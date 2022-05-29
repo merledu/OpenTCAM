@@ -1,0 +1,16 @@
+# https://pypi.org/project/pylint/
+# https://pypi.org/project/black/
+# https://pypi.org/project/bandit/
+# https://pypi.org/project/coverage/
+# https://pypi.org/project/pytest/
+
+# static code analysis tool
+pylint
+# code formatter
+black
+# find common security issues in code
+bandit
+# measures code coverage during test execution
+coverage
+# write tests for applications and libraries
+pytest
