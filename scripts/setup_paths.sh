@@ -1,12 +1,16 @@
 #!/bin/bash
 
 # ------------------------------ add folder compiler file path here
-export DIR_COMPILER    = ${OPENTCAM_ROOT}/compiler
+export DIR_COMPILER         = ${OPENTCAM_ROOT}/compiler
 
-# --------------- source code
-export DIR_COMP_MAIN   = ${DIR_COMPILER}/main.py
+# --------------- config files
+export DIR_COMP_CONFIGS     = ${DIR_COMPILER}/configs
 
-# --------------- tests
+# --------------- py source code
+export DIR_COMP_SRC         = ${DIR_COMPILER}/src
+
+# --------------- py tests
+export DIR_COMP_TESTS       = ${DIR_COMPILER}/tests
 
 # ------------------------------ add folder scripts file path here
 export DIR_SCRIPTS     = ${OPENTCAM_ROOT}/scripts
