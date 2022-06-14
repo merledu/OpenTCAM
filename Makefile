@@ -36,7 +36,7 @@ runpycode:
 cleanvenv:
 	@ echo ------------------- Deleting Python Virtual Environment/s ------------------
 	@ echo " "
-	@ rm -rf .pyvenv
+	@ rm -rf .py*
 	@ echo ------------------------------------ DONE ----------------------------------
 
 cleanlogs:
