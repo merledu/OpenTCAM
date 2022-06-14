@@ -26,10 +26,10 @@ setupvenv:
 	@ echo " "
 
 runpycode:
-	clear
+# clear
 	@ echo " "
 	@ echo --------------------------------- OpenTCAM ---------------------------------
-	@ python3 $(DIR_COMPILER)/main.py
+	@ python3 $(DIR_COMP_SRC)/main.py
 	@ echo ------------------------------------ DONE ----------------------------------
 	@ echo " "
 
