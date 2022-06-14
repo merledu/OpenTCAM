@@ -33,3 +33,13 @@ class tableMapping:
         else:
             logging.info('Config File NOT FOUND: ' + self.tcamTableFilePath)
             sys.exit('TCAM table config File NOT FOUND')
+    
+    
+    def readYAMLFile(self,filePath):
+        """
+        what does this func do ?
+        """
+        with open(filePath) as file:
+            self._tcamTableConfigs=yaml.full_load(file)
+        # print(json.dumps(self._tcamTableConfigs,indent=4))
+        # print(yaml.dump(self._tcamTableConfigs,sort_keys=False,default_flow_style=False))
