@@ -19,19 +19,28 @@ class tableMapping:
                             format='%(asctime)s | %(filename)s | %(funcName)s | %(levelname)s | %(lineno)d | %(message)s')
     
     # ----------------------------------------------------------------- Functions
-    def getYAMLFile(self):
+    def getPrjDir(self):
         """
         what does this func do ?
         """
         self.prjWorkDir=os.getcwd()
         logging.info('Project working dir: ' + self.prjWorkDir)
+        return self.prjWorkDir
+    
+    
+    def getYAMLFile(self):
+        """
+        what does this func do ?
+        """
         # get tcamTables config file path
         tempPath = os.path.join(self.prjWorkDir,'compiler/configs/tcamTables.yaml')
         if os.path.isfile(tempPath) is True:
             self.tcamTableFilePath = tempPath
             logging.info('Config File FOUND: ' + self.tcamTableFilePath)
+            return self.tcamTableFilePath
         else:
             logging.info('Config File NOT FOUND: ' + self.tcamTableFilePath)
+            # return self.tcamTableFilePath
             sys.exit('TCAM table config File NOT FOUND')
     
     
@@ -43,3 +52,6 @@ class tableMapping:
             self._tcamTableConfigs=yaml.full_load(file)
         # print(json.dumps(self._tcamTableConfigs,indent=4))
         # print(yaml.dump(self._tcamTableConfigs,sort_keys=False,default_flow_style=False))
+    
+    
+    
