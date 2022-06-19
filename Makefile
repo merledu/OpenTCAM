@@ -33,6 +33,20 @@ runpycode:
 	@ echo ------------------------------------ DONE ----------------------------------
 	@ echo " "
 
+install_iverilog:
+	@ echo " "
+	@ echo ------------------------- INSTALLING Icarus Verilog ------------------------
+	@ bash ${DIR_SCRIPTS}/install_iverilog.sh
+	@ echo ----------------------------------- DONE -----------------------------------
+	@ echo " "
+
+install_yosys:
+	@ echo " "
+	@ echo ------------------- INSTALLING Yosys Open SYnthesis Suite ------------------
+	@ bash ${DIR_SCRIPTS}/install_yosys.sh
+	@ echo ----------------------------------- DONE -----------------------------------
+	@ echo " "
+
 cleanvenv:
 	@ echo ------------------- Deleting Python Virtual Environment/s ------------------
 	@ echo " "
