@@ -5,6 +5,10 @@ OPENTCAM_ROOT = $(shell git rev-parse --show-toplevel)
 include ./scripts/setup_paths.sh
 
 # ------------------------------------------ VARIABLES
+TCAMCONFIG 	:= tcamTable2
+DEBUG 		:= 0
+VERBOSE 	:= 0
+
 # ------------------------------------------ TARGETS
 default: help
 
@@ -28,8 +32,11 @@ setupvenv:
 runpycode:
 # clear
 	@ echo " "
+# @ rm -rf logs
 	@ echo --------------------------------- OpenTCAM ---------------------------------
-	@ python3 $(DIR_COMP_SRC)/main.py
+	@ python3 $(DIR_COMP_SRC)/main.py \
+	--tcamConfig $(TCAMCONFIG) \
+	--debug $(DEBUG) --verbose $(VERBOSE)
 	@ echo ------------------------------------ DONE ----------------------------------
 	@ echo " "
 
@@ -55,7 +62,7 @@ cleanvenv:
 
 cleanlogs:
 	@ echo -------------------------- Deleting all log files --------------------------
-	@ rm -rf *.log
+	@ rm -rf logs
 	@ echo ------------------------------------ DONE ----------------------------------
 
 cleandumpfiles: cleanlogs
