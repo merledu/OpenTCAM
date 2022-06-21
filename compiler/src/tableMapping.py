@@ -109,24 +109,14 @@ class tableMapping:
             sys.exit('Required TCAM table config ', tcamConfig,' NOT FOUND')
     
     
-    # def readTCAMTable(self):
-    #     """
-    #     what does this func do ?
-    #     input args:
-    #     return val:
-    #     """
-    #     self._tcamTableMap = pd.read_excel(self.tcamTableXlsxFilePath, header=0 ,engine='openpyxl')
-    #     # print(mytable)
-    #     # print(type(mytable))
+    # print a table from excel or html file
+    def displayDF(self,dataFrame):
+        """
+        what does this func do ?
+        input args:
+        return val:
+        """
+        print('\n')
+        print(tabulate(dataFrame,headers='keys', showindex=False, disable_numparse=True, tablefmt='github'),'\n')
     
     
-    
-    
-    # # print a table from excel or html file
-    # def displayDF(self,dataFrame):
-    #     """
-    #     what does this func do ?
-    #     input args:
-    #     return val:
-    #     """
-    #     print(tabulate(dataFrame,headers='keys',tablefmt='github'))
