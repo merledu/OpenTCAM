@@ -15,19 +15,21 @@ import os
 class tableMapping:
     # ----------------------------------------------------------------- Variables
     def __init__(self):
-        # public vars
+        # ------------------- public vars
         self.prjWorkDir                 = str()
         self.tcamTableConfigsFilePath   = str()
         self.tcamTableXlsxFilePath      = str()
-        # protected vars
+        # ------------------- protected vars
         self._tcamTableConfigs          = dict()
         self._tcamTableMap              = pd.DataFrame
         self._sramTableMap              = pd.DataFrame
-        # private vars
+        # ------------------- private vars
         self.__tcamQueryStrLen  = int()
         self.__tcamSubStrLen    = int()
         self.__tcamTotalSubStr  = int()
         self.__tcamPotMatchAddr = int()
+        self.__sramTableRows    = int()
+        self.__sramTableCols    = int()
         
         
         # logging config
@@ -160,6 +162,20 @@ class tableMapping:
             logging.info('"MATCH NOT FOUND": TCAM table map rows != TCAM table YAML config potMatchAddr')
             logging.info('"MATCH NOT FOUND": TCAM table map cols != TCAM table YAML config queryStrLen')
             sys.exit('"MATCH NOT FOUND": MISMATCH in TCAM table map and YAML config rows/cols')
+    
+    
+    def getSRAMTableDim(self):
+        """
+        what does this func do ?
+        input args:
+        return val:
+        """
+        self.__sramTableRows = self.__tcamTotalSubStr * pow(2,self.__tcamSubStrLen)
+        self.__sramTableCols = self.__tcamPotMatchAddr
+        logging.info('SRAM table rows = ' + str(self.__sramTableRows) + ', col = ' + str(self.__sramTableCols))
+        # print(sramTableRows,sramTableCols)
+        return [self.__sramTableRows, self.__sramTableCols]
+    
     
     
 
