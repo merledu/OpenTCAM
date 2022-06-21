@@ -19,8 +19,9 @@ class tableMapping:
         self.tcamTableConfigsFilePath   = str()
         self.tcamTableXlsxFilePath      = str()
         # protected vars
-        self._tcamTableConfigs  = dict()
-        self._tcamTableMap      = pd.DataFrame
+        self._tcamTableConfigs          = dict()
+        self._tempTcamTableConfig       = dict()
+        self._tcamTableMap              = pd.DataFrame
         # private vars
         self.__tcamQueryStrLen  = int()
         self.__tcamSubStrLen    = int()
@@ -42,7 +43,7 @@ class tableMapping:
         return self.prjWorkDir
     
     
-    def getYAMLFile(self):
+    def getYAMLFilePath(self):
         """
         what does this func do ?
         input args:
@@ -52,15 +53,14 @@ class tableMapping:
         tempPath = os.path.join(self.prjWorkDir,'compiler/configs/tcamTables.yaml')
         if os.path.isfile(tempPath) is True:
             self.tcamTableConfigsFilePath = tempPath
-            logging.info('TCAM table config File FOUND: ' + self.tcamTableConfigsFilePath)
+            logging.info('"FOUND": TCAM table config file path: ' + self.tcamTableConfigsFilePath)
             return self.tcamTableConfigsFilePath
         else:
-            logging.info('TCAM table config file NOT FOUND: ' + self.tcamTableConfigsFilePath)
-            # return self.tcamTableConfigsFilePath
-            sys.exit('TCAM table config file NOT FOUND')
+            logging.info('"NOT FOUND": TCAM table config file path: ' + self.tcamTableConfigsFilePath)
+            sys.exit('"NOT FOUND": TCAM table config file')
     
     
-    def readYAMLFile(self,filePath):
+    def readYAML(self,filePath):
         """
         what does this func do ?
         input args:
@@ -70,10 +70,11 @@ class tableMapping:
             self._tcamTableConfigs=yaml.full_load(file)
         # print(json.dumps(self._tcamTableConfigs,indent=4))
         # print(yaml.dump(self._tcamTableConfigs,sort_keys=False,default_flow_style=False))
+        logging.info('Read TCAM table config file: ' + self.tcamTableConfigsFilePath)
         return self._tcamTableConfigs
     
     
-    def printYAMLFile(self):
+    def printYAML(self):
         """
         what does this func do ?
         input args:
@@ -84,7 +85,7 @@ class tableMapping:
         logging.info('Printed TCAM table configs')
     
     
-    def getTCAMTable(self,tcamConfig):
+    def getTCAMTableFilePath(self,tcamConfig):
         """
         what does this func do ?
         input args:
@@ -92,25 +93,24 @@ class tableMapping:
         """
         # look for specific tcam config in compiler/configs/tcamTables.yaml
         if tcamConfig in self._tcamTableConfigs.keys():
-            print(json.dumps(self._tcamTableConfigs[tcamConfig], indent=4))
-            logging.info('Required TCAM Config [' + tcamConfig + '] FOUND')
-            
+            self._tempTcamTableConfig = self._tcamTableConfigs[tcamConfig]
+            print(json.dumps(self._tempTcamTableConfig, indent=4))
+            logging.info('"FOUND" Required TCAM Config [' + tcamConfig + ']')
             # find the specific tcam table map in compiler/lib/
             tempPath = os.path.join(self.prjWorkDir,'compiler/lib/'+tcamConfig+'.xlsx')
             if os.path.isfile(tempPath) is True:
                 self.tcamTableXlsxFilePath = tempPath
-                logging.info('TCAM table map XLSX file FOUND: ' + self.tcamTableXlsxFilePath)
+                logging.info('"FOUND" TCAM table map XLSX file path: ' + self.tcamTableXlsxFilePath)
                 return self.tcamTableXlsxFilePath
             else:
-                logging.info('TCAM table map XLSX file NOT FOUND: ' + self.tcamTableXlsxFilePath)
-                sys.exit('TCAM table config file NOT FOUND')
+                logging.info('"NOT FOUND": TCAM table map XLSX file path: ' + self.tcamTableXlsxFilePath)
+                sys.exit('"NOT FOUND": TCAM table config file')
         else:
-            logging.info('TCAM Config [' + tcamConfig + '] NOT FOUND')
-            sys.exit('Required TCAM table config ', tcamConfig,' NOT FOUND')
+            logging.info('"NOT FOUND": TCAM Config [' + tcamConfig + ']')
+            sys.exit('"NOT FOUND": Required TCAM table config ', tcamConfig)
     
     
-    # print a table from excel or html file
-    def displayDF(self,dataFrame):
+    def printDF(self,dataFrame):
         """
         what does this func do ?
         input args:
@@ -118,5 +118,37 @@ class tableMapping:
         """
         print('\n')
         print(tabulate(dataFrame,headers='keys', showindex=False, disable_numparse=True, tablefmt='github'),'\n')
+        logging.info('Printed dataframe')
     
     
+    def readTCAMTable(self):
+        """
+        what does this func do ?
+        input args:
+        return val:
+        """
+        # store tcam table in dataframe
+        self._tcamTableMap = pd.read_excel(self.tcamTableXlsxFilePath, skiprows=2, index_col=None, engine='openpyxl')
+        # get num of rows and col from tcam table
+        tcamTableRows = self._tcamTableMap.shape[0]
+        tcamTableCols = self._tcamTableMap.shape[1]
+        # compare row/col of tcam table with respective yaml config
+        if (tcamTableRows == self._tempTcamTableConfig['potMatchAddr'] and 
+            tcamTableCols - 1 == self._tempTcamTableConfig['queryStrLen']):
+            logging.info('"MATCH FOUND": TCAM table map rows == TCAM table YAML config potMatchAddr')
+            logging.info('"MATCH FOUND": TCAM table map cols == TCAM table YAML config queryStrLen')
+            return [tcamTableRows, tcamTableCols]
+        else:
+            logging.info('"MATCH NOT FOUND": TCAM table map rows != TCAM table YAML config potMatchAddr')
+            logging.info('"MATCH NOT FOUND": TCAM table map cols != TCAM table YAML config queryStrLen')
+            sys.exit('"MATCH NOT FOUND": MISMATCH in TCAM table map and YAML config rows/cols')
+    
+    
+    # parseTCAMTable
+    # createSRAMTable
+    # genSRAMTable
+    # printTableExcel
+    # printTableCsv
+    
+    
+
