@@ -33,6 +33,12 @@ class TableMapping:
         self.__tcamPotMatchAddr = int()
         self.__sramTableRows    = int()
         self.__sramTableCols    = int()
+        self.__tcamRows         = list()
+        self.__tcamCols         = list()
+        self.__tcamColVec       = list()
+        self.__sramRows         = list()
+        self.__sramRowVec       = list()
+        self.__sramCols         = list()
         
         
         # logging config
@@ -236,3 +242,42 @@ class TableMapping:
                                     na_rep='', header=True, index=True, engine='xlsxwriter')
         logging.info('Created SRAM table XLSX file {:<s}'.format(self.sramTableXlsxFilePath))
         return self.sramTableXlsxFilePath
+    
+    
+    def splitRowsAndCols(self):
+        """
+        what does this func do ?
+        input args:
+        return val:
+        """
+        # store tcam and sram table in temp vars
+        tcamDF = self._tcamTable
+        sramDF = self._sramTable
+        logging.info('TCAM table (r*c): {0}'.format(tcamDF.shape))
+        logging.info('SRAM table (r*c): {0}'.format(sramDF.shape))
+        # create tcamRows vector
+        self.__tcamRows = np.arange(0,self.__tcamPotMatchAddr,1).tolist()
+        logging.info('TCAM table row vector: {0}'.format(self.__tcamRows))
+        # create tcamCols vector
+        self.__tcamCols = np.arange(1,self.__tcamQueryStrLen+1,1).tolist()
+        logging.info('TCAM table col vector: {0}'.format(self.__tcamCols))
+        # create tcamColVec vector and split in equal pieces
+        self.__tcamColVec = np.array_split(self.__tcamCols,self.__tcamTotalSubStr)
+        for i in range(len(self.__tcamColVec)):
+            self.__tcamColVec[i] = self.__tcamColVec[i].tolist()
+            logging.info('TCAM table col split vector [{0}]: {1}'.format(i,self.__tcamColVec[i]))
+        # create sramRows vector
+        self.__sramRows = np.arange(0,self.__tcamTotalSubStr * 2**self.__tcamSubStrLen,1).tolist()
+        logging.info('SRAM table row vector: {0}'.format(self.__sramRows))
+        # create sramRowVec vector and split in equal pieces
+        self.__sramRowVec = np.array_split(self.__sramRows,self.__tcamTotalSubStr)
+        for i in range(len(self.__sramRowVec)):
+            self.__sramRowVec[i] = self.__sramRowVec[i].tolist()
+            logging.info('SRAM table row split vector [{0}]: {1}'.format(i,self.__sramRowVec[i]))
+        # create sramCols vector
+        self.____sramCols = np.arange(1,self.__tcamPotMatchAddr+1,1).tolist()
+        logging.info('SRAM table col vector: {0}'.format(self.____sramCols))
+    
+    
+    
+
