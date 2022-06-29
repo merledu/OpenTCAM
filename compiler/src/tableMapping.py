@@ -11,15 +11,19 @@ import os
 # ======================================= Begin Class =======================================
 # ===========================================================================================
 
-class tableMapping:
+class TableMapping:
     # ----------------------------------------------------------------- Variables
     def __init__(self):
         # ------------------- public vars
         self.prjWorkDir                 = str()
         self.tcamTableConfigsFilePath   = str()
+        self.tcamTableConfigsFileName   = str()
         self.tcamTableXlsxFilePath      = str()
+        self.tcamTableXlsxFileName      = str()
+        self.sramTableXlsxFilePath      = str()
+        self.sramTableXlsxFileName      = str()
         # ------------------- protected vars
-        self._tcamTableConfigs  = dict()
+        self._tcamTableConfigs  = dict()        # = {}
         self._tcamTable         = pd.DataFrame
         self._sramTable         = pd.DataFrame
         # ------------------- private vars
@@ -39,6 +43,8 @@ class tableMapping:
     def getPrjDir(self):
         """
         what does this func do ?
+        input args:
+        return val:
         """
         self.prjWorkDir=os.getcwd()
         logging.info('Project working dir: {:<s}'.format(self.prjWorkDir))
@@ -55,6 +61,7 @@ class tableMapping:
         tempPath = os.path.join(self.prjWorkDir,'compiler/configs/tcamTables.yaml')
         if os.path.isfile(tempPath) is True:
             self.tcamTableConfigsFilePath = tempPath
+            self.tcamTableConfigsFileName = os.path.basename(tempPath)
             logging.info('"FOUND": TCAM table config file path: {:<s}'.format(self.tcamTableConfigsFilePath))
             return self.tcamTableConfigsFilePath
         else:
@@ -119,6 +126,7 @@ class tableMapping:
         tempPath = os.path.join(self.prjWorkDir,'compiler/lib/'+tcamConfig+'.xlsx')
         if os.path.isfile(tempPath) is True:
             self.tcamTableXlsxFilePath = tempPath
+            self.tcamTableXlsxFileName = os.path.basename(tempPath)
             logging.info('"FOUND" TCAM table map XLSX file path: {:<s}'.format(self.tcamTableXlsxFilePath))
             return self.tcamTableXlsxFilePath
         else:
@@ -177,16 +185,21 @@ class tableMapping:
     
     
     def genSRAMTable(self):
+        """
+        what does this func do ?
+        input args:
+        return val:
+        """
         # create temp vars
         sramTableAddrList = list()
         sramColHeadings = list()
-        
         # create row address
         for i in range(self.__tcamTotalSubStr):
             for j in range(2**self.__tcamSubStrLen):
-                sramTableAddrList.append(format(j, '#012b'))  # with 0b prefix
-                # sramTableAddrList.append(format(j, '08b'))    # without 0b prefix
-            logging.info('Created [{:>4d}] addresses from search query [{:>4d}]'.format(j+1,i))
+                padding = '0'+str(self.__tcamSubStrLen)+'b'
+                # sramTableAddrList.append(format(j, '#012b'))  # with 0b prefix
+                sramTableAddrList.append(format(j, padding))    # without 0b prefix
+            logging.info('Created [{:>4d}] SRAM addresses from search query [{:>4d}]'.format(j+1,i))
         # create col headings
         for k in reversed(range(self.__tcamPotMatchAddr)):
             heading = 'D'+str(k)
@@ -200,13 +213,26 @@ class tableMapping:
         self._sramTable.insert(0,'Addresses',sramTableAddrList,allow_duplicates=True)
         # logging.info('Created empty [{:d} x {:d}] SRAM table'.format(self.__sramTableRows,self.__sramTableCols))
         logging.info('Created empty [{:d} x {:d}] SRAM table'.format(self._sramTable.shape[0],self._sramTable.shape[1]))
-
-
-
-
-
-# parseTCAMTable - mapTCAM2SRAM
-# createSRAMTable
-# genSRAMTable
-# printTableExcel
-# printTableCsv
+    
+    
+    def createSRAMExcel(self):
+        """
+        what does this func do ?
+        input args:
+        return val:
+        """
+        # create sramTables dir if it doesnt exist
+        tempPath = os.path.join(self.prjWorkDir,'sramTables')
+        if os.path.exists(tempPath) is False:
+            os.makedirs('sramTables')
+            logging.info('Created sramTables dir: {:<s}'.format(tempPath))
+        # create sram table file path
+        self.sramTableXlsxFileName = os.path.basename(self.tcamTableXlsxFileName.replace('tcam','sram'))
+        self.sramTableXlsxFilePath = os.path.join(tempPath,self.sramTableXlsxFileName)
+        # create empty excel file in dir sramTables
+        writer = pd.ExcelWriter(self.sramTableXlsxFilePath,engine='xlsxwriter')
+        writer.save()
+        self._sramTable.to_excel(excel_writer=self.sramTableXlsxFilePath, sheet_name=self.sramTableXlsxFileName,
+                                    na_rep='', header=True, index=True, engine='xlsxwriter')
+        logging.info('Created SRAM table XLSX file {:<s}'.format(self.sramTableXlsxFilePath))
+        return self.sramTableXlsxFilePath
