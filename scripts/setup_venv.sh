@@ -4,7 +4,7 @@
 export start_time=$(date +%s.%3N)
 
 # virtualenv name
-VIRENV=.pyVenvOpenTcam
+export VIRENV=.pyVenvOpenTcam
 
 # python3 -m pip uninstall -y virtualenv
 
