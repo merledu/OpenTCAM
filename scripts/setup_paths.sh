@@ -17,9 +17,11 @@ export DIR_SCRIPTS     = ${OPENTCAM_ROOT}/scripts
 export SETUP_PATHS     = ${OPENTCAM_ROOT}/scripts/setup_paths.sh
 export SETUP_VENV      = ${OPENTCAM_ROOT}/scripts/setup_venv.sh
 
+# ------------------------------ add folder py venv file path here
+export DIR_VENV         = ${OPENTCAM_ROOT}/.pyVenvOpenTcam
+
 # ------------------------------ add folder docs file path here
 export DIR_DOCS        = ${OPENTCAM_ROOT}/docs
 
 # ------------------------------ add folder images file path here
 export DIR_IMAGES      = ${OPENTCAM_ROOT}/images
-
