@@ -115,8 +115,10 @@ class TableMapping:
             self.__tcamTotalSubStr  = tempConfig['totalSubStr']
             self.__tcamPotMatchAddr = tempConfig['potMatchAddr']
             # print specific tcam config
-            print(json.dumps(tempConfig, indent=4))
+            # print(tempConfig)
             logging.info('"FOUND" Required TCAM Config [{:<s}]'.format(tcamConfig))
+            logging.info('TCAM Config Data [{:<s}] = {}'.format(tcamConfig,tempConfig))
+            return tempConfig
         else:
             logging.error('"NOT FOUND": TCAM Config [{:<s}]'.format(tcamConfig))
             sys.exit('"NOT FOUND": Required TCAM table config [{:<s}]'.format(tcamConfig))
@@ -148,7 +150,7 @@ class TableMapping:
         """
         print('\n')
         print(tabulate(dataFrame,headers='keys', showindex=True, disable_numparse=True, tablefmt='github'),'\n')
-        logging.info('Printed dataframe')
+        logging.info('Printing dataframe')
     
     
     def readTCAMTable(self):
@@ -159,12 +161,9 @@ class TableMapping:
         """
         # store tcam table in dataframe
         self._tcamTable = pd.read_excel(self.tcamTableXlsxFilePath, skiprows=2, index_col=None, engine='openpyxl')
-        # print(self._tcamTable)
         # get num of rows and col from tcam table
         tcamTableRows = self._tcamTable.shape[0]
         tcamTableCols = self._tcamTable.shape[1]
-        # print('tcam table map:  ',tcamTableRows,tcamTableCols)
-        # print('tcam table conf: ',self.__tcamPotMatchAddr,self.__tcamQueryStrLen)        
         # compare row/col of tcam table with respective yaml config
         if (tcamTableRows == self.__tcamPotMatchAddr and 
             tcamTableCols - 1 == self.__tcamQueryStrLen):
@@ -186,7 +185,6 @@ class TableMapping:
         self.__sramTableRows = self.__tcamTotalSubStr * pow(2,self.__tcamSubStrLen)
         self.__sramTableCols = self.__tcamPotMatchAddr
         logging.info('SRAM table rows [{:>4d}] cols [{:>4d}]'.format(self.__sramTableRows,self.__sramTableCols))
-        # print(sramTableRows,sramTableCols)
         return [self.__sramTableRows, self.__sramTableCols]
     
     
@@ -275,9 +273,45 @@ class TableMapping:
             self.__sramRowVec[i] = self.__sramRowVec[i].tolist()
             logging.info('SRAM table row split vector [{0}]: {1}'.format(i,self.__sramRowVec[i]))
         # create sramCols vector
-        self.____sramCols = np.arange(1,self.__tcamPotMatchAddr+1,1).tolist()
-        logging.info('SRAM table col vector: {0}'.format(self.____sramCols))
+        self.__sramCols = np.arange(0,self.__tcamPotMatchAddr+1,1).tolist()
+        logging.info('SRAM table col vector: {0}'.format(self.__sramCols))
     
     
-    
+    def mapTCAMtoSRAM(self):
+        """
+        what does this func do ?
+        input args:
+        return val:
+        """
+        tcamDF = self._tcamTable
+        sramDF = self._sramTable
+        # iterate through tcam table rows
+        for a in range(len(tcamDF)):
+            # iterate through tcam table cols
+            for b in range(len(self.__tcamColVec)):
+                # search and concat search query str in tcam table 
+                tempSQ = [str(c) for c in list(tcamDF.iloc[a,self.__tcamColVec[b]])]
+                tempSQ = ''.join(tempSQ)
+                # print('temp SRAM addr: ',tempSQ,' SQ col: ',b,' tcam row: ',a)
+                logging.info('Address Mapping to SRAM | Addr: {:>10s} | Sub String Col: {:>5d} | TCAM Row: {:>5d} |'.format(tempSQ,b,a))
+                # create sram table subsections based on query str
+                tempSRAMTable = sramDF.iloc[self.__sramRowVec[b],self.__sramCols]
+                logging.info('Search Query mapping portion: {:d}'.format(b))
+                # print(tabulate(tempSRAMTable,headers='keys',tablefmt='github'),'\n')
+                # find specific mapping cell in sram table
+                rowIndx = tempSRAMTable.index[tempSRAMTable['Addresses']==tempSQ].to_list()[0]
+                colIndx = len(self.__sramCols) - a - 1
+                # print('sram rowIndx: ',rowIndx,type(rowIndx))
+                # print('sram colIndx: ',colIndx,type(colIndx))
+                # find specific entry
+                tempData = sramDF.iloc[rowIndx,colIndx]
+                # print(sramDF.iloc[rowIndx,colIndx])
+                logging.info('SRAM table cell [{:d}, {:d}] | Old Value = {}'.format(rowIndx,colIndx,tempData))
+                # replace specific entry
+                sramDF.iat[rowIndx,colIndx] = 1
+                # print(sramDF.iat[rowIndx, colIndx])
+                logging.info('SRAM table cell [{:d}, {:d}] | New Value = {}'.format(rowIndx,colIndx,sramDF.iloc[rowIndx,colIndx]))
+        # add zeros in empty cells
+        sramDF = sramDF.fillna(0)
+        self._sramTable = sramDF
 
