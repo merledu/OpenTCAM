@@ -5,9 +5,7 @@ OPENTCAM_ROOT = $(shell git rev-parse --show-toplevel)
 include ./scripts/setup_paths.sh
 
 # ------------------------------------------ VARIABLES
-TCAMCONFIG 	:= tcamTable2
-DEBUG 		:= 0
-VERBOSE 	:= 0
+include ./scripts/setup_vars.sh
 
 # ------------------------------------------ TARGETS
 default: help
@@ -29,15 +27,31 @@ setupvenv:
 	@ echo ------------------------------------ DONE ----------------------------------
 	@ echo " "
 
-runpycode:
-# clear
+runopentcam:
 	@ echo " "
-# @ rm -rf logs
 	@ echo --------------------------------- OpenTCAM ---------------------------------
 	@ python3 $(DIR_COMP_SRC)/main.py \
 	--tcamConfig $(TCAMCONFIG) \
 	--debug $(DEBUG) --verbose $(VERBOSE)
 	@ echo ------------------------------------ DONE ----------------------------------
+	@ echo " "
+
+runpylint:
+	@ echo " "
+	@ echo ------------------------------ Running PyLint ------------------------------
+	pylint ./compiler/src/*.py --output-format=parseable:./logs/pylint.log,colorized \
+	--msg-template='{path:s}: (Ln {line:d}, Col {column}) -- {obj} -- {msg_id} -- {msg}' \
+	--rcfile=${OPENTCAM_ROOT}/.pylintrc
+	@ echo ------------------------------------ DONE ----------------------------------
+	@ echo " "
+
+runblack:
+	@ echo " "
+	@ echo ------------------------------ Running Black ------------------------------
+	@ black --check --target-version=py35 ./compiler/src/*.py
+	@ echo " "
+	@ black --target-version=py35 ./compiler/src/.py  
+	@ echo ---------------------------------- DONE -----------------------------------
 	@ echo " "
 
 install_iverilog:
@@ -55,24 +69,36 @@ install_yosys:
 	@ echo " "
 
 cleanvenv:
+	@ echo " "
 	@ echo ------------------- Deleting Python Virtual Environment/s ------------------
 	@ echo " "
 	@ rm -rf .py*
 	@ echo ------------------------------------ DONE ----------------------------------
+	@ echo " "
 
 cleanlogs:
 	@ echo -------------------------- Deleting all log files --------------------------
 	@ rm -rf logs
 	@ echo ------------------------------------ DONE ----------------------------------
+	@ echo " "
 
-cleandumpfiles: cleanlogs
+cleanexcel:
+	@ echo " "
+	@ echo ----------------------- Deleting all SRAM table files ----------------------
+	@ rm -rf sramTables
+	@ echo ------------------------------------ DONE ----------------------------------
+	@ echo " "
+
+cleandumpfiles: cleanlogs cleanexcel
 
 deepclean:
 	clear
+	@ echo " "
 	@ echo ------------------------- Deep Cleaning Environment ------------------------
 	@ echo " "
 	@ make cleanvenv 
 	@ make cleandumpfiles
+	@ make cleanexcel
 	@ echo ------------------------------------ DONE ----------------------------------
 	@ echo " "
 
@@ -84,7 +110,11 @@ help:
 	@ echo " "
 	@ echo " loadpaths:		display various loaded file paths"
 	@ echo " setupvenv:		create a virtual environemnt with all necessary dependencies"
-	@ echo " runpycode:		simulate openTCAM"
+	@ echo " "
+	@ echo " runopentcam:		simulate openTCAM"
+	@ echo " 	TCAMCONFIG=tcamTableX	tcam table config name"
+	@ echo " 	DEBUG=1/0		debugging on/off"
+	@ echo " 	VERBOSE=1/0		verbosity on/off"
 	@ echo " "
 	@ echo " cleanvenv:		remove the virtual env"
 	@ echo " cleanlogs:		remove all .log files"
