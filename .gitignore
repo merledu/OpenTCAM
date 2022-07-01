@@ -3,3 +3,4 @@
 logs
 
 compiler/src/__pycache__
+compiler/lib/.~lock.*.xlsx#

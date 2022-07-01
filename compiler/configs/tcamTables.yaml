@@ -17,16 +17,16 @@ tcamTable1:
     potMatchAddr: 8
 
 tcamTable2:
-    queryStrLen: 32
-    subStrLen: 8
-    totalSubStr: 4
-    potMatchAddr: 8
+    queryStrLen: 4
+    subStrLen: 4
+    totalSubStr: 1
+    potMatchAddr: 4
 
 tcamTable3:
-    queryStrLen: 15
-    subStrLen: 5
-    totalSubStr: 3
-    potMatchAddr: 8
+    queryStrLen: 8
+    subStrLen: 4
+    totalSubStr: 2
+    potMatchAddr: 4
 
 tcamTable4:
     queryStrLen: 10
