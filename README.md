@@ -1,5 +1,7 @@
-![opentcam logo](images/opentcam_logo.svg)
-<!-- ![opentcam logo](images/opentcam_logo.jpg) -->
+<div align="center">
+    <img src="./images/opentcam_logo.jpg">
+    <!-- <img src="./images/opentcam_logo.svg"> -->
+</div>
 
 <!-- insert badges here -->
 <!-- python -->
@@ -45,6 +47,17 @@ The OpenTCAM compiler requires Python3 and Pip3 inorder to work:
 
 ## Basic Usage
 <!-- explain how to run and simulate the opentcam code -->
+-   Activate virtual environment: `source .pyVenvOpenTcam/bin/activate`
+-   Generate TCAM -> SRAM table map:
+    ```bash
+	make runopentcam \
+	TCAMCONFIG=tcamTableX \     # tcam table config name here X=1,2,..
+	DEBUG=1/0 \                 # debugging on/off
+	VERBOSE=1/0 \               # verbosity on/off
+    ```
+
+
+-   Deactivate virtual environment: `deactivate`
 
 ## Unit Tests
 <!-- explain how to run and simulate the opentcam tests -->
