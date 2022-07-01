@@ -16,10 +16,14 @@
 
 # static code analysis tool
 pylint
+# generate package and class diagrams
+# pyreverse
 # code formatter
 black
 # find common security issues in code
 bandit
+# sort your imports
+isort
 
 # data analysis toolkit
 pandas
