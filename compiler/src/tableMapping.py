@@ -25,6 +25,10 @@ class TableMapping:
         self.sramTableXlsxFileName      = str()
         self.sramTableHtmlFilePath      = str()
         self.sramTableHtmlFileName      = str()
+        self.sramTableJsonFilePath      = str()
+        self.sramTableJsonFileName      = str()
+        self.sramTableTxtFilePath       = str()
+        self.sramTableTxtFileName       = str()
         # ------------------- protected vars
         self._tcamTableConfigs  = dict()        # = {}
         self._tcamTable         = pd.DataFrame
@@ -326,6 +330,53 @@ class TableMapping:
                                     na_rep='', header=True, index=True, engine='xlsxwriter')
         logging.info('Created SRAM table XLSX file {:<s}'.format(self.sramTableXlsxFilePath))
         return self.sramTableXlsxFilePath
+    
+    
+    def writeSRAMtoHtml(self):
+        """
+        what does this func do ?
+        input args:
+        return val:
+        """
+        # create sram table file path and name
+        self.sramTableHtmlFileName = os.path.basename(self.tcamTableXlsxFileName.replace('tcam','sram').replace('.xlsx','.html'))
+        self.sramTableHtmlFilePath = os.path.join(self.sramTableDir,self.sramTableHtmlFileName)
+        # create html file in dir sramTables
+        self._sramTable.to_html(self.sramTableHtmlFilePath,index=True,header=True,justify='center',classes='table table-stripped')
+        logging.info('Created SRAM table HTML file {:<s}'.format(self.sramTableHtmlFilePath))
+        return self.sramTableHtmlFilePath
+    
+    
+    def writeSRAMtoJson(self):
+        """
+        what does this func do ?
+        input args:
+        return val:
+        """
+        # create sram table file path and name
+        self.sramTableJsonFileName = os.path.basename(self.tcamTableXlsxFileName.replace('tcam','sram').replace('.xlsx','.json'))
+        self.sramTableJsonFilePath = os.path.join(self.sramTableDir,self.sramTableJsonFileName)
+        # create json file in dir sramTables
+        self._sramTable.to_json(self.sramTableJsonFilePath,orient='index',indent=4)
+        logging.info('Created SRAM table JSON file {:<s}'.format(self.sramTableJsonFilePath))
+        return self.sramTableJsonFilePath
+    
+    
+    def writeSRAMtoTxt(self):
+        """
+        what does this func do ?
+        input args:
+        return val:
+        """
+        # create sram table file path and name
+        self.sramTableTxtFileName = os.path.basename(self.tcamTableXlsxFileName.replace('tcam','sram').replace('.xlsx','.txt'))
+        self.sramTableTxtFilePath = os.path.join(self.sramTableDir,self.sramTableTxtFileName)
+        # create txt file in dir sramTables
+        myTable = tabulate(self._sramTable,headers='keys', showindex=True, disable_numparse=True, tablefmt='github')
+        with open(self.sramTableTxtFilePath,'w') as f:
+            f.write(myTable)
+        logging.info('Created SRAM table Txt file {:<s}'.format(self.sramTableTxtFilePath))
+        return self.sramTableTxtFilePath
 
 
 # ===========================================================================================
