@@ -310,6 +310,22 @@ class TableMapping:
         self._sramTable = sramDF
     
     
+    def writeSRAMtoXlsx(self):
+        """
+        what does this func do ?
+        input args:
+        return val:
+        """
+        # create sram table file path and name
+        self.sramTableXlsxFileName = os.path.basename(self.tcamTableXlsxFileName.replace('tcam','sram'))
+        self.sramTableXlsxFilePath = os.path.join(self.sramTableDir,self.sramTableXlsxFileName)
+        # create excel file in dir sramTables
+        writer = pd.ExcelWriter(self.sramTableXlsxFilePath,engine='xlsxwriter')
+        writer.save()
+        self._sramTable.to_excel(excel_writer=self.sramTableXlsxFilePath, sheet_name=self.sramTableXlsxFileName,
+                                    na_rep='', header=True, index=True, engine='xlsxwriter')
+        logging.info('Created SRAM table XLSX file {:<s}'.format(self.sramTableXlsxFilePath))
+        return self.sramTableXlsxFilePath
 
 
 # ===========================================================================================
