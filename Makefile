@@ -11,19 +11,21 @@ include ./scripts/setup_vars.sh
 default: help
 
 loadpaths:
-	$(info DIR_COMPILER:	$(DIR_COMPILER))
-	$(info DIR_COMP_MAIN:	$(DIR_COMP_MAIN))
-	$(info DIR_SCRIPTS:	$(DIR_SCRIPTS))
-	$(info SETUP_PATHS:	$(SETUP_PATHS))
-	$(info SETUP_VENV:	$(SETUP_VENV))
-	$(info DIR_DOCS:	$(DIR_DOCS))
-	$(info DIR_IMAGES:	$(DIR_IMAGES))
+	$(info DIR_COMPILER:		$(DIR_COMPILER))
+	$(info DIR_COMP_CONFIGS:	$(DIR_COMP_CONFIGS))
+	$(info DIR_COMP_LIB:		$(DIR_COMP_LIB))
+	$(info DIR_COMP_SRC:		$(DIR_COMP_SRC))
+	$(info DIR_COMP_TESTS:		$(DIR_COMP_TESTS))
+	$(info DIR_SCRIPTS:		$(DIR_SCRIPTS))
+	$(info DIR_VENV:		$(DIR_VENV))
+	$(info DIR_DOCS:		$(DIR_DOCS))
+	$(info DIR_IMAGES:		$(DIR_IMAGES))
 
 setupvenv:
 	clear
 	@ echo -------------------- Creating Python Virtual Environment -------------------
 	@ echo " "
-	@ bash ${SETUP_VENV}
+	@ bash ${DIR_SCRIPTS}/setup_venv.sh
 	@ echo ------------------------------------ DONE ----------------------------------
 	@ echo " "
 
@@ -32,6 +34,7 @@ runopentcam:
 	@ echo --------------------------------- OpenTCAM ---------------------------------
 	@ python3 $(DIR_COMP_SRC)/main.py \
 	--tcamConfig $(TCAMCONFIG) \
+	-excel $(EXCEL) -html $(HTML) -json $(JSON) -txt $(TXT) \
 	--debug $(DEBUG) --verbose $(VERBOSE)
 	@ echo ------------------------------------ DONE ----------------------------------
 	@ echo " "
