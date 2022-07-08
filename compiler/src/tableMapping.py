@@ -16,12 +16,15 @@ class TableMapping:
     def __init__(self):
         # ------------------- public vars
         self.prjWorkDir                 = str()
+        self.sramTableDir               = str()   
         self.tcamTableConfigsFilePath   = str()
         self.tcamTableConfigsFileName   = str()
         self.tcamTableXlsxFilePath      = str()
         self.tcamTableXlsxFileName      = str()
         self.sramTableXlsxFilePath      = str()
         self.sramTableXlsxFileName      = str()
+        self.sramTableHtmlFilePath      = str()
+        self.sramTableHtmlFileName      = str()
         # ------------------- protected vars
         self._tcamTableConfigs  = dict()        # = {}
         self._tcamTable         = pd.DataFrame
@@ -219,27 +222,18 @@ class TableMapping:
         logging.info('Created empty [{:d} x {:d}] SRAM table'.format(self._sramTable.shape[0],self._sramTable.shape[1]))
     
     
-    def createSRAMExcel(self):
+    def createSRAMTableDir(self):
         """
         what does this func do ?
         input args:
         return val:
         """
         # create sramTables dir if it doesnt exist
-        tempPath = os.path.join(self.prjWorkDir,'sramTables')
-        if os.path.exists(tempPath) is False:
+        self.sramTableDir = os.path.join(self.prjWorkDir,'sramTables')
+        if os.path.exists(self.sramTableDir) is False:
             os.makedirs('sramTables')
-            logging.info('Created sramTables dir: {:<s}'.format(tempPath))
-        # create sram table file path
-        self.sramTableXlsxFileName = os.path.basename(self.tcamTableXlsxFileName.replace('tcam','sram'))
-        self.sramTableXlsxFilePath = os.path.join(tempPath,self.sramTableXlsxFileName)
-        # create empty excel file in dir sramTables
-        writer = pd.ExcelWriter(self.sramTableXlsxFilePath,engine='xlsxwriter')
-        writer.save()
-        self._sramTable.to_excel(excel_writer=self.sramTableXlsxFilePath, sheet_name=self.sramTableXlsxFileName,
-                                    na_rep='', header=True, index=True, engine='xlsxwriter')
-        logging.info('Created SRAM table XLSX file {:<s}'.format(self.sramTableXlsxFilePath))
-        return self.sramTableXlsxFilePath
+            logging.info('Created sramTables dir: {:<s}'.format(self.sramTableDir))
+        return self.sramTableDir 
     
     
     def splitRowsAndCols(self):
@@ -314,6 +308,9 @@ class TableMapping:
         # add zeros in empty cells
         sramDF = sramDF.fillna(0)
         self._sramTable = sramDF
+    
+    
+
 
 # ===========================================================================================
 # ======================================== End Class ========================================
