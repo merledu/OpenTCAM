@@ -18,6 +18,14 @@ def main():
     # list of all possible args for OpenTCAM
     parser.add_argument('-tconf','--tcamConfig',
                         type=str,default='tcamTable2',metavar='',required=True,nargs='?',help='name of specific TCAM table config')
+    parser.add_argument('-excel',
+                        type=int,default=1,metavar='',required=False,nargs='?',help='print SRAM table map as xlsx')
+    parser.add_argument('-html',
+                        type=int,default=0,metavar='',required=False,nargs='?',help='print SRAM table map as html')
+    parser.add_argument('-json',
+                        type=int,default=0,metavar='',required=False,nargs='?',help='print SRAM table map as json')
+    parser.add_argument('-txt',
+                        type=int,default=0,metavar='',required=False,nargs='?',help='print SRAM table map as txt')
     parser.add_argument('-d','--debug',
                         type=int,default=0,metavar='',required=False,nargs='?',help='print debugging mode')
     parser.add_argument('-v','--verbose',
@@ -58,8 +66,8 @@ def main():
     # print empty sram table map
     if myargs.debug:
         tm1.printDF(tm1._sramTable)
-    # create sram table map excel file
-    tm1.createSRAMExcel()
+    # create sram tables dir
+    tm1.createSRAMTableDir()    
     # read various params and map the tcam table to sram table
     tm1.splitRowsAndCols()
     tm1.mapTCAMtoSRAM()
@@ -67,7 +75,17 @@ def main():
     if myargs.verbose:
         tm1.printDF(tm1._sramTable)
     # write sram table map to excel file
-    tm1.createSRAMExcel()
+    if myargs.excel:
+        tm1.writeSRAMtoXlsx()
+    # write sram table map to html file
+    if myargs.html:
+        tm1.writeSRAMtoHtml()
+    # write sram table map to json file
+    if myargs.json:
+        tm1.writeSRAMtoJson()
+    # write sram table map to txt file
+    if myargs.txt:
+        tm1.writeSRAMtoTxt()
 
 
 
