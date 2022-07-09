@@ -9,7 +9,11 @@ import os
 # ===========================================================================================
 
 class TestTableMapping(unittest.TestCase):
-    pass
+    
+    def testGetPrjDir(self):
+        actual = TableMapping.getPrjDir(self)
+        expected = os.getcwd()
+        self.assertEqual(actual,expected,msg='MISMATCH in prj dir path')
 
 
 # ===========================================================================================
@@ -18,4 +22,5 @@ class TestTableMapping(unittest.TestCase):
 
 
 if __name__ == '__main__':
+    # * run all test cases
     unittest.main(testRunner=HtmlTestRunner.HTMLTestRunner(output='logs'))
