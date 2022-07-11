@@ -1,6 +1,6 @@
-from compiler.src.tableMapping import *
-import HtmlTestRunner
 import unittest
+from compiler.src.tableMapping import *
+from unittest import TestCase
 import logging
 import os
 
@@ -8,12 +8,24 @@ import os
 # ======================================= Begin Class =======================================
 # ===========================================================================================
 
-class TestTableMapping(unittest.TestCase):
+class TestTableMapping(TestCase):
+    
+    def setUp(self):
+        self.tm = TableMapping()
+    
     
     def testGetPrjDir(self):
-        actual = TableMapping.getPrjDir(self)
-        expected = os.getcwd()
-        self.assertEqual(actual,expected,msg='MISMATCH in prj dir path')
+        actualVal = self.tm.getPrjDir()
+        expectedVal = os.getcwd()
+        self.assertEqual(actualVal,expectedVal,msg='MISMATCH in prj dir path')
+    
+    
+    # def testGetYAMLFilePath(self):
+    #     tm = TableMapping()
+    #     tm.getPrjDir()
+    #     actual = tm.getYAMLFilePath()
+    #     expected = os.path.join(tm.getPrjDir(),'compiler/configs/tcamTables.yaml')
+    #     self.assertEqual(actual,expected,msg='MISMATCH in YAML file path')
 
 
 # ===========================================================================================
@@ -23,4 +35,5 @@ class TestTableMapping(unittest.TestCase):
 
 if __name__ == '__main__':
     # * run all test cases
-    unittest.main(testRunner=HtmlTestRunner.HTMLTestRunner(output='logs'))
+    unittest.main()
+    # unittest.main(testRunner=HtmlTestRunner.HTMLTestRunner(output='logs'))
