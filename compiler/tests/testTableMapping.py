@@ -20,12 +20,11 @@ class TestTableMapping(TestCase):
         self.assertEqual(actualVal,expectedVal,msg='MISMATCH in prj dir path')
     
     
-    # def testGetYAMLFilePath(self):
-    #     tm = TableMapping()
-    #     tm.getPrjDir()
-    #     actual = tm.getYAMLFilePath()
-    #     expected = os.path.join(tm.getPrjDir(),'compiler/configs/tcamTables.yaml')
-    #     self.assertEqual(actual,expected,msg='MISMATCH in YAML file path')
+    def testGetYAMLFilePath(self):
+        self.tm.getPrjDir()
+        actualVal = self.tm.getYAMLFilePath()
+        expectedVal = os.path.join(self.tm.getPrjDir(),'compiler/configs/tcamTables.yaml')
+        self.assertEqual(actualVal,expectedVal,msg='MISMATCH in YAML file path')
 
 
 # ===========================================================================================
