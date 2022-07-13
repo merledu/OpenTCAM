@@ -69,7 +69,6 @@ class TestTableMapping(TestCase):
         self.tm.getYAMLFilePath()
         self.tm.readYAML(self.tm.tcamTableConfigsFilePath)
         actualTcamConfName = list(self.tm._tcamTableConfigs.keys())
-        # actualTcamConfCount = len(list(self.tm._tcamTableConfigs.keys()))
         for conf in actualTcamConfName:
             actualVal.append(self.tm.getTCAMTableFilePath(conf))
         # * ----- expected output
@@ -91,12 +90,12 @@ class TestTableMapping(TestCase):
         self.tm.readYAML(self.tm.tcamTableConfigsFilePath)
         for conf in self.tm._tcamTableConfigs:
             self.tm.getTCAMConfig(conf)
-            actualAbsXlsxPath = self.tm.getTCAMTableFilePath(conf)
+            self.tm.getTCAMTableFilePath(conf)
             [rows, cols] = self.tm.readTCAMTable()
             tempDict = {'config': conf,'rows': rows,'cols': cols}
             actualTcamTableShape.append(tempDict)
-        actualTcamTableShape = sorted(actualTcamTableShape, key=lambda x: x['config'])
-        # print(actualTcamTableShape)
+        actualVal = sorted(actualTcamTableShape, key=lambda x: x['config'])
+        # print(actualVal)
         # * ----- expected output
         for expectRelXlsxPath in glob.iglob('compiler/lib/*.xlsx',recursive=True):
             expectAbsXlsxPath = os.path.join(self.tm.prjWorkDir,expectRelXlsxPath)
@@ -104,9 +103,40 @@ class TestTableMapping(TestCase):
             expectTcamTable = pd.read_excel(expectAbsXlsxPath, skiprows=2, index_col=None, engine='openpyxl')
             tempDict = {'config': expectAbsTcamConfig,'rows': expectTcamTable.shape[0],'cols': expectTcamTable.shape[1]}
             expectTcamTableShape.append(tempDict)
-        expectTcamTableShape = sorted(expectTcamTableShape, key=lambda x: x['config'])
-        # print(expectTcamTableShape)
-        self.assertEqual(actualTcamTableShape,expectTcamTableShape,msg='configs dont match')
+        expectedVal = sorted(expectTcamTableShape, key=lambda x: x['config'])
+        # print(expectedVal)
+        self.assertEqual(actualVal,expectedVal,msg='MISMATCH in TCAM table map rows and columns')
+    
+    
+    def testGetSRAMTableDim(self):
+        actualSramTableShape = list()
+        expectSramTableShape = list()
+        # * ----- actual output
+        self.tm.getPrjDir()
+        self.tm.getYAMLFilePath()
+        self.tm.readYAML(self.tm.tcamTableConfigsFilePath)
+        for conf in self.tm._tcamTableConfigs:
+            self.tm.getTCAMConfig(conf)
+            self.tm.getTCAMTableFilePath(conf)
+            self.tm.readTCAMTable()
+            [sramRows, sramCols] = self.tm.getSRAMTableDim()
+            conf = conf.replace('tcam','sram')
+            tempSramDict = {'config': conf,'rows': sramRows,'cols': sramCols}
+            actualSramTableShape.append(tempSramDict)
+        actualVal = sorted(actualSramTableShape, key=lambda x: x['config'])
+        # print(actualVal)
+        # * ----- expected output
+        with open('compiler/configs/tcamTables.yaml','r') as file:
+            fileData = yaml.full_load(file)
+        for key in fileData:
+            sramRows = fileData[key]['totalSubStr'] * pow(2,fileData[key]['subStrLen'])
+            sramCols = fileData[key]['potMatchAddr']
+            conf = key.replace('tcam','sram')
+            tempSramDict = {'config': conf,'rows': sramRows,'cols': sramCols}
+            expectSramTableShape.append(tempSramDict)
+        expectedVal = sorted(expectSramTableShape, key=lambda x: x['config'])
+        # print(expectedVal)
+        self.assertEqual(actualVal,expectedVal,msg='MISMATCH in SRAM table map rows and columns')
 
 
 
