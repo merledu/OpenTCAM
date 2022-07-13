@@ -80,6 +80,33 @@ class TestTableMapping(TestCase):
         actualVal.sort()
         expectedVal.sort()
         self.assertEqual(actualVal,expectedVal,msg='MISMATCH in total number of Xlsx TCAM table maps')
+    
+    
+    def testReadTCAMTable(self):
+        actualTcamTableShape = list()
+        expectTcamTableShape = list()
+        # * ----- actual output
+        self.tm.getPrjDir()
+        self.tm.getYAMLFilePath()
+        self.tm.readYAML(self.tm.tcamTableConfigsFilePath)
+        for conf in self.tm._tcamTableConfigs:
+            self.tm.getTCAMConfig(conf)
+            actualAbsXlsxPath = self.tm.getTCAMTableFilePath(conf)
+            [rows, cols] = self.tm.readTCAMTable()
+            tempDict = {'config': conf,'rows': rows,'cols': cols}
+            actualTcamTableShape.append(tempDict)
+        actualTcamTableShape = sorted(actualTcamTableShape, key=lambda x: x['config'])
+        # print(actualTcamTableShape)
+        # * ----- expected output
+        for expectRelXlsxPath in glob.iglob('compiler/lib/*.xlsx',recursive=True):
+            expectAbsXlsxPath = os.path.join(self.tm.prjWorkDir,expectRelXlsxPath)
+            expectAbsTcamConfig = os.path.basename(expectAbsXlsxPath).replace('.xlsx','')
+            expectTcamTable = pd.read_excel(expectAbsXlsxPath, skiprows=2, index_col=None, engine='openpyxl')
+            tempDict = {'config': expectAbsTcamConfig,'rows': expectTcamTable.shape[0],'cols': expectTcamTable.shape[1]}
+            expectTcamTableShape.append(tempDict)
+        expectTcamTableShape = sorted(expectTcamTableShape, key=lambda x: x['config'])
+        # print(expectTcamTableShape)
+        self.assertEqual(actualTcamTableShape,expectTcamTableShape,msg='configs dont match')
 
 
 
