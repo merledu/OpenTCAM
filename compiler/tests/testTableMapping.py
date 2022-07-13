@@ -59,6 +59,28 @@ class TestTableMapping(TestCase):
             expectedVal = list(fileData.keys())
         # * ----- assertion
         self.assertEqual(actualVal,expectedVal,msg='MISMATCH in total number of TCAM table YAML configs')
+    
+    
+    def testGetTCAMTableFilePath(self):
+        actualVal = list()
+        expectedVal = list()
+        # * ----- actual output
+        self.tm.getPrjDir()
+        self.tm.getYAMLFilePath()
+        self.tm.readYAML(self.tm.tcamTableConfigsFilePath)
+        actualTcamConfName = list(self.tm._tcamTableConfigs.keys())
+        # actualTcamConfCount = len(list(self.tm._tcamTableConfigs.keys()))
+        for conf in actualTcamConfName:
+            actualVal.append(self.tm.getTCAMTableFilePath(conf))
+        # * ----- expected output
+        for expectRelXlsxPath in glob.iglob('compiler/lib/*.xlsx',recursive=True):
+            expectAbsXlsxPath = os.path.join(self.tm.prjWorkDir,expectRelXlsxPath)
+            expectedVal.append(expectAbsXlsxPath)
+        # * ----- assertion
+        actualVal.sort()
+        expectedVal.sort()
+        self.assertEqual(actualVal,expectedVal,msg='MISMATCH in total number of Xlsx TCAM table maps')
+
 
 
 
