@@ -33,6 +33,19 @@ class TestTableMapping(TestCase):
         expectedVal = os.path.join(self.tm.prjWorkDir,'compiler/configs/tcamTables.yaml')
         # * ----- assertion
         self.assertEqual(actualVal,expectedVal,msg='MISMATCH in TCAM table YAML file path')
+    
+    
+    def testReadYAML(self):
+        # * ----- actual output
+        self.tm.getPrjDir()
+        self.tm.getYAMLFilePath()
+        actualVal = self.tm.readYAML(self.tm.tcamTableConfigsFilePath)
+        # * ----- expected output
+        with open('compiler/configs/tcamTables.yaml','r') as file:
+            expectedVal = yaml.full_load(file)
+        # * ----- assertion
+        self.assertEqual(actualVal,expectedVal,msg='MISMATCH in reading TCAM table YAML config file')
+
 
 
 
