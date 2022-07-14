@@ -1,6 +1,7 @@
 from compiler.src.tableMapping import *
 from unittest import TestCase
 import pandas as pd
+import pytest
 import logging
 import yaml
 import glob
@@ -137,6 +138,19 @@ class TestTableMapping(TestCase):
         expectedVal = sorted(expectSramTableShape, key=lambda x: x['config'])
         # print(expectedVal)
         self.assertEqual(actualVal,expectedVal,msg='MISMATCH in SRAM table map rows and columns')
+    
+    
+    def tesGenSRAMTable(self):
+        pass
+    
+    
+    def testCreateSRAMTableDir(self):
+        # * ----- actual output
+        self.tm.getPrjDir()
+        actualVal = os.path.join(self.tm.prjWorkDir,'sramTables')
+        # * ----- expected output
+        expectedVal = os.path.join(os.getcwd(),'sramTables')
+        self.assertEqual(actualVal,expectedVal,msg='MISMATCH in SRAM table map directory')
 
 
 
