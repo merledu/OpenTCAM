@@ -1,0 +1,35 @@
+# =============================================================================
+#                  TCAM tables configuration list format
+# -----------------------------------------------------------------------------
+# tcamTableX      : config of Nth tcam table
+# queryStrLen     : total length (in bits) of the input query string
+# subStrLen       : total length (in bits) of each query sub string
+# totalSubStr     : total number of query sub strings
+#           queryStrLen = totalSubStr * subStrLen
+# potMatchAddr    : total numbr of potential math addresses in TCAM table
+# =============================================================================
+
+
+tcamTable1:
+    queryStrLen: 20
+    subStrLen: 5
+    totalSubStr: 4
+    potMatchAddr: 8
+
+tcamTable2:
+    queryStrLen: 4
+    subStrLen: 4
+    totalSubStr: 1
+    potMatchAddr: 4
+
+tcamTable3:
+    queryStrLen: 8
+    subStrLen: 4
+    totalSubStr: 2
+    potMatchAddr: 4
+
+tcamTable4:
+    queryStrLen: 10
+    subStrLen: 2
+    totalSubStr: 5
+    potMatchAddr: 16

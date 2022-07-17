@@ -1,16 +1,45 @@
 # https://pypi.org/project/pylint/
 # https://pypi.org/project/black/
 # https://pypi.org/project/bandit/
-# https://pypi.org/project/coverage/
+
+# https://pypi.org/project/pandas/
+# https://pypi.org/project/tabulate/
+# https://pypi.org/project/openpyxl/
+# https://pypi.org/project/XlsxWriter/
+
+# https://pypi.org/project/PyYAML/
+# https://pypi.org/project/yamllint/
+
 # https://pypi.org/project/pytest/
+# https://pypi.org/project/coverage/
+
 
 # static code analysis tool
 pylint
+# generate package and class diagrams
+# pyreverse
 # code formatter
 black
 # find common security issues in code
 bandit
-# measures code coverage during test execution
-coverage
+# sort your imports
+isort
+
+# data analysis toolkit
+pandas
+# pretty print tabular data
+tabulate
+# r/w excel 2010 xlsx/xlsm/xltx/xltm files
+openpyxl
+# writing files in the Excel 2007+ XLSX format
+XlsxWriter
+
+# YAML parser and emitter
+PyYAML
+# check YAML for syntax validity
+yamllint
+
 # write tests for applications and libraries
 pytest
+# measures code coverage during test execution
+coverage

@@ -1,22 +1,29 @@
 #!/bin/bash
 
+# export start_time=$SECONDS
+export start_time=$(date +%s.%3N)
+
 # virtualenv name
-VIRENV=.pyVenvOpenTcam
+export VIRENV=.pyVenvOpenTcam
+
+# python3 -m pip uninstall -y virtualenv
 
 # check python3 version
-check1=$(python3 --version)
-echo -e "$check1 \n" 
+echo -e "$(python3 --version)"
+echo -e "$(command -v python3)\n"
 
 # check if pip package virtualenv is installed
-check2=$(pip show virtualenv)
-echo $check2
+CHECK=$(pip show virtualenv 2>&1 >/dev/null)
+# echo "output: $CHECK"
 
-if [[ $check2 = 'WARNING: Package(s) not found: virtualenv' ]]
+if [[ $CHECK = "WARNING: Package(s) not found: virtualenv" ]]
 then
-    echo -e "PIP package virtualenv INSTALLED. \n\n"
+    echo -e "package virtualenv NOT FOUND"
+    echo -e "INSTALLING pip package virtualenv\n"
+    python3 -m pip install --user virtualenv
+    echo -e "\n\n"
 else
-    echo -e "INSTALLING PIP package virtualenv \n\n"
-    sudo apt install -y python3-virtualenv
+    echo -e "pip package virtualenv already INSTALLED\n\n"
 fi
 
 # create virtual env
@@ -43,3 +50,8 @@ echo -e "\n"
 # display upated packages installed
 pip list -v
 echo -e "\n"
+
+# script simuation time
+export end_time=$(date +%s.%3N)
+export elapsed_time=$(echo "scale=3; $end_time - $start_time" | bc)
+echo -e "Total time: ${elapsed_time} sec"

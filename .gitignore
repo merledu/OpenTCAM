@@ -1,1 +1,24 @@
+# Byte-compiled / optimized / DLL files
+compiler/src/__pycache__
+compiler/lib/.~lock.*.xlsx#
+
+# Installer logs
+logs
+
+# unit tests
+
+# coverage reports
+.coverage
+
+# pyenv
+
+# virtual environments
 .pyVenvOpenTcam
+.py*
+.venv*
+
+# mkdocs documentation
+
+# sphinx documentation
+
+
