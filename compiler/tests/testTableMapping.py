@@ -1,8 +1,9 @@
 from compiler.src.tableMapping import *
 from unittest import TestCase
 import pandas as pd
+import numpy as np
 import pytest
-import logging
+# import logging
 import yaml
 import glob
 import os
@@ -106,6 +107,7 @@ class TestTableMapping(TestCase):
             expectTcamTableShape.append(tempDict)
         expectedVal = sorted(expectTcamTableShape, key=lambda x: x['config'])
         # print(expectedVal)
+        # * ----- assertion
         self.assertEqual(actualVal,expectedVal,msg='MISMATCH in TCAM table map rows and columns')
     
     
@@ -137,6 +139,7 @@ class TestTableMapping(TestCase):
             expectSramTableShape.append(tempSramDict)
         expectedVal = sorted(expectSramTableShape, key=lambda x: x['config'])
         # print(expectedVal)
+        # * ----- assertion
         self.assertEqual(actualVal,expectedVal,msg='MISMATCH in SRAM table map rows and columns')
     
     
@@ -150,8 +153,67 @@ class TestTableMapping(TestCase):
         actualVal = os.path.join(self.tm.prjWorkDir,'sramTables')
         # * ----- expected output
         expectedVal = os.path.join(os.getcwd(),'sramTables')
+        # * ----- assertion
         self.assertEqual(actualVal,expectedVal,msg='MISMATCH in SRAM table map directory')
-
+    
+    
+    def testSplitRowsAndCols(self):
+        actualVal = 0
+        expectedVal = 4
+        # * ----- actual output
+        actualTcamRows = list()
+        actualTcamCols = list()
+        actualSramRows = list()
+        actualSramCols = list()
+        self.tm.getPrjDir()
+        self.tm.getYAMLFilePath()
+        self.tm.readYAML(self.tm.tcamTableConfigsFilePath)
+        for conf in self.tm._tcamTableConfigs:
+            self.tm.getTCAMConfig(conf)
+            self.tm.getTCAMTableFilePath(conf)
+            self.tm.readTCAMTable()
+            self.tm.getSRAMTableDim()
+            [tempTcamRows, tempTcamCols, tempSramRows, tempSramCols] = self.tm.splitRowsAndCols()
+            actualTcamRows.append(tempTcamRows)
+            actualTcamCols.append(tempTcamCols)
+            actualSramRows.append(tempSramRows)
+            actualSramCols.append(tempSramCols)
+        # * ----- expected output
+        expectedTcamRows = list()
+        expectedTcamCols = list()
+        expectedSramRows = list()
+        expectedSramCols = list()
+        with open('compiler/configs/tcamTables.yaml','r') as file:
+            fileData = yaml.full_load(file)
+        for conf in fileData:
+            qsl = fileData[conf]['queryStrLen']
+            ssl = fileData[conf]['subStrLen']
+            tss = fileData[conf]['totalSubStr']
+            pma = fileData[conf]['potMatchAddr']
+            tempTcamRows = np.arange(0,pma,1).tolist()
+            tempTcamCols = np.arange(1,qsl+1,1).tolist()
+            tempTcamColVec = np.array_split(tempTcamCols,tss)
+            for i in range(len(tempTcamColVec)):
+                tempTcamColVec[i] = tempTcamColVec[i].tolist()
+            tempSramRows = np.arange(0,tss * 2**ssl,1).tolist()
+            tempSramRowVec = np.array_split(tempSramRows,tss)
+            for i in range(len(tempSramRowVec)):
+                tempSramRowVec[i] = tempSramRowVec[i].tolist()
+            tempSramCols = np.arange(0,pma+1,1).tolist()
+            expectedTcamRows.append(tempTcamRows)
+            expectedTcamCols.append(tempTcamColVec)
+            expectedSramRows.append(tempSramRowVec)
+            expectedSramCols.append(tempSramCols)
+        # * ----- assertion
+        if actualTcamRows == expectedTcamRows:
+            actualVal += 1
+        if actualTcamCols == expectedTcamCols:
+            actualVal += 1
+        if actualSramRows == expectedSramRows:
+            actualVal += 1
+        if actualSramCols == expectedSramCols:
+            actualVal += 1
+        self.assertEqual(actualVal,expectedVal,msg='MISMATCH in TCAM and SRAM row and column vectors')
 
 
 
