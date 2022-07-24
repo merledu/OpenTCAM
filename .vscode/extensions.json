@@ -6,6 +6,7 @@
         "oderwat.indent-rainbow",
         "njpwerner.autodocstring",
         "aaron-bond.better-comments",
+        "streetsidesoftware.code-spell-checker",
         "esbenp.prettier-vscode",
         "redhat.vscode-yaml"
     ]

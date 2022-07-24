@@ -1,14 +1,19 @@
 {
-    "editor.fontSize": 14,
+    "editor.fontSize": 13,
     "editor.tabSize": 4,
     "terminal.integrated.fontSize": 13,
     "terminal.integrated.lineHeight": 1,
+    "terminal.integrated.shellIntegration.enabled": true,
     "editor.insertSpaces": true,
     "editor.bracketPairColorization.enabled": true,
     "editor.bracketPairColorization.independentColorPoolPerBracketType": true,
     "editor.comments.insertSpace": true,
     "editor.detectIndentation": true,
     "editor.lineHeight": 0,
-    "files.trimTrailingWhitespace": true
+    // "files.trimTrailingWhitespace": true
+    "editor.minimap.enabled": false,
+    "cSpell.enabled": true,
+    "cSpell.caseSensitive": true,
+    "json.maxItemsComputed": 100000,
+    "yaml.format.printWidth": 100
 }
-
