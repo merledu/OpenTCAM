@@ -249,6 +249,41 @@ class TestTableMapping(TestCase):
             expectedSramTablePath.append(filePath)
         # * ----- assertion
         self.assertEqual(actualSramTablePath,expectedSramTablePath,msg='MISMATCH in SRAM xlsx file paths')
+    
+    
+    def testWriteSRAMtoHtml(self):
+        actualSramTablePath = list()
+        expectedSramTablePath = list()
+        # * ----- actual output
+        self.tm.getPrjDir()
+        self.tm.getYAMLFilePath()
+        self.tm.readYAML(self.tm.tcamTableConfigsFilePath)
+        for conf in self.tm._tcamTableConfigs:
+            self.tm.getTCAMConfig(conf)
+            self.tm.getTCAMTableFilePath(conf)
+            self.tm.readTCAMTable()
+            self.tm.getSRAMTableDim()
+            self.tm.genSRAMTable()
+            self.tm.createSRAMTableDir()
+            self.tm.splitRowsAndCols()
+            self.tm.mapTCAMtoSRAM()
+            self.tm.writeSRAMtoHtml()
+            actualSramTablePath.append(self.tm.sramTableHtmlFilePath)
+        # * ----- expected output
+        sramTableDir = os.path.join(os.getcwd(),'sramTables')
+        with open('compiler/configs/tcamTables.yaml','r') as file:
+            fileOut = yaml.full_load(file)
+        tcamTableConf = list(fileOut.keys())
+        for conf in tcamTableConf:
+            conf = conf.replace('tcam','sram') + '.html'
+            filePath = os.path.join(sramTableDir,conf)
+            expectedSramTablePath.append(filePath)
+        # * ----- assertion
+        self.assertEqual(actualSramTablePath,expectedSramTablePath,msg='MISMATCH in SRAM html file paths')
+
+        print('\n')
+        print(actualSramTablePath)
+        print(expectedSramTablePath)
 
 
 
