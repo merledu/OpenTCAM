@@ -12,3 +12,5 @@ TXT         := 1
 DEBUG 		:= 0
 VERBOSE 	:= 1
 
+# python testing framework
+RUNNER      := pytest
