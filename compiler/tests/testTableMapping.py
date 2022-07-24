@@ -2,8 +2,6 @@ from compiler.src.tableMapping import *
 from unittest import TestCase
 import pandas as pd
 import numpy as np
-import pytest
-# import logging
 import yaml
 import glob
 import os
@@ -24,6 +22,8 @@ class TestTableMapping(TestCase):
         # * ----- expected output
         expectedVal = os.getcwd()
         # * ----- assertion
+        # print('\n',actualVal)
+        # print('',expectedVal)
         self.assertEqual(actualVal,expectedVal,msg='MISMATCH in prj dir path')
     
     
@@ -34,6 +34,8 @@ class TestTableMapping(TestCase):
         # * ----- expected output
         expectedVal = os.path.join(self.tm.prjWorkDir,'compiler/configs/tcamTables.yaml')
         # * ----- assertion
+        # print('\n',actualVal)
+        # print('',expectedVal)
         self.assertEqual(actualVal,expectedVal,msg='MISMATCH in TCAM table YAML file path')
     
     
@@ -46,6 +48,8 @@ class TestTableMapping(TestCase):
         with open('compiler/configs/tcamTables.yaml','r') as file:
             expectedVal = yaml.full_load(file)
         # * ----- assertion
+        # print('\n',actualVal)
+        # print('',expectedVal)
         self.assertEqual(actualVal,expectedVal,msg='MISMATCH in reading TCAM table YAML config file')
     
     
@@ -60,6 +64,8 @@ class TestTableMapping(TestCase):
             fileData = yaml.full_load(file)
             expectedVal = list(fileData.keys())
         # * ----- assertion
+        # print('\n',actualVal)
+        # print('',expectedVal)
         self.assertEqual(actualVal,expectedVal,msg='MISMATCH in total number of TCAM table YAML configs')
     
     
@@ -80,6 +86,8 @@ class TestTableMapping(TestCase):
         # * ----- assertion
         actualVal.sort()
         expectedVal.sort()
+        # print('\n',actualVal)
+        # print('',expectedVal)
         self.assertEqual(actualVal,expectedVal,msg='MISMATCH in total number of Xlsx TCAM table maps')
     
     
@@ -97,7 +105,6 @@ class TestTableMapping(TestCase):
             tempDict = {'config': conf,'rows': rows,'cols': cols}
             actualTcamTableShape.append(tempDict)
         actualVal = sorted(actualTcamTableShape, key=lambda x: x['config'])
-        # print(actualVal)
         # * ----- expected output
         for expectRelXlsxPath in glob.iglob('compiler/lib/*.xlsx',recursive=True):
             expectAbsXlsxPath = os.path.join(self.tm.prjWorkDir,expectRelXlsxPath)
@@ -106,8 +113,9 @@ class TestTableMapping(TestCase):
             tempDict = {'config': expectAbsTcamConfig,'rows': expectTcamTable.shape[0],'cols': expectTcamTable.shape[1]}
             expectTcamTableShape.append(tempDict)
         expectedVal = sorted(expectTcamTableShape, key=lambda x: x['config'])
-        # print(expectedVal)
         # * ----- assertion
+        # print('\n',actualVal)
+        # print('',expectedVal)
         self.assertEqual(actualVal,expectedVal,msg='MISMATCH in TCAM table map rows and columns')
     
     
@@ -127,7 +135,6 @@ class TestTableMapping(TestCase):
             tempSramDict = {'config': conf,'rows': sramRows,'cols': sramCols}
             actualSramTableShape.append(tempSramDict)
         actualVal = sorted(actualSramTableShape, key=lambda x: x['config'])
-        # print(actualVal)
         # * ----- expected output
         with open('compiler/configs/tcamTables.yaml','r') as file:
             fileData = yaml.full_load(file)
@@ -138,8 +145,9 @@ class TestTableMapping(TestCase):
             tempSramDict = {'config': conf,'rows': sramRows,'cols': sramCols}
             expectSramTableShape.append(tempSramDict)
         expectedVal = sorted(expectSramTableShape, key=lambda x: x['config'])
-        # print(expectedVal)
         # * ----- assertion
+        # print('\n',actualVal)
+        # print('',expectedVal)
         self.assertEqual(actualVal,expectedVal,msg='MISMATCH in SRAM table map rows and columns')
     
     
@@ -154,6 +162,8 @@ class TestTableMapping(TestCase):
         # * ----- expected output
         expectedVal = os.path.join(os.getcwd(),'sramTables')
         # * ----- assertion
+        # print('\n',actualVal)
+        # print('',expectedVal)
         self.assertEqual(actualVal,expectedVal,msg='MISMATCH in SRAM table map directory')
     
     
@@ -213,6 +223,8 @@ class TestTableMapping(TestCase):
             actualVal += 1
         if actualSramCols == expectedSramCols:
             actualVal += 1
+        # print('\n',actualVal)
+        # print('',expectedVal)
         self.assertEqual(actualVal,expectedVal,msg='MISMATCH in TCAM and SRAM row and column vectors')
     
     
@@ -238,6 +250,7 @@ class TestTableMapping(TestCase):
             self.tm.mapTCAMtoSRAM()
             self.tm.writeSRAMtoXlsx()
             actualSramTablePath.append(self.tm.sramTableXlsxFilePath)
+        actualVal = actualSramTablePath
         # * ----- expected output
         sramTableDir = os.path.join(os.getcwd(),'sramTables')
         with open('compiler/configs/tcamTables.yaml','r') as file:
@@ -247,8 +260,11 @@ class TestTableMapping(TestCase):
             conf = conf.replace('tcam','sram') + '.xlsx'
             filePath = os.path.join(sramTableDir,conf)
             expectedSramTablePath.append(filePath)
+        expectedVal = expectedSramTablePath
         # * ----- assertion
-        self.assertEqual(actualSramTablePath,expectedSramTablePath,msg='MISMATCH in SRAM xlsx file paths')
+        # print('\n',actualVal)
+        # print('',expectedVal)
+        self.assertEqual(actualVal,expectedVal,msg='MISMATCH in SRAM xlsx file paths')
     
     
     def testWriteSRAMtoHtml(self):
@@ -269,6 +285,7 @@ class TestTableMapping(TestCase):
             self.tm.mapTCAMtoSRAM()
             self.tm.writeSRAMtoHtml()
             actualSramTablePath.append(self.tm.sramTableHtmlFilePath)
+        actualVal = actualSramTablePath
         # * ----- expected output
         sramTableDir = os.path.join(os.getcwd(),'sramTables')
         with open('compiler/configs/tcamTables.yaml','r') as file:
@@ -278,8 +295,11 @@ class TestTableMapping(TestCase):
             conf = conf.replace('tcam','sram') + '.html'
             filePath = os.path.join(sramTableDir,conf)
             expectedSramTablePath.append(filePath)
+        expectedVal = expectedSramTablePath
         # * ----- assertion
-        self.assertEqual(actualSramTablePath,expectedSramTablePath,msg='MISMATCH in SRAM html file paths')
+        # print('\n',actualVal)
+        # print('',expectedVal)
+        self.assertEqual(actualVal,expectedVal,msg='MISMATCH in SRAM html file paths')
     
     
     def testWriteSRAMtoJson(self):
@@ -300,6 +320,7 @@ class TestTableMapping(TestCase):
             self.tm.mapTCAMtoSRAM()
             self.tm.writeSRAMtoJson()
             actualSramTablePath.append(self.tm.sramTableJsonFilePath)
+        actualVal = actualSramTablePath
         # * ----- expected output
         sramTableDir = os.path.join(os.getcwd(),'sramTables')
         with open('compiler/configs/tcamTables.yaml','r') as file:
@@ -309,14 +330,46 @@ class TestTableMapping(TestCase):
             conf = conf.replace('tcam','sram') + '.json'
             filePath = os.path.join(sramTableDir,conf)
             expectedSramTablePath.append(filePath)
+        expectedVal = expectedSramTablePath
         # * ----- assertion
-        self.assertEqual(actualSramTablePath,expectedSramTablePath,msg='MISMATCH in SRAM json file paths')
-
-
-        print('\n')
-        print(actualSramTablePath)
-        print(expectedSramTablePath)
-
+        # print('\n',actualVal)
+        # print('',expectedVal)
+        self.assertEqual(actualVal,expectedVal,msg='MISMATCH in SRAM json file paths')
+    
+    
+    def testWriteSRAMtoTxt(self):
+        actualSramTablePath = list()
+        expectedSramTablePath = list()
+        # * ----- actual output
+        self.tm.getPrjDir()
+        self.tm.getYAMLFilePath()
+        self.tm.readYAML(self.tm.tcamTableConfigsFilePath)
+        for conf in self.tm._tcamTableConfigs:
+            self.tm.getTCAMConfig(conf)
+            self.tm.getTCAMTableFilePath(conf)
+            self.tm.readTCAMTable()
+            self.tm.getSRAMTableDim()
+            self.tm.genSRAMTable()
+            self.tm.createSRAMTableDir()
+            self.tm.splitRowsAndCols()
+            self.tm.mapTCAMtoSRAM()
+            self.tm.writeSRAMtoTxt()
+            actualSramTablePath.append(self.tm.sramTableTxtFilePath)
+        actualVal = actualSramTablePath
+        # * ----- expected output
+        sramTableDir = os.path.join(os.getcwd(),'sramTables')
+        with open('compiler/configs/tcamTables.yaml','r') as file:
+            fileOut = yaml.full_load(file)
+        tcamTableConf = list(fileOut.keys())
+        for conf in tcamTableConf:
+            conf = conf.replace('tcam','sram') + '.txt'
+            filePath = os.path.join(sramTableDir,conf)
+            expectedSramTablePath.append(filePath)
+        expectedVal = expectedSramTablePath
+        # * ----- assertion
+        # print('\n',actualVal)
+        # print('',expectedVal)
+        self.assertEqual(actualVal,expectedVal,msg='MISMATCH in SRAM txt file paths')
 
 
 # ===========================================================================================
@@ -327,4 +380,3 @@ class TestTableMapping(TestCase):
 if __name__ == '__main__':
     # * run all test cases
     unittest.main()
-    # unittest.main(testRunner=HtmlTestRunner.HTMLTestRunner(output='logs'))
