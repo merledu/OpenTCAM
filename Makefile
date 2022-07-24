@@ -21,6 +21,15 @@ loadpaths:
 	$(info DIR_DOCS:		$(DIR_DOCS))
 	$(info DIR_IMAGES:		$(DIR_IMAGES))
 
+install_dependencies:
+	@ clear
+	@ echo ----------------------- Installing basic dependencies ----------------------
+	@ sudo apt install git \
+	python3 python3-pip python3-venv
+	@ sudo python3 -m pip install virtualenv
+	@ echo ------------------------------------ DONE ----------------------------------
+	@ echo " "
+
 setupvenv:
 	clear
 	@ echo -------------------- Creating Python Virtual Environment -------------------
@@ -39,6 +48,14 @@ runopentcam:
 	@ echo ------------------------------------ DONE ----------------------------------
 	@ echo " "
 
+runallunittest:
+	@ echo " "
+	@ echo --------------------------- OpenTCAM Unit Tests ----------------------------
+	@ python3 -m pytest -v -s --ff --cache-clear \
+	./compiler/tests/*.py
+	@ echo ------------------------------------ DONE ----------------------------------
+	@ echo " "
+
 runpylint:
 	@ echo " "
 	@ echo ------------------------------ Running PyLint ------------------------------
@@ -53,7 +70,7 @@ runblack:
 	@ echo ------------------------------ Running Black ------------------------------
 	@ black --check --target-version=py35 ./compiler/src/*.py
 	@ echo " "
-	@ black --target-version=py35 ./compiler/src/.py  
+	@ black --target-version=py35 ./compiler/src/.py
 	@ echo ---------------------------------- DONE -----------------------------------
 	@ echo " "
 
@@ -99,7 +116,7 @@ deepclean:
 	@ echo " "
 	@ echo ------------------------- Deep Cleaning Environment ------------------------
 	@ echo " "
-	@ make cleanvenv 
+	@ make cleanvenv
 	@ make cleandumpfiles
 	@ make cleanexcel
 	@ echo ------------------------------------ DONE ----------------------------------

@@ -1,11 +1,13 @@
 # Byte-compiled / optimized / DLL files
 compiler/src/__pycache__
+compiler/tests/__pycache__
 compiler/lib/.~lock.*.xlsx#
 
 # Installer logs
 logs
 
 # unit tests
+.pytest_cache
 
 # coverage reports
 .coverage

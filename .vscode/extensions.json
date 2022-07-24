@@ -1,0 +1,13 @@
+{
+    "recommendations": [
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "kevinrose.vsc-python-indent",
+        "oderwat.indent-rainbow",
+        "njpwerner.autodocstring",
+        "aaron-bond.better-comments",
+        "streetsidesoftware.code-spell-checker",
+        "esbenp.prettier-vscode",
+        "redhat.vscode-yaml"
+    ]
+}

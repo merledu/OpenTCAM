@@ -28,13 +28,13 @@ The OpenTCAM compiler requires Python3 and Pip3 inorder to work:
 ### Linux/Debian (Ubuntu)
 -   Install using the following command:
     ```bash
-    sudo apt install python3 python3-pip python3-venv
+    make install_dependencies
     ```
 
 ### MacOS
 -   Make sure you have [Homebrew](https://brew.sh/) installed.
 -   Install using the following command:
-    ```zsh
+    ```bash
     brew install python3
     ```
 
@@ -64,6 +64,7 @@ The OpenTCAM compiler requires Python3 and Pip3 inorder to work:
 Regression testing performs a number of tests for all modules in OpenTCAM. From the unit test directory (`$OpenTCAM/compiler/tests`), use the following command:
 -   Run all regression tests:
     ```bash
+    make runallunittest
     ```
 -   Run a specific test:
     ```bash
