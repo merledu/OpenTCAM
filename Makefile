@@ -39,6 +39,14 @@ runopentcam:
 	@ echo ------------------------------------ DONE ----------------------------------
 	@ echo " "
 
+runallunittest:
+	@ echo " "
+	@ echo --------------------------- OpenTCAM Unit Tests ----------------------------
+	@ python3 -m pytest -v -s --ff --cache-clear \
+	./compiler/tests/*.py
+	@ echo ------------------------------------ DONE ----------------------------------
+	@ echo " "
+
 runpylint:
 	@ echo " "
 	@ echo ------------------------------ Running PyLint ------------------------------
@@ -53,7 +61,7 @@ runblack:
 	@ echo ------------------------------ Running Black ------------------------------
 	@ black --check --target-version=py35 ./compiler/src/*.py
 	@ echo " "
-	@ black --target-version=py35 ./compiler/src/.py  
+	@ black --target-version=py35 ./compiler/src/.py
 	@ echo ---------------------------------- DONE -----------------------------------
 	@ echo " "
 
@@ -99,7 +107,7 @@ deepclean:
 	@ echo " "
 	@ echo ------------------------- Deep Cleaning Environment ------------------------
 	@ echo " "
-	@ make cleanvenv 
+	@ make cleanvenv
 	@ make cleandumpfiles
 	@ make cleanexcel
 	@ echo ------------------------------------ DONE ----------------------------------
