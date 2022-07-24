@@ -21,6 +21,15 @@ loadpaths:
 	$(info DIR_DOCS:		$(DIR_DOCS))
 	$(info DIR_IMAGES:		$(DIR_IMAGES))
 
+install_dependencies:
+	@ clear
+	@ echo ----------------------- Installing basic dependencies ----------------------
+	@ sudo apt install git \
+	python3 python3-pip python3-venv
+	@ sudo python3 -m pip install virtualenv
+	@ echo ------------------------------------ DONE ----------------------------------
+	@ echo " "
+
 setupvenv:
 	clear
 	@ echo -------------------- Creating Python Virtual Environment -------------------
