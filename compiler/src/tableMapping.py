@@ -1,11 +1,15 @@
+from difflib import SequenceMatcher
+# from collections import defaultdict
 from tabulate import tabulate
 import numpy as np
 import pandas as pd
+import jellyfish
 import logging
 import yaml
 import json
 import sys
 import os
+import re
 
 # ===========================================================================================
 # ======================================= Begin Class =======================================
@@ -31,6 +35,7 @@ class TableMapping:
         self.sramTableTxtFileName       = str()
         # * ------------------- protected vars
         self._tcamTableConfigs  = dict()        # = {}
+        self._sqAddrTable       = pd.DataFrame
         self._tcamTable         = pd.DataFrame
         self._sramTable         = pd.DataFrame
         # * ------------------- private vars
@@ -110,7 +115,7 @@ class TableMapping:
         logging.info('Printed TCAM table configs')
     
     
-    def getTCAMConfig(self,tcamConfig,verbose):
+    def getTCAMConfig(self,tcamConfig):
         """
         what does this func do ?
         input args:
@@ -294,48 +299,72 @@ class TableMapping:
         return [self.__tcamRows, self.__tcamColVec, self.__sramRowVec, self.__sramCols]
     
     
-    def mapTCAMtoSRAM(self,verbose,debug):
+    def generateSRAMSubStr(self,verbose,debug):
         """
         what does this func do ?
         input args:
         return val:
         """
         tcamDF = self._tcamTable
-        sramDF = self._sramTable
+        count1 = 0
+        count2 = 0
+        tempSQAddrDf = pd.DataFrame(columns=['SQ Addr','SQ col','TCAM row'])
+        self._sqAddrTable = pd.DataFrame(columns=['SQ Addr','SQ col','TCAM row'])
+        
+        # * ----- add all original search queries in dataframe
         # * iterate through tcam table rows
-        for a in range(len(tcamDF)):
+        for row in range(len(tcamDF)):
             # * iterate through tcam table cols
-            for b in range(len(self.__tcamColVec)):
-                # * search and concat search query str in tcam table
-                tempSQ = [str(c) for c in list(tcamDF.iloc[a,self.__tcamColVec[b]])]
-                tempSQ = ''.join(tempSQ)
-                # print('temp SRAM addr: ',tempSQ,' SQ col: ',b,' tcam row: ',a)
-                logging.info('Address Mapping to SRAM | Addr: {:>10s} | Sub String Col: {:>5d} | TCAM Row: {:>5d} |'.format(tempSQ,b,a))
-                printDebug(debug,'Address Mapping to SRAM | Addr: {:>s} | Sub String Col: {:>d} | TCAM Row: {:>d} |'.format(tempSQ,b,a))
-                # * create sram table subsections based on query str
-                tempSRAMTable = sramDF.iloc[self.__sramRowVec[b],self.__sramCols]
-                logging.info('Search Query mapping portion: {:d}'.format(b))
-                printDebug(debug,'Search Query mapping portion: {:d}'.format(b))
-                # print(tabulate(tempSRAMTable,headers='keys',tablefmt='github'),'\n')
-                # * find specific mapping cell in sram table
-                rowIndx = tempSRAMTable.index[tempSRAMTable['Addresses']==tempSQ].to_list()[0]
-                colIndx = len(self.__sramCols) - a - 1
-                # print('sram rowIndx: ',rowIndx,type(rowIndx))
-                # print('sram colIndx: ',colIndx,type(colIndx))
-                # * find specific entry
-                tempData = sramDF.iloc[rowIndx,colIndx]
-                # print(sramDF.iloc[rowIndx,colIndx])
-                logging.info('SRAM table cell [{:d}, {:d}] | Old Value = {}'.format(rowIndx,colIndx,tempData))
-                printDebug(debug,'SRAM table cell [{:d}, {:d}] | Old Value = {}'.format(rowIndx,colIndx,tempData))
-                # * replace specific entry
-                sramDF.iat[rowIndx,colIndx] = 1
-                # print(sramDF.iat[rowIndx, colIndx])
-                logging.info('SRAM table cell [{:d}, {:d}] | New Value = {}'.format(rowIndx,colIndx,sramDF.iloc[rowIndx,colIndx]))
-                if verbose or debug:
-                    print('SRAM table cell [{:3d}, {:3d}] | New Value = {}'.format(rowIndx,colIndx,sramDF.iloc[rowIndx,colIndx]))
-        # * add zeros in empty cells
-        sramDF = sramDF.fillna(0)
-        self._sramTable = sramDF
+            for col in range(len(self.__tcamColVec)):
+                # * search and concat search query string address in tcam table
+                tempAddr = [str(c) for c in list(tcamDF.iloc[row,self.__tcamColVec[col]])]
+                tempAddr = ''.join(tempAddr)
+                # * append row in sqSubStrAddrDf data frame
+                tempRow = [tempAddr, col, row]
+                tempSQAddrDf.loc[count1] = tempRow
+                count1 += 1
+                logging.info('Address Mapping to SRAM | Addr: {:>s} | Sub String Col: {:>5d} | TCAM Row: {:>5d} |'.format(tempAddr,col,row))
+                printDebug(debug,'Address Mapping to SRAM | Addr: {:>s} | Sub String Col: {:>3d} | TCAM Row: {:>3d} |'.format(tempAddr,col,row))
+        if verbose:
+            self.printDF(tempSQAddrDf,'Empty Search Query Address Table')
+        
+        # * ----- find all possible alternatives for X based addr
+        # * create array of N bit bin addresses
+        SQBinAddrList = np.arange(2**self.__tcamSubStrLen).tolist()
+        padding = '0'+str(self.__tcamSubStrLen)+'b'
+        for item in SQBinAddrList:
+            dec2Bin = format(item,padding)
+            SQBinAddrList = SQBinAddrList[:item]+[dec2Bin]+SQBinAddrList[item+1:]
+        if verbose or debug:
+            print('N bit bin addr list:     ',SQBinAddrList)
+        # * get origSQ addr
+        sqAddrDrList = tempSQAddrDf.loc[:,'SQ Addr'].to_list()
+        printDebug(debug,'Search Query addr list:   {0}'.format(sqAddrDrList))
+        # * map the 'bX in search queries to 0 and 1
+        for orig in sqAddrDrList:
+            # * if 'bX in search query them find alternatives and add in table
+            if 'x' in orig:
+                for new in SQBinAddrList:
+                    matching = jellyfish.damerau_levenshtein_distance(orig, new)
+                    if matching == len(re.findall('x',orig)):
+                        printVerbose(verbose,'orig Search Query = {} | new Search Query = {} | matching ratio = {} |'.format(orig, new, matching))
+                        logging.info('orig Search Query = {} | new Search Query = {} | matching ratio = {} |'.format(orig, new, matching))
+                        origRowData = tempSQAddrDf.loc[tempSQAddrDf['SQ Addr'] == orig].values.flatten().tolist()
+                        # origRowIndex = tempSQAddrDf.index[tempSQAddrDf['SQ Addr'] == orig].tolist()
+                        i = origRowData.index(orig)
+                        origRowData = origRowData[:i]+[new]+origRowData[i+1:]
+                        self._sqAddrTable.loc[count2] = origRowData
+                        count2 += 1
+            # * else simply add search query in table as is
+            else:
+                printVerbose(verbose,'orig Search Query = {} | new Search Query = {} | matching ratio = {} |'.format(orig, orig, 0))
+                logging.info('orig Search Query = {} | new Search Query = {} | matching ratio = {} |'.format(orig, orig, 0))
+                origRowData = tempSQAddrDf.loc[tempSQAddrDf['SQ Addr'] == orig].values.flatten().tolist()
+                self._sqAddrTable.loc[count2] = origRowData
+                count2 += 1
+    
+    
+    
     
     
     def writeSRAMtoXlsx(self):
