@@ -16,5 +16,8 @@
     "cSpell.caseSensitive": true,
     "json.maxItemsComputed": 100000,
     "yaml.format.printWidth": 100,
-    "python.defaultInterpreterPath": "./.pyVenvOpenTcam/bin/python"
+    "python.defaultInterpreterPath": "./.pyVenvOpenTcam/bin/python",
+    "cSpell.words": [
+        "Damerau"
+    ]
 }
