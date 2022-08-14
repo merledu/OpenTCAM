@@ -34,8 +34,8 @@ class TableMapping:
         self.sramTableTxtFilePath       = str()
         self.sramTableTxtFileName       = str()
         # * ------------------- protected vars
-        self._tcamTableConfigs  = dict()        # = {}
-        self._sqAddrTable       = pd.DataFrame
+        self._tcamTableConfigs  = dict()
+        self._queryStrAddrTable = pd.DataFrame
         self._tcamTable         = pd.DataFrame
         self._sramTable         = pd.DataFrame
         # * ------------------- private vars
@@ -308,8 +308,8 @@ class TableMapping:
         tcamDF = self._tcamTable
         count1 = 0
         count2 = 0
-        tempSQAddrDf = pd.DataFrame(columns=['SQ Addr','SQ col','TCAM row'])
-        self._sqAddrTable = pd.DataFrame(columns=['SQ Addr','SQ col','TCAM row'])
+        tempQSAddrTable = pd.DataFrame(columns=['Query Str Addr','QS col','PMA'])
+        self._queryStrAddrTable = pd.DataFrame(columns=['Query Str Addr','QS col','PMA'])
         
         # * ----- add all original search queries in dataframe
         # * iterate through tcam table rows
@@ -321,51 +321,51 @@ class TableMapping:
                 tempAddr = ''.join(tempAddr)
                 # * append row in sqSubStrAddrDf data frame
                 tempRow = [tempAddr, col, row]
-                tempSQAddrDf.loc[count1] = tempRow
+                tempQSAddrTable.loc[count1] = tempRow
                 count1 += 1
                 logging.info('Address Mapping to SRAM | Addr: {:>s} | Sub String Col: {:>5d} | TCAM Row: {:>5d} |'.format(tempAddr,col,row))
                 printDebug(debug,'Address Mapping to SRAM | Addr: {:>s} | Sub String Col: {:>3d} | TCAM Row: {:>3d} |'.format(tempAddr,col,row))
         if verbose:
-            self.printDF(tempSQAddrDf,'Original Search Query Address Table')
+            self.printDF(tempQSAddrTable,'Original Search Query Address Table')
         
         # * ----- find all possible alternatives for X based addr
         # * create array of N bit bin addresses
-        SQBinAddrList = np.arange(2**self.__tcamSubStrLen).tolist()
+        queryStrBinAddrList = np.arange(2**self.__tcamSubStrLen).tolist()
         padding = '0'+str(self.__tcamSubStrLen)+'b'
-        for item in SQBinAddrList:
+        for item in queryStrBinAddrList:
             dec2Bin = format(item,padding)
-            SQBinAddrList = SQBinAddrList[:item]+[dec2Bin]+SQBinAddrList[item+1:]
-        logging.info('N bit bin addr list: {0}'.format(SQBinAddrList))
-        logging.info('N bit bin addr list len: {0}'.format(len(SQBinAddrList)))
+            queryStrBinAddrList = queryStrBinAddrList[:item]+[dec2Bin]+queryStrBinAddrList[item+1:]
+        logging.info('N bit bin addr list: {0}'.format(queryStrBinAddrList))
+        logging.info('N bit bin addr list len: {0}'.format(len(queryStrBinAddrList)))
         if verbose or debug:
-            print('N bit bin addr list: {0}'.format(SQBinAddrList))
-            print('N bit bin addr list len: {0}'.format(len(SQBinAddrList)))
+            print('N bit bin addr list: {0}'.format(queryStrBinAddrList))
+            print('N bit bin addr list len: {0}'.format(len(queryStrBinAddrList)))
         
         # * get origSQ addr
-        sqAddrDrList = tempSQAddrDf['SQ Addr'].to_list()
-        printDebug(debug,'Search Query addr list: {0}'.format(sqAddrDrList))
-        printDebug(debug,'Search Query addr list len: {0}\n'.format(len(sqAddrDrList)))
+        tempQSAddrList = tempQSAddrTable['Query Str Addr'].to_list()
+        printDebug(debug,'Search Query addr list: {0}'.format(tempQSAddrList))
+        printDebug(debug,'Search Query addr list len: {0}\n'.format(len(tempQSAddrList)))
         # * map the 'bX in search queries to 0 and 1
-        for orig in sqAddrDrList:
+        for orig in tempQSAddrList:
             # * if 'bX in search query them find alternatives and add in table
             if 'x' in orig:
-                for new in SQBinAddrList:
+                for new in queryStrBinAddrList:
                     matching = jellyfish.damerau_levenshtein_distance(orig, new)
                     if matching == len(re.findall('x',orig)):
                         printVerbose(verbose,'orig Search Query = {} | new Search Query = {} | matching ratio = {} |'.format(orig, new, matching))
                         logging.info('orig Search Query = {} | new Search Query = {} | matching ratio = {} |'.format(orig, new, matching))
-                        origRowData = tempSQAddrDf.loc[tempSQAddrDf['SQ Addr'] == orig].values.flatten().tolist()
-                        # origRowIndex = tempSQAddrDf.index[tempSQAddrDf['SQ Addr'] == orig].tolist()
+                        origRowData = tempQSAddrTable.loc[tempQSAddrTable['Query Str Addr'] == orig].values.flatten().tolist()
+                        # origRowIndex = tempQSAddrTable.index[tempQSAddrTable['Query Str Addr'] == orig].tolist()
                         i = origRowData.index(orig)
                         origRowData = origRowData[:i]+[new]+origRowData[i+1:]
-                        self._sqAddrTable.loc[count2] = origRowData
+                        self._queryStrAddrTable.loc[count2] = origRowData
                         count2 += 1
             # * else simply add search query in table as is
             else:
                 printVerbose(verbose,'orig Search Query = {} | new Search Query = {} | matching ratio = {} |'.format(orig, orig, 0))
                 logging.info('orig Search Query = {} | new Search Query = {} | matching ratio = {} |'.format(orig, orig, 0))
-                origRowData = tempSQAddrDf.iloc[count2].to_list()
-                self._sqAddrTable.loc[count2] = origRowData
+                origRowData = tempQSAddrTable.iloc[count2].to_list()
+                self._queryStrAddrTable.loc[count2] = origRowData
                 count2 += 1
     
     
@@ -376,9 +376,9 @@ class TableMapping:
         return val:
         """
         sramDF = self._sramTable
-        sramAddrList = self._sqAddrTable['SQ Addr'].to_list()
-        tcamRowList = self._sqAddrTable['TCAM row'].to_list()
-        sramColList = self._sqAddrTable['SQ col'].to_list()
+        sramAddrList = self._queryStrAddrTable['Query Str Addr'].to_list()
+        tcamRowList = self._queryStrAddrTable['PMA'].to_list()
+        sramColList = self._queryStrAddrTable['QS col'].to_list()
         
         if len(tcamRowList) == len(sramColList):
             for tempSQ, a,b in itertools.zip_longest(sramAddrList, tcamRowList, sramColList):
