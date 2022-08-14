@@ -24,21 +24,20 @@ loadpaths:
 install_dependencies:
 	@ clear
 	@ echo ----------------------- Installing basic dependencies ----------------------
-	@ sudo apt install git \
-	python3 python3-pip python3-venv
-	@ sudo python3 -m pip install virtualenv
+	@ sudo apt install git make python3 python3-pip python3-venv
+	@ sudo python3 -m pip install --user virtualenv
 	@ echo ------------------------------------ DONE ----------------------------------
 	@ echo " "
 
-setupvenv:
+opentcam_venv:
 	clear
-	@ echo -------------------- Creating Python Virtual Environment -------------------
+	@ echo ------------------- Creating OpenTCAM Virtual Environment ------------------
 	@ echo " "
 	@ bash ${DIR_SCRIPTS}/setup_venv.sh
 	@ echo ------------------------------------ DONE ----------------------------------
 	@ echo " "
 
-runopentcam:
+tablemap:
 	@ echo " "
 	@ echo --------------------------------- OpenTCAM ---------------------------------
 	@ python3 $(DIR_COMP_SRC)/main.py \
@@ -102,14 +101,14 @@ cleanlogs:
 	@ echo ------------------------------------ DONE ----------------------------------
 	@ echo " "
 
-cleanexcel:
+cleansramtables:
 	@ echo " "
 	@ echo ----------------------- Deleting all SRAM table files ----------------------
 	@ rm -rf sramTables
 	@ echo ------------------------------------ DONE ----------------------------------
 	@ echo " "
 
-cleandumpfiles: cleanlogs cleanexcel
+cleandumpfiles: cleanlogs cleansramtables
 
 deepclean:
 	clear
