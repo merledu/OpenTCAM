@@ -335,17 +335,18 @@ class TableMapping:
         for item in SQBinAddrList:
             dec2Bin = format(item,padding)
             SQBinAddrList = SQBinAddrList[:item]+[dec2Bin]+SQBinAddrList[item+1:]
+        logging.info('N bit bin addr list: {0}'.format(SQBinAddrList))
+        logging.info('N bit bin addr list len: {0}'.format(len(SQBinAddrList)))
         if verbose or debug:
-            print('N bit bin addr list: {0}\n'.format(SQBinAddrList))
-            print('N bit bin addr list len: {0}\n'.format(len(SQBinAddrList)))
+            print('N bit bin addr list: {0}'.format(SQBinAddrList))
+            print('N bit bin addr list len: {0}'.format(len(SQBinAddrList)))
         
         # * get origSQ addr
-        sqAddrDrList = tempSQAddrDf.loc[:,'SQ Addr'].to_list()
-        printDebug(debug,'Search Query addr list: {0}\n'.format(sqAddrDrList))
+        sqAddrDrList = tempSQAddrDf['SQ Addr'].to_list()
+        printDebug(debug,'Search Query addr list: {0}'.format(sqAddrDrList))
         printDebug(debug,'Search Query addr list len: {0}\n'.format(len(sqAddrDrList)))
         # * map the 'bX in search queries to 0 and 1
         for orig in sqAddrDrList:
-            print('orig: ',orig)
             # * if 'bX in search query them find alternatives and add in table
             if 'x' in orig:
                 for new in SQBinAddrList:
@@ -361,29 +362,26 @@ class TableMapping:
                         count2 += 1
             # * else simply add search query in table as is
             else:
-                print('sq: ',orig,count2)
-                printVerbose(verbose,'without X orig Search Query = {} | new Search Query = {} | matching ratio = {} |'.format(orig, orig, 0))
+                printVerbose(verbose,'orig Search Query = {} | new Search Query = {} | matching ratio = {} |'.format(orig, orig, 0))
                 logging.info('orig Search Query = {} | new Search Query = {} | matching ratio = {} |'.format(orig, orig, 0))
-                origRowData = tempSQAddrDf.loc[tempSQAddrDf['SQ Addr'] == orig].values.flatten().tolist()
-                print('without X row data: ',origRowData,'\n')
+                origRowData = tempSQAddrDf.iloc[count2].to_list()
                 self._sqAddrTable.loc[count2] = origRowData
                 count2 += 1
     
     
     def mapTCAMtoSRAM(self,verbose,debug):
-        tcamDF = self._tcamTable
+        """
+        what does this func do ?
+        input args:
+        return val:
+        """
         sramDF = self._sramTable
         sramAddrList = self._sqAddrTable['SQ Addr'].to_list()
         tcamRowList = self._sqAddrTable['TCAM row'].to_list()
         sramColList = self._sqAddrTable['SQ col'].to_list()
-        print('tcamRowList: ',tcamRowList)
-        print('sramColList: ',sramColList)
-        print('tcamColVec:  ',self.__tcamColVec)
         
         if len(tcamRowList) == len(sramColList):
-            # col = b, row = a
             for tempSQ, a,b in itertools.zip_longest(sramAddrList, tcamRowList, sramColList):
-                print(tempSQ, a, b)
                 # * create sram table subsections based on query str
                 tempSRAMTable = sramDF.iloc[self.__sramRowVec[b],self.__sramCols]
                 logging.info('Search Query mapping portion: {:d}'.format(b))
