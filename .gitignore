@@ -8,6 +8,7 @@ logs
 
 # unit tests
 .pytest_cache
+compiler/tests/.test_cache
 
 # coverage reports
 .coverage
