@@ -1,16 +1,17 @@
-from compiler.src.tableMapping import *
+from compiler.src.tableMapping import TableMapping
 from unittest import TestCase
 import pandas as pd
 import numpy as np
 import yaml
 import glob
 import os
+import pytest
 
 # ===========================================================================================
 # ======================================= Begin Class =======================================
 # ===========================================================================================
 
-class TestTableMapping(TestCase):
+class testTableMapping(TestCase):
     
     def setUp(self):
         self.tm = TableMapping()
@@ -18,6 +19,8 @@ class TestTableMapping(TestCase):
         self.debug = 0
     
     
+    @ pytest.mark.testTableMapping
+    @ pytest.mark.testGetPrjDir
     def testGetPrjDir(self):
         # * ----- actual output
         actualVal = self.tm.getPrjDir(self.verb)
@@ -29,6 +32,8 @@ class TestTableMapping(TestCase):
         self.assertEqual(actualVal,expectedVal,msg='MISMATCH in prj dir path')
     
     
+    @ pytest.mark.testTableMapping
+    @ pytest.mark.testGetYAMLFilePath
     def testGetYAMLFilePath(self):
         # * ----- actual output
         self.tm.getPrjDir(self.verb)
@@ -41,6 +46,8 @@ class TestTableMapping(TestCase):
         self.assertEqual(actualVal,expectedVal,msg='MISMATCH in TCAM table YAML file path')
     
     
+    @ pytest.mark.testTableMapping
+    @ pytest.mark.testReadYAML
     def testReadYAML(self):
         # * ----- actual output
         self.tm.getPrjDir(self.verb)
@@ -55,6 +62,8 @@ class TestTableMapping(TestCase):
         self.assertEqual(actualVal,expectedVal,msg='MISMATCH in reading TCAM table YAML config file')
     
     
+    @ pytest.mark.testTableMapping
+    @ pytest.mark.testGetTCAMConfig
     def testGetTCAMConfig(self):
         # * ----- actual output
         self.tm.getPrjDir(self.verb)
@@ -71,6 +80,8 @@ class TestTableMapping(TestCase):
         self.assertEqual(actualVal,expectedVal,msg='MISMATCH in total number of TCAM table YAML configs')
     
     
+    @ pytest.mark.testTableMapping
+    @ pytest.mark.testGetTCAMTableFilePath
     def testGetTCAMTableFilePath(self):
         actualVal = list()
         expectedVal = list()
@@ -93,6 +104,8 @@ class TestTableMapping(TestCase):
         self.assertEqual(actualVal,expectedVal,msg='MISMATCH in total number of Xlsx TCAM table maps')
     
     
+    @ pytest.mark.testTableMapping
+    @ pytest.mark.testReadTCAMTable
     def testReadTCAMTable(self):
         actualTcamTableShape = list()
         expectTcamTableShape = list()
@@ -121,6 +134,8 @@ class TestTableMapping(TestCase):
         self.assertEqual(actualVal,expectedVal,msg='MISMATCH in TCAM table map rows and columns')
     
     
+    @ pytest.mark.testTableMapping
+    @ pytest.mark.testGetSRAMTableDim
     def testGetSRAMTableDim(self):
         actualSramTableShape = list()
         expectSramTableShape = list()
@@ -153,10 +168,14 @@ class TestTableMapping(TestCase):
         self.assertEqual(actualVal,expectedVal,msg='MISMATCH in SRAM table map rows and columns')
     
     
-    def tesGenSRAMTable(self):
+    @ pytest.mark.testTableMapping
+    @ pytest.mark.testGenSRAMTable
+    def testGenSRAMTable(self):
         pass
     
     
+    @ pytest.mark.testTableMapping
+    @ pytest.mark.testCreateSRAMTableDir
     def testCreateSRAMTableDir(self):
         # * ----- actual output
         self.tm.getPrjDir(self.verb)
@@ -169,6 +188,8 @@ class TestTableMapping(TestCase):
         self.assertEqual(actualVal,expectedVal,msg='MISMATCH in SRAM table map directory')
     
     
+    @ pytest.mark.testTableMapping
+    @ pytest.mark.testSplitRowsAndCols
     def testSplitRowsAndCols(self):
         actualVal = 0
         expectedVal = 4
@@ -230,14 +251,20 @@ class TestTableMapping(TestCase):
         self.assertEqual(actualVal,expectedVal,msg='MISMATCH in TCAM and SRAM row and column vectors')
     
     
+    @ pytest.mark.testTableMapping
+    @ pytest.mark.testGenerateSRAMSubStr
     def testGenerateSRAMSubStr(self):
         pass
     
     
+    @ pytest.mark.testTableMapping
+    @ pytest.mark.testMapTCAMtoSRAM
     def testMapTCAMtoSRAM(self):
         pass
     
     
+    @ pytest.mark.testTableMapping
+    @ pytest.mark.testWriteSRAMtoXlsx
     def testWriteSRAMtoXlsx(self):
         actualSramTablePath = list()
         expectedSramTablePath = list()
@@ -274,6 +301,8 @@ class TestTableMapping(TestCase):
         self.assertEqual(actualVal,expectedVal,msg='MISMATCH in SRAM xlsx file paths')
     
     
+    @ pytest.mark.testTableMapping
+    @ pytest.mark.testWriteSRAMtoHtml
     def testWriteSRAMtoHtml(self):
         actualSramTablePath = list()
         expectedSramTablePath = list()
@@ -310,6 +339,8 @@ class TestTableMapping(TestCase):
         self.assertEqual(actualVal,expectedVal,msg='MISMATCH in SRAM html file paths')
     
     
+    @ pytest.mark.testTableMapping
+    @ pytest.mark.testWriteSRAMtoJson
     def testWriteSRAMtoJson(self):
         actualSramTablePath = list()
         expectedSramTablePath = list()
@@ -346,6 +377,8 @@ class TestTableMapping(TestCase):
         self.assertEqual(actualVal,expectedVal,msg='MISMATCH in SRAM json file paths')
     
     
+    @ pytest.mark.testTableMapping
+    @ pytest.mark.testWriteSRAMtoTxt
     def testWriteSRAMtoTxt(self):
         actualSramTablePath = list()
         expectedSramTablePath = list()

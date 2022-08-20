@@ -27,9 +27,3 @@ tcamTable3:
     subStrLen: 4
     totalSubStr: 2
     potMatchAddr: 4
-
-tcamTable4:
-    queryStrLen: 10
-    subStrLen: 2
-    totalSubStr: 5
-    potMatchAddr: 16
