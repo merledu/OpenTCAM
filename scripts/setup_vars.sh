@@ -4,7 +4,7 @@
 VIRENV      := .pyVenvOpenTcam
 
 # python compiler src main args
-TCAMCONFIG 	:= tcamTable3
+TCAMCONFIG 	:= tcamTable2
 EXCEL       := 1
 HTML        := 0
 JSON        := 0
@@ -14,3 +14,6 @@ VERBOSE 	:= 1
 
 # python testing framework
 RUNNER      := pytest
+TESTCLASS   := 
+TESTNAME    := 
+MARKER      := 

@@ -1,7 +1,7 @@
 {
-    "editor.fontSize": 13,
+    "editor.fontSize": 12,
     "editor.tabSize": 4,
-    "terminal.integrated.fontSize": 13,
+    "terminal.integrated.fontSize": 12,
     "terminal.integrated.lineHeight": 1,
     "terminal.integrated.shellIntegration.enabled": true,
     "editor.insertSpaces": true,
