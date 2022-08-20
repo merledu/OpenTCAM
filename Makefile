@@ -47,6 +47,15 @@ tablemap:
 	@ echo ------------------------------------ DONE ----------------------------------
 	@ echo " "
 
+rununittest:
+	@ echo " "
+	@ echo --------------------------- OpenTCAM Unit Test -----------------------------
+	@ python3 -m pytest -v -m ${MARKER} compiler/tests/*.py
+	@ echo ------------------------------------ DONE ----------------------------------
+	@ echo " "
+# run single test using test_class_name and test_name
+# @ python3 -m pytest -v compiler/tests/${TESTCLASS}.py::${TESTCLASS}::${TESTNAME}
+
 runallunittest:
 	@ echo " "
 	@ echo --------------------------- OpenTCAM Unit Tests ----------------------------
