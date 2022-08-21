@@ -12,8 +12,12 @@ TXT         := 1
 DEBUG 		:= 0
 VERBOSE 	:= 1
 
-# python testing framework
+# python pytest testing framework
 RUNNER      := pytest
 TESTCLASS   := 
 TESTNAME    := 
 MARKER      := 
+
+# python coverage args
+COV_TITLE   := "OpenTCAM Coverage"
+COV_FOLDER  := "coverage_html"

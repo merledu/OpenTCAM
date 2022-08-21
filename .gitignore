@@ -12,6 +12,8 @@ compiler/tests/.test_cache
 
 # coverage reports
 .coverage
+htmlcov
+coverage*
 
 # pyenv
 
