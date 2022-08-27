@@ -24,21 +24,20 @@ loadpaths:
 install_dependencies:
 	@ clear
 	@ echo ----------------------- Installing basic dependencies ----------------------
-	@ sudo apt install git \
-	python3 python3-pip python3-venv
-	@ sudo python3 -m pip install virtualenv
+	@ sudo apt install git make python3 python3-pip python3-venv
+	@ sudo python3 -m pip install --user virtualenv
 	@ echo ------------------------------------ DONE ----------------------------------
 	@ echo " "
 
-setupvenv:
+opentcam_venv:
 	clear
-	@ echo -------------------- Creating Python Virtual Environment -------------------
+	@ echo ------------------- Creating OpenTCAM Virtual Environment ------------------
 	@ echo " "
 	@ bash ${DIR_SCRIPTS}/setup_venv.sh
 	@ echo ------------------------------------ DONE ----------------------------------
 	@ echo " "
 
-runopentcam:
+tablemap:
 	@ echo " "
 	@ echo --------------------------------- OpenTCAM ---------------------------------
 	@ python3 $(DIR_COMP_SRC)/main.py \
@@ -48,18 +47,39 @@ runopentcam:
 	@ echo ------------------------------------ DONE ----------------------------------
 	@ echo " "
 
+rununittest:
+	@ echo " "
+	@ echo --------------------------- OpenTCAM Unit Test -----------------------------
+	@ python3 -m pytest -v -m ${MARKER} compiler/tests/*.py
+	@ echo ------------------------------------ DONE ----------------------------------
+	@ echo " "
+# run single test using test_class_name and test_name
+# @ python3 -m pytest -v compiler/tests/${TESTCLASS}.py::${TESTCLASS}::${TESTNAME}
+
 runallunittest:
 	@ echo " "
 	@ echo --------------------------- OpenTCAM Unit Tests ----------------------------
-	@ python3 -m pytest -v -s --ff --cache-clear \
-	./compiler/tests/*.py
+	@ python3 -m pytest -v -s --ff --cache-clear ${DIR_COMP_TESTS}/*.py
+	@ echo ------------------------------------ DONE ----------------------------------
+	@ echo " "
+
+coverage:
+	@ echo " "
+	@ echo -------------------------- OpenTCAM Test Coverage --------------------------
+	@ coverage erase
+	@ echo " "
+	@ coverage run --branch -m pytest -v --ff --cache-clear ${DIR_COMP_TESTS}/*.py
+	@ echo " "
+	@ coverage report -m
+	@ echo " "
+	@ coverage html --precision=4 --title=${COV_TITLE} -d ${COV_FOLDER}
 	@ echo ------------------------------------ DONE ----------------------------------
 	@ echo " "
 
 runpylint:
 	@ echo " "
 	@ echo ------------------------------ Running PyLint ------------------------------
-	pylint ./compiler/src/*.py --output-format=parseable:./logs/pylint.log,colorized \
+	pylint ${DIR_COMP_SRC}/*.py --output-format=parseable:./logs/pylint.log,colorized \
 	--msg-template='{path:s}: (Ln {line:d}, Col {column}) -- {obj} -- {msg_id} -- {msg}' \
 	--rcfile=${OPENTCAM_ROOT}/.pylintrc
 	@ echo ------------------------------------ DONE ----------------------------------
@@ -68,9 +88,9 @@ runpylint:
 runblack:
 	@ echo " "
 	@ echo ------------------------------ Running Black ------------------------------
-	@ black --check --target-version=py35 ./compiler/src/*.py
+	@ black --check --target-version=py35 ${DIR_COMP_SRC}/*.py
 	@ echo " "
-	@ black --target-version=py35 ./compiler/src/.py
+	@ black --target-version=py35 ${DIR_COMP_SRC}/.py
 	@ echo ---------------------------------- DONE -----------------------------------
 	@ echo " "
 
@@ -97,19 +117,38 @@ cleanvenv:
 	@ echo " "
 
 cleanlogs:
-	@ echo -------------------------- Deleting all log files --------------------------
+	@ echo " "
+	@ echo --------------------------- Deleting Log File/s ----------------------------
 	@ rm -rf logs
 	@ echo ------------------------------------ DONE ----------------------------------
 	@ echo " "
 
-cleanexcel:
+cleansramtables:
 	@ echo " "
-	@ echo ----------------------- Deleting all SRAM table files ----------------------
+	@ echo ---------------------- Deleting SRAM Table Map File/s ----------------------
 	@ rm -rf sramTables
 	@ echo ------------------------------------ DONE ----------------------------------
 	@ echo " "
 
-cleandumpfiles: cleanlogs cleanexcel
+cleantests:
+	@ echo " "
+	@ echo --------------------------- Deleting Test Cache ----------------------------
+	@ rm -rf ${DIR_COMP_TESTS}/.test_cache
+	@ echo ------------------------------------ DONE ----------------------------------
+	@ echo " "
+
+cleancoverage:
+	@ echo " "
+	@ echo ------------------------- Deleting Coverage File/s -------------------------
+	@ rm -rf coverage* htmlcov .coverage
+	@ echo ------------------------------------ DONE ----------------------------------
+	@ echo " "
+
+cleandumpfiles: 
+	@ make cleanlogs 
+	@ make cleansramtables 
+	@ make cleantests 
+	@ make cleancoverage
 
 deepclean:
 	clear
@@ -118,7 +157,6 @@ deepclean:
 	@ echo " "
 	@ make cleanvenv
 	@ make cleandumpfiles
-	@ make cleanexcel
 	@ echo ------------------------------------ DONE ----------------------------------
 	@ echo " "
 

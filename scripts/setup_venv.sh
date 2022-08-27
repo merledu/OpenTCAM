@@ -44,7 +44,7 @@ echo -e "\n"
 
 # install necessary pip packages
 echo -e "--- INSTALLING pip packages ---\n\n"
-python3 -m pip install -r requirements.txt
+python3 -m pip install --no-cache-dir -r requirements.txt
 echo -e "\n"
 
 # display upated packages installed

@@ -30,7 +30,7 @@ def main():
                         type=int,default=0,metavar='',required=False,nargs='?',help='print debugging mode')
     parser.add_argument('-v','--verbose',
                         type=int,default=0,metavar='',required=False,nargs='?',help='print verbose mode')
-    myargs = parser.parse_args()
+    arg = parser.parse_args()
     
     # ====================================================== code main body    
     
@@ -38,53 +38,55 @@ def main():
     tm1=TableMapping()
     
     # get project dir
-    tm1.getPrjDir()
+    tm1.getPrjDir(arg.verbose)
     # get tcam table config yaml file path
-    tm1.getYAMLFilePath()
+    tm1.getYAMLFilePath(arg.verbose)
     # read tcam table config yaml file
-    tm1.readYAML(tm1.tcamTableConfigsFilePath)
+    tm1.readYAML(tm1.tcamTableConfigsFilePath,arg.verbose)
     # print all tcam configs
-    if myargs.debug:
-        tm1.printYAML()
-    if myargs.tcamConfig:
+    if arg.debug:
+        tm1.printYAML(arg.debug)
+    if arg.tcamConfig:
         # get specific tcam config from yaml file
-        tempConfig = tm1.getTCAMConfig(myargs.tcamConfig)
+        tempConfig = tm1.getTCAMConfig(arg.tcamConfig)
         # print specific tcam config
-        if myargs.verbose:
-            print(json.dumps(tempConfig, indent=4))
+        print(json.dumps(tempConfig, indent=4))
         # get tcam table map file path
-        tm1.getTCAMTableFilePath(myargs.tcamConfig)
+        tm1.getTCAMTableFilePath(arg.tcamConfig,arg.verbose)
     # read tcam table map file
-    tm1.readTCAMTable()
+    tm1.readTCAMTable(arg.verbose)
     # print tcam table map
-    if myargs.verbose:
-        tm1.printDF(tm1._tcamTable)
+    tm1.printDF(tm1._tcamTable,'TCAM Table Map')
     # calculate sram table dimensions
-    tm1.getSRAMTableDim()
+    tm1.getSRAMTableDim(arg.verbose)
     # create sram table dataframe
-    tm1.genSRAMTable()
+    tm1.genSRAMTable(arg.verbose)
     # print empty sram table map
-    if myargs.debug:
-        tm1.printDF(tm1._sramTable)
+    if arg.debug:
+        tm1.printDF(tm1._sramTable,'Empty SRAM Table Map')
     # create sram tables dir
-    tm1.createSRAMTableDir()    
+    tm1.createSRAMTableDir(arg.verbose)
     # read various params and map the tcam table to sram table
-    tm1.splitRowsAndCols()
-    tm1.mapTCAMtoSRAM()
+    tm1.splitRowsAndCols(arg.debug)
+    # generate all possible combinations of sram addr
+    tm1.generateSRAMSubStr(arg.verbose,arg.debug)
+    # print search query addr table
+    tm1.printDF(tm1._queryStrAddrTable,'SRAM Search Query Addr Table')
+    # map all possible tcam table addr to sram table
+    tm1.mapTCAMtoSRAM(arg.verbose,arg.debug)
     # print updated sram table
-    if myargs.verbose:
-        tm1.printDF(tm1._sramTable)
+    tm1.printDF(tm1._sramTable,'SRAM Table Map')
     # write sram table map to excel file
-    if myargs.excel:
+    if arg.excel:
         tm1.writeSRAMtoXlsx()
     # write sram table map to html file
-    if myargs.html:
+    if arg.html:
         tm1.writeSRAMtoHtml()
     # write sram table map to json file
-    if myargs.json:
+    if arg.json:
         tm1.writeSRAMtoJson()
     # write sram table map to txt file
-    if myargs.txt:
+    if arg.txt:
         tm1.writeSRAMtoTxt()
 
 

@@ -13,6 +13,7 @@
 # https://pypi.org/project/pytest/
 # https://pypi.org/project/coverage/
 
+# https://pypi.org/project/jellyfish/
 
 # static code analysis tool
 pylint
@@ -33,6 +34,8 @@ tabulate
 openpyxl
 # writing files in the Excel 2007+ XLSX format
 XlsxWriter
+# library for approximate & phonetic matching of strings
+jellyfish
 
 # YAML parser and emitter
 PyYAML
