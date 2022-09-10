@@ -16,6 +16,9 @@
     "cSpell.caseSensitive": true,
     "json.maxItemsComputed": 100000,
     "yaml.format.printWidth": 100,
+    "markdown.preview.fontSize": 12,
+    "markdown.preview.lineHeight": 1.0,
+    "markdown-preview-github-styles.colorTheme": "light",
     "python.defaultInterpreterPath": "./.pyVenvOpenTcam/bin/python",
     "cSpell.words": [
         "Damerau"
