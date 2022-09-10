@@ -54,12 +54,19 @@ rununittest:
 	@ echo ------------------------------------ DONE ----------------------------------
 	@ echo " "
 # run single test using test_class_name and test_name
-# @ python3 -m pytest -v compiler/tests/${TESTCLASS}.py::${TESTCLASS}::${TESTNAME}
+# @ python3 -m pytest -v compiler/tests/${TESTCLASS}.pytepy::${TESTCLASS}::${TESTNAME}
 
-runallunittest:
+runregression:
 	@ echo " "
 	@ echo --------------------------- OpenTCAM Unit Tests ----------------------------
 	@ python3 -m pytest -v -s --ff --cache-clear ${DIR_COMP_TESTS}/*.py
+	@ echo ------------------------------------ DONE ----------------------------------
+	@ echo " "
+
+testmarkers:
+	@ echo " "
+	@ echo -------------------------- OpenTCAM Test Markers ---------------------------
+	@ pytest --markers
 	@ echo ------------------------------------ DONE ----------------------------------
 	@ echo " "
 
@@ -144,7 +151,7 @@ cleancoverage:
 	@ echo ------------------------------------ DONE ----------------------------------
 	@ echo " "
 
-cleandumpfiles: 
+cleanall: 
 	@ make cleanlogs 
 	@ make cleansramtables 
 	@ make cleantests 
@@ -156,7 +163,7 @@ deepclean:
 	@ echo ------------------------- Deep Cleaning Environment ------------------------
 	@ echo " "
 	@ make cleanvenv
-	@ make cleandumpfiles
+	@ make cleanall
 	@ echo ------------------------------------ DONE ----------------------------------
 	@ echo " "
 

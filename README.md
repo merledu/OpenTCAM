@@ -16,61 +16,107 @@ An open-source Ternary Content Addressable Memory (TCAM) compiler.
 ## What is OpenTCAM?
 <!-- introduction -->
 OpenTCAM is an open source Python framework that can be used to create the design and layouts of a customizable TCAM memory to use in FPGA and ASIC designs. 
-<!-- OpenTCAM supports integration in both commercial and open-source flows with both predictive and fabricable technologies. -->
 
 ## Documentation
 <!-- links to documentation and FAQ -->
-We have created a detailed presentation that serves as our documentation (for now). Take a look at it [here]().
+<!-- We have created a detailed presentation that serves as our documentation (for now). Take a look at it [here](). -->
+Currently in the making. For now refer to this README.
 
 ## How to Install
-The OpenTCAM compiler requires Python3 and Pip3 inorder to work:
+The OpenTCAM compiler requires [Python3](https://www.python.org/downloads/), [Pip3](https://pypi.org/) and [MAKE](https://www.gnu.org/software/make/) inorder to run properly:
 
 ### Linux/Debian (Ubuntu)
--   Install using the following command:
+-   Install all pre-requisites softwares using the following commands:
+    ```bash
+    sudo apt install -y git make python3 python3-pip python3-venv
+	sudo python3 -m pip install --user virtualenv 
+    ```
+-   If MAKE is already pre installed simply run the command:
     ```bash
     make install_dependencies
     ```
 
-### MacOS
+<!-- ### MacOS
 -   Make sure you have [Homebrew](https://brew.sh/) installed.
 -   Install using the following command:
     ```bash
     brew install python3
-    ```
+    ``` -->
 
-### Basic Setup
+## How to Use
+### 1.  Basic Setup
+<!-- explain how to create virtual environments -->
 - To setup and build the python virtual environment required for running the compiler simply run the following command in the project directory. It will automatically setup and install all the required pip packages.
     ```bash
-    make setupvenv
+    make opentcam_venv
     ```
--   To learn more about what are python virtual environments and how they work click [here](https://realpython.com/python-virtual-environments-a-primer/).
 
-## Basic Usage
+### 2.  Virtual Environment Basics
+<!-- explain how to use virtual environments -->
+**NOTE:** All commands mentioned below require the use virtual environment created in the previous step. The virtual environment needs to be activated everytime before use and deactivated when done.
+1.  Activate virtual environment: 
+    ```bash
+    source .pyVenvOpenTcam/bin/activate
+    ```
+2.  Deactivate virtual environment:
+    ```bash
+    deactivate
+    ```
+To learn more about what are python virtual environments and how they work click [here](https://realpython.com/python-virtual-environments-a-primer/).
+
+### 3.  Generating TCAM Memories
 <!-- explain how to run and simulate the opentcam code -->
--   Activate virtual environment: `source .pyVenvOpenTcam/bin/activate`
 -   Generate TCAM -> SRAM table map:
     ```bash
-	make runopentcam \
-	TCAMCONFIG=tcamTableX \     # tcam table config name here X=1,2,..
-	DEBUG=1/0 \                 # debugging on/off
-	VERBOSE=1/0 \               # verbosity on/off
-    ```
+	make tablemap \
+	TCAMCONFIG=tcamTableX \ # tcam table config name here X=1,2,..
+    EXCEL=1/0 \             # generate SRAM table map as excel file
+    HTML=1/0 \              # generate SRAM table map as html file
+    JSON=1/0 \              # generate SRAM table map as json file
+    TXT=1/0 \               # generate SRAM table map as text file
+    DEBUG=1/0 \             # debugging on/off
+    VERBOSE=1/0             # verbosity on/off    
+	```
 
-
--   Deactivate virtual environment: `deactivate`
-
-## Unit Tests
+### 4.  Unit Tests
 <!-- explain how to run and simulate the opentcam tests -->
-Regression testing performs a number of tests for all modules in OpenTCAM. From the unit test directory (`$OpenTCAM/compiler/tests`), use the following command:
--   Run all regression tests:
-    ```bash
-    make runallunittest
-    ```
+Unit tests are an important part of regression testing to ensure that the code still functions as expected after making changes to the code and helps ensure code stability.
+
+Use the following commands:
 -   Run a specific test:
     ```bash
+    make rununittest MARKER=test_name
     ```
--   To set the verbosity add the `-v` flag:
+-   Run all tests of a specific test class:
     ```bash
+    make rununittest MARKER=test_class_name
+    ```
+-   Run all regression tests:
+    ```bash
+    make runregression
+    ```
+-   Display all test markers:
+    ```bash
+    make testmarkers
+    ```
+
+### 5.  Code Coverage
+<!-- explain how to run and simulate code coverage -->
+Used to gauge the effectiveness of tests. It can show which parts of your code are being exercised by tests, and which are not.
+-   To generate code coverage simply run the command:
+    ```bash
+    make coverage
+    ```
+A report will be created in the folder `coverage_html`. Simply open the file `coverage_html/index.html` in the web browser of your choice to view a detailed coverage report.
+
+### 6.  CleanUp
+-   Clean all files including tables, bins, logs generated:
+    ```bash
+    make cleanall
+    ```
+-   Clean everything including virtual environment/s. Make sure to deactivate any or all virtual environment/s.
+    ```bash
+    make deepclean
     ```
 
 ## Get Involved
