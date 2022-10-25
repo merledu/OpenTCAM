@@ -1,5 +1,5 @@
 {
-    "editor.fontSize": 12,
+    "editor.fontSize": 13,
     "editor.tabSize": 4,
     "terminal.integrated.fontSize": 12,
     "terminal.integrated.lineHeight": 1,
@@ -10,15 +10,15 @@
     "editor.comments.insertSpace": true,
     "editor.detectIndentation": true,
     "editor.lineHeight": 0,
-    // "files.trimTrailingWhitespace": true
+    // "files.trimTrailingWhitespace": true,
+    "markdown.preview.fontSize": 10,
+    "markdown.preview.lineHeight": 1.0,
+    "markdown-preview-github-styles.colorTheme": "light",
     "editor.minimap.enabled": false,
     "cSpell.enabled": true,
     "cSpell.caseSensitive": true,
     "json.maxItemsComputed": 100000,
     "yaml.format.printWidth": 100,
-    "markdown.preview.fontSize": 12,
-    "markdown.preview.lineHeight": 1.0,
-    "markdown-preview-github-styles.colorTheme": "light",
     "python.defaultInterpreterPath": "./.pyVenvOpenTcam/bin/python",
     "cSpell.words": [
         "Damerau"

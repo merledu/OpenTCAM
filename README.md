@@ -15,7 +15,9 @@ An open-source Ternary Content Addressable Memory (TCAM) compiler.
 
 ## What is OpenTCAM?
 <!-- introduction -->
-OpenTCAM is an open source Python framework that can be used to create the design and layouts of a customizable TCAM memory to use in FPGA and ASIC designs. 
+OpenTCAM is an open source Python framework that can be used to create the design (RTL) and layouts (GDS-II) of a customizable SRAM-based TCAM memory to use in FPGA and ASIC designs respectively. 
+
+Currently the compilers are using SRAMs generated from OpenRAM Compiler, but the idea is to make a generalized compiler for any SRAM-based TCAM. The idea is to utilize 36KB BRAM blocks of FPGAs and OpenRAM generated 1Kb SRAM blocks (using sky130 nm PDKs) for ASIC to mimic any size of TCAM.
 
 ## Documentation
 <!-- links to documentation and FAQ -->
