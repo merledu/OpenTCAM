@@ -73,6 +73,19 @@ class TcamRtlGenerator:
         logging.info('Read TCAM table config file: {:<s}'.format(self.tcamTableConfigsFilePath))
         printVerbose(verbose,'Read TCAM table config file: {:<s}'.format(self.tcamTableConfigsFilePath))
         return self._tcamTableConfigs
+    
+    
+    def printYAML(self,debug):
+        """
+        what does this func do ?
+        input args:
+        return val:
+        """
+        printDebug(debug,'Printing TCAM table configs')
+        print(json.dumps(self._tcamTableConfigs,indent=4))
+        # print(yaml.dump(self._tcamTableConfigs,sort_keys=False,default_flow_style=False))
+        logging.info('Printed TCAM table configs')
+
 
 
 
