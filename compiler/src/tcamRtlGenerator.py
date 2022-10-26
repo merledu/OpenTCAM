@@ -22,17 +22,17 @@ class TcamRtlGenerator:
                             format='%(asctime)s | %(filename)s | %(funcName)s | %(levelname)s | %(lineno)d | %(message)s')
     
     
-    # # * ----------------------------------------------------------------- Functions
-    # def getPrjDir(self,verbose):
-    #     """
-    #     what does this func do ?
-    #     input args:
-    #     return val:
-    #     """
-    #     self.prjWorkDir=os.getcwd()
-    #     logging.info('Project working dir: {:<s}'.format(self.prjWorkDir))
-    #     printVerbose(verbose,'Project working dir: {:<s}'.format(self.prjWorkDir))
-    #     return self.prjWorkDir
+    # * ----------------------------------------------------------------- Functions
+    def getPrjDir(self,verbose):
+        """
+        what does this func do ?
+        input args:
+        return val:
+        """
+        self.prjWorkDir=os.getcwd()
+        logging.info('Project working dir: {:<s}'.format(self.prjWorkDir))
+        printVerbose(verbose,'Project working dir: {:<s}'.format(self.prjWorkDir))
+        return self.prjWorkDir
 
 
 
