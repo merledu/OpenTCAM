@@ -85,6 +85,32 @@ class TcamRtlGenerator:
         print(json.dumps(self._tcamTableConfigs,indent=4))
         # print(yaml.dump(self._tcamTableConfigs,sort_keys=False,default_flow_style=False))
         logging.info('Printed TCAM table configs')
+    
+    
+    def getTCAMConfig(self,tcamConfig):
+        """
+        what does this func do ?
+        input args:
+        return val:
+        """
+        # * look for specific tcam config in compiler/configs/tcamTables.yaml
+        if tcamConfig in self._tcamTableConfigs.keys():
+            tempConfig = self._tcamTableConfigs[tcamConfig]
+            # * save tcam config vars
+            self.__tcamQueryStrLen  = tempConfig['queryStrLen']
+            self.__tcamSubStrLen    = tempConfig['subStrLen']
+            self.__tcamTotalSubStr  = tempConfig['totalSubStr']
+            self.__tcamPotMatchAddr = tempConfig['potMatchAddr']
+            # * print specific tcam config
+            # print(tempConfig)
+            logging.info('"FOUND" Required TCAM Config [{:<s}]'.format(tcamConfig))
+            print('"FOUND" Required TCAM Config [{:<s}]'.format(tcamConfig))
+            logging.info('TCAM Config Data [{:<s}] = {}'.format(tcamConfig,tempConfig))
+            return tempConfig
+        else:
+            logging.error('"NOT FOUND": TCAM Config [{:<s}]'.format(tcamConfig))
+            sys.exit('"NOT FOUND": Required TCAM table config [{:<s}]'.format(tcamConfig))
+
 
 
 
