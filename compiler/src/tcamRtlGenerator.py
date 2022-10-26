@@ -1,6 +1,9 @@
 import logging
+import yaml
+import json
 import sys
 import os
+import re
 
 # ===========================================================================================
 # ======================================= Begin Class =======================================
@@ -55,6 +58,22 @@ class TcamRtlGenerator:
         else:
             logging.error('"NOT FOUND": TCAM table config file path: {:<s}'.format(self.tcamTableConfigsFilePath))
             sys.exit('"NOT FOUND": TCAM table config file path: {:<s}'.format(self.tcamTableConfigsFilePath))
+    
+    
+    def readYAML(self,filePath,verbose):
+        """
+        what does this func do ?
+        input args:
+        return val:
+        """
+        with open(filePath) as file:
+            self._tcamTableConfigs=yaml.full_load(file)
+        # print(json.dumps(self._tcamTableConfigs,indent=4))
+        # print(yaml.dump(self._tcamTableConfigs,sort_keys=False,default_flow_style=False))
+        logging.info('Read TCAM table config file: {:<s}'.format(self.tcamTableConfigsFilePath))
+        printVerbose(verbose,'Read TCAM table config file: {:<s}'.format(self.tcamTableConfigsFilePath))
+        return self._tcamTableConfigs
+
 
 
 
