@@ -208,8 +208,23 @@ class TcamRtlWrapperGenerator:
             tempLine = "{:4s}assign {:<s}[{:^d}] = (in_addr[{:^d}:{:^d}] == {:^d}'d{:d});" \
             .format(' ', blockSel['name'], index, blockSel['inputAddr'][0], blockSel['inputAddr'][1], int(math.log2(blockSel['width'])), index)  
             self.__tcamRtlWrapLine.append(tempLine)
-
-
+    
+    
+    def insertWriteMask(self):
+        writeMask = self._currConfig['wireWriteMask']
+        
+        # * create wire/s for wmask
+        for i in range(writeMask['width']):
+            tempLine = '{:4s}wire\t[{:^d}:0]\t{:s}{:d};'.format(' ', writeMask['width']-1, writeMask['name'], i)
+            self.__tcamRtlWrapLine.append(tempLine)
+        
+        # * create assign statements
+        for i in range(writeMask['width']):
+            tempLine1 = '{:4s}assign {:<s}{:d} = '.format(' ', writeMask['name'], i)
+            tempLine2 = '{:s}{:^d}{:s}{:<s}[{:d}]{:s} & {:<s};' \
+            .format('{ ', writeMask['width'], '{', self._currConfig['wireBlockSel']['name'], i, '} }', self._currConfig['ports'][3]['name'])
+            tempLine = tempLine1 + tempLine2
+            self.__tcamRtlWrapLine.append(tempLine)
 
 
 
@@ -224,6 +239,10 @@ class TcamRtlWrapperGenerator:
         
         self.insertComment('memory block selection for write logic')
         self.insertBlockSelect()
+        self.insertBlankLine(1)
+        
+        self.insertComment('logic for write mask')
+        self.insertWriteMask()
         self.insertBlankLine(1)
 
 # ===========================================================================================
