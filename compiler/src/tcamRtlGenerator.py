@@ -144,20 +144,34 @@ class TcamRtlWrapperGenerator:
         logging.info('Created TCAM memory "{:<s}" wrapper: {:<s}'.format(tcamWrapConfig, self.tcamMemWrapperRTLFilePath))
     
     
-    def generateWrapper(self):
+    def insertComment(self, comment):
+        # * insert comment in code
+        tempLine = '//' + str(comment)
+        self.__tcamRtlWrapLine.append(tempLine)
+        logging.info('Added comment {:s} in: {:<s}'.format(comment, self._topWrapperFileName))
+    
+    
+    def insertBlankLine(self, blankLines):
+        for i in range(blankLines):
+            tempLine = ''
+            self.__tcamRtlWrapLine.append(tempLine)
+        logging.info('Added {:d} line space definition in: {:<s}'.format(blankLines, self._topWrapperFileName))
+    
+    
+    def printWrapper(self):
         with open(self.tcamMemWrapperRTLFilePath, 'w') as file1:
             for line in self.__tcamRtlWrapLine:
                 file1.write(line + '\n')
         file1.close()
     
     
-    def writeTimeScale(self, timeUnit, timePrecision):
+    def insertTimeScale(self, timeUnit, timePrecision):
         tempLine = '`timescale ' + str(timeUnit).replace(' ','') + '/' + str(timePrecision).replace(' ','')
         self.__tcamRtlWrapLine.append(tempLine)
         logging.info('Added timescale in: {:<s}'.format(self._topWrapperFileName))
     
     
-    def writeTcamPorts(self):
+    def insertModuleDefinition(self):
         # * write module definition
         tempLine = 'module ' +  self._currConfig['moduleName'] + ' ('
         self.__tcamRtlWrapLine.append(tempLine)
@@ -179,9 +193,22 @@ class TcamRtlWrapperGenerator:
         # * write closing bracket
         tempLine = ');'
         self.__tcamRtlWrapLine.append(tempLine)
+    
+    
+    
 
 
 
+
+
+
+
+    def generateWrapper(self, timeUnit, timePrecision):
+        self.insertTimeScale(timeUnit, timePrecision)
+        self.insertBlankLine(1)
+        
+        self.insertModuleDefinition()
+        self.insertBlankLine(1)
 
 # ===========================================================================================
 # ======================================== End Class ========================================
