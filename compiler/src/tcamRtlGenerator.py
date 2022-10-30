@@ -9,22 +9,25 @@ import re
 # ======================================= Begin Class =======================================
 # ===========================================================================================
 
-class TcamRtlGenerator:
+class TcamRtlWrapperGenerator:
     # * ----------------------------------------------------------------- Variables
     def __init__(self):
         # * ------------------- public vars
         self.prjWorkDir = str()
-        self.tcamTableConfigsFilePath = str()
-        self.tcamTableConfigsFileName = str()
+        self.tcamMemWrapperConfigsFilePath  = str()
+        self.tcamMemWrapperConfigsFileName  = str()
 
         # * ------------------- protected vars
-        self._tcamTableConfigs  = dict()
+        self._tcamMemWrapperConfigs = dict()
 
         # * ------------------- private vars
-        self.__tcamQueryStrLen  = int()
+        self.__inputWMask       = int()
+        self.__inputAddress     = int()
+        self.__outputReadData   = int()
+        self.__blockSelect      = int()
         
         # * logging config
-        logging.basicConfig(level=logging.DEBUG, filename='./logs/tcamRtlGenerator.log',
+        logging.basicConfig(level=logging.DEBUG, filename='./logs/TcamRtlWrapperGenerator.log',
                             format='%(asctime)s | %(filename)s | %(funcName)s | %(levelname)s | %(lineno)d | %(message)s')
     
     
@@ -48,16 +51,16 @@ class TcamRtlGenerator:
         return val:
         """
         # * get tcamTables config file path
-        tempPath = os.path.join(self.prjWorkDir,'compiler/configs/tcamTables.yaml')
+        tempPath = os.path.join(self.prjWorkDir,'compiler/configs/tcamMemWrapper.yaml')
         if os.path.isfile(tempPath) is True:
-            self.tcamTableConfigsFilePath = tempPath
-            self.tcamTableConfigsFileName = os.path.basename(tempPath)
-            logging.info('"FOUND": TCAM table config file path: {:<s}'.format(self.tcamTableConfigsFilePath))
-            printVerbose(verbose,'"FOUND": TCAM table config file path: {:<s}'.format(self.tcamTableConfigsFilePath))
-            return self.tcamTableConfigsFilePath
+            self.tcamMemWrapperConfigsFilePath = tempPath
+            self.tcamMemWrapperConfigsFileName = os.path.basename(tempPath)
+            logging.info('"FOUND": TCAM memory wrapper config file path: {:<s}'.format(self.tcamMemWrapperConfigsFilePath))
+            printVerbose(verbose,'"FOUND": TCAM memory wrapper config file path: {:<s}'.format(self.tcamMemWrapperConfigsFileName))
+            return self.tcamMemWrapperConfigsFilePath
         else:
-            logging.error('"NOT FOUND": TCAM table config file path: {:<s}'.format(self.tcamTableConfigsFilePath))
-            sys.exit('"NOT FOUND": TCAM table config file path: {:<s}'.format(self.tcamTableConfigsFilePath))
+            logging.error('"NOT FOUND": TCAM memory wrapper config file path: {:<s}'.format(self.tcamMemWrapperConfigsFilePath))
+            sys.exit('"NOT FOUND": TCAM memory wrapper config file path: {:<s}'.format(self.tcamMemWrapperConfigsFileName))
     
     
     def readYAML(self,filePath,verbose):
@@ -67,12 +70,12 @@ class TcamRtlGenerator:
         return val:
         """
         with open(filePath) as file:
-            self._tcamTableConfigs=yaml.full_load(file)
-        # print(json.dumps(self._tcamTableConfigs,indent=4))
-        # print(yaml.dump(self._tcamTableConfigs,sort_keys=False,default_flow_style=False))
-        logging.info('Read TCAM table config file: {:<s}'.format(self.tcamTableConfigsFilePath))
-        printVerbose(verbose,'Read TCAM table config file: {:<s}'.format(self.tcamTableConfigsFilePath))
-        return self._tcamTableConfigs
+            self._tcamMemWrapperConfigs=yaml.full_load(file)
+        # print(json.dumps(self._tcamMemWrapperConfigs, indent=4))
+        # print(yaml.dump(self._tcamMemWrapperConfigs, sort_keys=False, default_flow_style=False))
+        logging.info('Read TCAM memory wrapper config file: {:<s}'.format(self.tcamMemWrapperConfigsFilePath))
+        printVerbose(verbose,'Read TCAM memory wrapper config file: {:<s}'.format(self.tcamMemWrapperConfigsFileName))
+        return self._tcamMemWrapperConfigs
     
     
     def printYAML(self,debug):
@@ -81,38 +84,37 @@ class TcamRtlGenerator:
         input args:
         return val:
         """
-        printDebug(debug,'Printing TCAM table configs')
-        print(json.dumps(self._tcamTableConfigs,indent=4))
-        # print(yaml.dump(self._tcamTableConfigs,sort_keys=False,default_flow_style=False))
-        logging.info('Printed TCAM table configs')
+        printDebug(debug, 'Printing TCAM memory wrapper configs')
+        print(json.dumps(self._tcamMemWrapperConfigs, indent=4))
+        # print(yaml.dump(self._tcamMemWrapperConfigs, sort_keys=False, default_flow_style=False))
+        logging.info('Printed TCAM memory wrapper configs')
     
     
-    def getTCAMConfig(self,tcamConfig):
+    def getTCAMWrapperConfig(self, tcamWrapConfig):
         """
         what does this func do ?
         input args:
         return val:
         """
         # * look for specific tcam config in compiler/configs/tcamTables.yaml
-        if tcamConfig in self._tcamTableConfigs.keys():
-            tempConfig = self._tcamTableConfigs[tcamConfig]
+        if tcamWrapConfig in self._tcamMemWrapperConfigs.keys():
+            tempConfig = self._tcamMemWrapperConfigs[tcamWrapConfig]
             # * save tcam config vars
-            self.__tcamQueryStrLen  = tempConfig['queryStrLen']
-            self.__tcamSubStrLen    = tempConfig['subStrLen']
-            self.__tcamTotalSubStr  = tempConfig['totalSubStr']
-            self.__tcamPotMatchAddr = tempConfig['potMatchAddr']
+            self.__inputWMask       = tempConfig['inputWMask']
+            self.__inputAddress     = tempConfig['inputAddress']
+            self.__outputReadData   = tempConfig['outputReadData']
+            self.__blockSelect      = tempConfig['blockSelect']
             # * print specific tcam config
             # print(tempConfig)
-            logging.info('"FOUND" Required TCAM Config [{:<s}]'.format(tcamConfig))
-            print('"FOUND" Required TCAM Config [{:<s}]'.format(tcamConfig))
-            logging.info('TCAM Config Data [{:<s}] = {}'.format(tcamConfig,tempConfig))
+            logging.info('"FOUND" Required TCAM Memory Wrapper Config [{:<s}]'.format(tcamWrapConfig))
+            print('"FOUND" Required TCAM Memory Wrapper Config [{:<s}]'.format(tcamWrapConfig))
+            logging.info('TCAM Memory Wrapper Config Data [{:<s}] = {}'.format(tcamWrapConfig, tempConfig))
             return tempConfig
         else:
-            logging.error('"NOT FOUND": TCAM Config [{:<s}]'.format(tcamConfig))
-            sys.exit('"NOT FOUND": Required TCAM table config [{:<s}]'.format(tcamConfig))
-
-
-
+            logging.error('"NOT FOUND": TCAM Memory Wrapper Config [{:<s}]'.format(tcamWrapConfig))
+            sys.exit('"NOT FOUND": Required TCAM Memory Wrapper Config [{:<s}]'.format(tcamWrapConfig))
+    
+    
 
 
 
