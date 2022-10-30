@@ -24,6 +24,7 @@ class TcamRtlWrapperGenerator:
         self._topWrapperName        = str()
 
         # * ------------------- private vars
+        self.__tcamRtlWrapLine  = list()
         self.__inputWMask       = int()
         self.__inputAddress     = int()
         self.__outputReadData   = int()
@@ -140,7 +141,13 @@ class TcamRtlWrapperGenerator:
         self._topWrapperName = 'top_' + str(tcamWrapConfig).replace('MemWrapper_','_mem_') + '.sv'
         self.tcamMemWrapperRTLFilePath = os.path.join(self.tcamMemWrapperRTLFolderPath, self._topWrapperName)
         logging.info('Created TCAM memory "{:<s}" wrapper: {:<s}'.format(tcamWrapConfig, self.tcamMemWrapperRTLFilePath))
-
+    
+    
+    def writeTimeScale(self, timeUnit, timePrecision):
+        # `timescale 1ns/100ps
+        tempLine = '`timescale ' + str(timeUnit).replace(' ','') + '/' + str(timePrecision).replace(' ','')
+        self.__tcamRtlWrapLine.append(tempLine)
+        logging.info('Added timescale in: {:<s}'.format(self._topWrapperName))
 
 
 
