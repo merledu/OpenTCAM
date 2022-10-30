@@ -39,10 +39,20 @@ opentcam_venv:
 
 tablemap:
 	@ echo " "
-	@ echo --------------------------------- OpenTCAM ---------------------------------
-	@ python3 $(DIR_COMP_SRC)/main.py \
+	@ echo ---------------------------- OpenTCAM Table Map ----------------------------
+	@ python3 $(DIR_COMP_SRC)/mainTableMapping.py \
 	--tcamConfig $(TCAMCONFIG) \
 	-excel $(EXCEL) -html $(HTML) -json $(JSON) -txt $(TXT) \
+	--debug $(DEBUG) --verbose $(VERBOSE)
+	@ echo ------------------------------------ DONE ----------------------------------
+	@ echo " "
+
+tcamrtl:
+	@ echo " "
+	@ echo ---------------------------- OpenTCAM Table Map ----------------------------
+	@ python3 $(DIR_COMP_SRC)/mainTcamRTLGenerator.py \
+	--tcamWrapConfig $(TCAMWRAPCONFIG) \
+	--timeunit $(TIMEUNIT) --timeprecision $(TIMEPRECISION) \
 	--debug $(DEBUG) --verbose $(VERBOSE)
 	@ echo ------------------------------------ DONE ----------------------------------
 	@ echo " "
@@ -137,6 +147,13 @@ cleansramtables:
 	@ echo ------------------------------------ DONE ----------------------------------
 	@ echo " "
 
+cleantcamrtl:
+	@ echo " "
+	@ echo ------------------------- Deleting TCAM RTL File/s -------------------------
+	@ rm -rf tcam_mem_rtl
+	@ echo ------------------------------------ DONE ----------------------------------
+	@ echo " "
+
 cleantests:
 	@ echo " "
 	@ echo --------------------------- Deleting Test Cache ----------------------------
@@ -152,10 +169,7 @@ cleancoverage:
 	@ echo " "
 
 cleanall: 
-	@ make cleanlogs 
-	@ make cleansramtables 
-	@ make cleantests 
-	@ make cleancoverage
+	@ make cleanlogs cleansramtables cleantcamrtl cleantests cleancoverage
 
 deepclean:
 	clear
