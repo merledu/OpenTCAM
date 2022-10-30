@@ -1,4 +1,5 @@
 import logging
+import math
 import yaml
 import json
 import sys
@@ -146,7 +147,7 @@ class TcamRtlWrapperGenerator:
     
     def insertComment(self, comment):
         # * insert comment in code
-        tempLine = '//' + str(comment)
+        tempLine = '{:<4s}// {:<s}'.format(' ', comment)
         self.__tcamRtlWrapLine.append(tempLine)
         logging.info('Added comment {:s} in: {:<s}'.format(comment, self._topWrapperFileName))
     
@@ -195,7 +196,18 @@ class TcamRtlWrapperGenerator:
         self.__tcamRtlWrapLine.append(tempLine)
     
     
-    
+    def insertBlockSelect(self):
+        blockSel = self._currConfig['wireBlockSel']
+        
+        # * create wire/s for block_sel
+        tempLine = '{:4s}wire\t[{:^d}:0]\t{:s};'.format(' ', blockSel['width']-1, blockSel['name'])
+        self.__tcamRtlWrapLine.append(tempLine)
+        
+        # * create assign statements
+        for index in range(blockSel['width']):
+            tempLine = "{:4s}assign {:<s}[{:^d}] = (in_addr[{:^d}:{:^d}] == {:^d}'d{:d});" \
+            .format(' ', blockSel['name'], index, blockSel['inputAddr'][0], blockSel['inputAddr'][1], int(math.log2(blockSel['width'])), index)  
+            self.__tcamRtlWrapLine.append(tempLine)
 
 
 
@@ -208,6 +220,10 @@ class TcamRtlWrapperGenerator:
         self.insertBlankLine(1)
         
         self.insertModuleDefinition()
+        self.insertBlankLine(1)
+        
+        self.insertComment('memory block selection for write logic')
+        self.insertBlockSelect()
         self.insertBlankLine(1)
 
 # ===========================================================================================
