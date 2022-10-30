@@ -147,7 +147,7 @@ class TcamRtlWrapperGenerator:
     def generateWrapper(self):
         with open(self.tcamMemWrapperRTLFilePath, 'w') as file1:
             for line in self.__tcamRtlWrapLine:
-                file1.write(line)
+                file1.write(line + '\n')
         file1.close()
     
     
@@ -155,7 +155,30 @@ class TcamRtlWrapperGenerator:
         tempLine = '`timescale ' + str(timeUnit).replace(' ','') + '/' + str(timePrecision).replace(' ','')
         self.__tcamRtlWrapLine.append(tempLine)
         logging.info('Added timescale in: {:<s}'.format(self._topWrapperFileName))
-
+    
+    
+    def writeTcamPorts(self):
+        # * write module definition
+        tempLine = 'module ' +  self._currConfig['moduleName'] + ' ('
+        self.__tcamRtlWrapLine.append(tempLine)
+        logging.info('Added module definition in: {:<s}'.format(self._topWrapperFileName))
+        
+        # * write IO ports
+        for i in range(len(self._currConfig['ports'])):
+            port = self._currConfig['ports'][i]
+            if port['width'] == 0:
+                tempLine = '{:4s}{:s}\t{:s}\t{:s}'.format(' ', port['direction'], 'logic', port['name'])
+            else:
+                tempLine = '{:4s}{:s}\t{:s}\t[{:^d}:0]\t{:s}'.format(' ', port['direction'], 'logic', port['width']-1, port['name'])
+            # * add a , for N-1 ports in definition
+            if i != len(self._currConfig['ports']) - 1:
+                tempLine += ','            
+            self.__tcamRtlWrapLine.append(tempLine)
+        logging.info('Added IO ports in module definition in: {:<s}'.format(self._topWrapperFileName))
+        
+        # * write closing bracket
+        tempLine = ');'
+        self.__tcamRtlWrapLine.append(tempLine)
 
 
 
