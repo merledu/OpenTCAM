@@ -20,15 +20,16 @@ class TcamRtlWrapperGenerator:
         self.tcamMemWrapperRTLFilePath      = str()
 
         # * ------------------- protected vars
+        self._currConfig            = dict()
         self._tcamMemWrapperConfigs = dict()
-        self._topWrapperName        = str()
+        self._topWrapperFileName    = str()
 
         # * ------------------- private vars
         self.__tcamRtlWrapLine  = list()
-        self.__inputWMask       = int()
-        self.__inputAddress     = int()
-        self.__outputReadData   = int()
-        self.__blockSelect      = int()
+        # self.__inputWMask       = int()
+        # self.__inputAddress     = int()
+        # self.__outputReadData   = int()
+        # self.__blockSelect      = int()
         
         # * logging config
         logging.basicConfig(level=logging.DEBUG, filename='./logs/TcamRtlWrapperGenerator.log',
@@ -102,18 +103,18 @@ class TcamRtlWrapperGenerator:
         """
         # * look for specific tcam config in compiler/configs/tcamTables.yaml
         if tcamWrapConfig in self._tcamMemWrapperConfigs.keys():
-            tempConfig = self._tcamMemWrapperConfigs[tcamWrapConfig]
+            self._currConfig = self._tcamMemWrapperConfigs[tcamWrapConfig]
             # * save tcam config vars
-            self.__inputWMask       = tempConfig['inputWMask']
-            self.__inputAddress     = tempConfig['inputAddress']
-            self.__outputReadData   = tempConfig['outputReadData']
-            self.__blockSelect      = tempConfig['blockSelect']
+            # self.__inputWMask       = self._currConfig['inputWMask']
+            # self.__inputAddress     = self._currConfig['inputAddress']
+            # self.__outputReadData   = self._currConfig['outputReadData']
+            # self.__blockSelect      = self._currConfig['blockSelect']
             # * print specific tcam config
-            # print(tempConfig)
+            # print(self._currConfig)
             logging.info('"FOUND" Required TCAM Memory Wrapper Config [{:<s}]'.format(tcamWrapConfig))
-            print('"FOUND" Required TCAM Memory Wrapper Config [{:<s}]'.format(tcamWrapConfig))
-            logging.info('TCAM Memory Wrapper Config Data [{:<s}] = {}'.format(tcamWrapConfig, tempConfig))
-            return tempConfig
+            print('\n"FOUND" Required TCAM Memory Wrapper Config [{:<s}]'.format(tcamWrapConfig))
+            logging.info('TCAM Memory Wrapper Config Data [{:<s}] = {}'.format(tcamWrapConfig, self._currConfig))
+            return self._currConfig
         else:
             logging.error('"NOT FOUND": TCAM Memory Wrapper Config [{:<s}]'.format(tcamWrapConfig))
             sys.exit('"NOT FOUND": Required TCAM Memory Wrapper Config [{:<s}]'.format(tcamWrapConfig))
@@ -138,16 +139,22 @@ class TcamRtlWrapperGenerator:
         input args:
         return val:
         """
-        self._topWrapperName = 'top_' + str(tcamWrapConfig).replace('MemWrapper_','_mem_') + '.sv'
-        self.tcamMemWrapperRTLFilePath = os.path.join(self.tcamMemWrapperRTLFolderPath, self._topWrapperName)
+        self._topWrapperFileName = 'top_' + str(tcamWrapConfig).replace('MemWrapper_','_mem_') + '.sv'
+        self.tcamMemWrapperRTLFilePath = os.path.join(self.tcamMemWrapperRTLFolderPath, self._topWrapperFileName)
         logging.info('Created TCAM memory "{:<s}" wrapper: {:<s}'.format(tcamWrapConfig, self.tcamMemWrapperRTLFilePath))
     
     
+    def generateWrapper(self):
+        with open(self.tcamMemWrapperRTLFilePath, 'w') as file1:
+            for line in self.__tcamRtlWrapLine:
+                file1.write(line)
+        file1.close()
+    
+    
     def writeTimeScale(self, timeUnit, timePrecision):
-        # `timescale 1ns/100ps
         tempLine = '`timescale ' + str(timeUnit).replace(' ','') + '/' + str(timePrecision).replace(' ','')
         self.__tcamRtlWrapLine.append(tempLine)
-        logging.info('Added timescale in: {:<s}'.format(self._topWrapperName))
+        logging.info('Added timescale in: {:<s}'.format(self._topWrapperFileName))
 
 
 
