@@ -3,14 +3,20 @@
 # virtual env names
 VIRENV      := .pyVenvOpenTcam
 
-# python compiler src main args
+DEBUG 		:= 0
+VERBOSE 	:= 1
+
+# python opentcam table generator main args
 TCAMCONFIG 	:= tcamTable2
 EXCEL       := 1
 HTML        := 0
 JSON        := 0
 TXT         := 1
-DEBUG 		:= 0
-VERBOSE 	:= 1
+
+# python opentcam RTL generator main args
+TCAMWRAPCONFIG  := tcamMemWrapper_64x28
+TIMEUNIT        := 1ns
+TIMEPRECISION   := 100ps
 
 # python pytest testing framework
 RUNNER      := pytest
