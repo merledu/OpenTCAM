@@ -17,9 +17,11 @@ class TcamRtlWrapperGenerator:
         self.tcamMemWrapperConfigsFilePath  = str()
         self.tcamMemWrapperConfigsFileName  = str()
         self.tcamMemWrapperRTLFolderPath    = str()
+        self.tcamMemWrapperRTLFilePath      = str()
 
         # * ------------------- protected vars
         self._tcamMemWrapperConfigs = dict()
+        self._topWrapperName        = str()
 
         # * ------------------- private vars
         self.__inputWMask       = int()
@@ -127,7 +129,17 @@ class TcamRtlWrapperGenerator:
             os.makedirs(self.tcamMemWrapperRTLFolderPath)
             logging.info('Created TCAM memory "{:<s}" RTL folder: {:<s}'.format(tcamWrapConfig, self.tcamMemWrapperRTLFolderPath))
             printVerbose(verbose, 'Created TCAM memory "{:<s}" RTL folder: {:<s}'.format(tcamWrapConfig, self.tcamMemWrapperRTLFolderPath))
-
+    
+    
+    def createWrapConfigFile(self, tcamWrapConfig):
+        """
+        what does this func do ?
+        input args:
+        return val:
+        """
+        self._topWrapperName = 'top_' + str(tcamWrapConfig).replace('MemWrapper_','_mem_') + '.sv'
+        self.tcamMemWrapperRTLFilePath = os.path.join(self.tcamMemWrapperRTLFolderPath, self._topWrapperName)
+        logging.info('Created TCAM memory "{:<s}" wrapper: {:<s}'.format(tcamWrapConfig, self.tcamMemWrapperRTLFilePath))
 
 
 
