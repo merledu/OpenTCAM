@@ -16,6 +16,7 @@ class TcamRtlWrapperGenerator:
         self.prjWorkDir = str()
         self.tcamMemWrapperConfigsFilePath  = str()
         self.tcamMemWrapperConfigsFileName  = str()
+        self.tcamMemWrapperRTLFolderPath    = str()
 
         # * ------------------- protected vars
         self._tcamMemWrapperConfigs = dict()
@@ -115,7 +116,17 @@ class TcamRtlWrapperGenerator:
             sys.exit('"NOT FOUND": Required TCAM Memory Wrapper Config [{:<s}]'.format(tcamWrapConfig))
     
     
-
+    def createWrapConfigDir(self, tcamWrapConfig, verbose):
+        """
+        what does this func do ?
+        input args:
+        return val:
+        """
+        self.tcamMemWrapperRTLFolderPath = os.path.join(self.prjWorkDir, 'tcam_mem_rtl', tcamWrapConfig)
+        if os.path.exists(self.tcamMemWrapperRTLFolderPath) is False:
+            os.makedirs(self.tcamMemWrapperRTLFolderPath)
+            logging.info('Created TCAM memory "{:<s}" RTL folder: {:<s}'.format(tcamWrapConfig, self.tcamMemWrapperRTLFolderPath))
+            printVerbose(verbose, 'Created TCAM memory "{:<s}" RTL folder: {:<s}'.format(tcamWrapConfig, self.tcamMemWrapperRTLFolderPath))
 
 
 
