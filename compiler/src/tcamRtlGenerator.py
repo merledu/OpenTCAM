@@ -214,17 +214,35 @@ class TcamRtlWrapperGenerator:
         writeMask = self._currConfig['wireWriteMask']
         
         # * create wire/s for wmask
-        for i in range(writeMask['width']):
+        for i in range(self._currConfig['tcamBlocks']):
             tempLine = '{:4s}wire\t[{:^d}:0]\t{:s}{:d};'.format(' ', writeMask['width']-1, writeMask['name'], i)
             self.__tcamRtlWrapLine.append(tempLine)
         
         # * create assign statements
-        for i in range(writeMask['width']):
+        for i in range(self._currConfig['tcamBlocks']):
             tempLine1 = '{:4s}assign {:<s}{:d} = '.format(' ', writeMask['name'], i)
             tempLine2 = '{:s}{:^d}{:s}{:<s}[{:d}]{:s} & {:<s};' \
             .format('{ ', writeMask['width'], '{', self._currConfig['wireBlockSel']['name'], i, '} }', self._currConfig['ports'][3]['name'])
             tempLine = tempLine1 + tempLine2
             self.__tcamRtlWrapLine.append(tempLine)
+    
+    
+    def insertAwAddr(self):
+        awAddr = self._currConfig['wireAwAddr']
+        
+        # * create wire/s for awaddr
+        for i in range(self._currConfig['tcamBlocks']):
+            tempLine = '{:4s}wire\t[{:^d}:0]\t{:s}{:d};'.format(' ', awAddr['width']-1, awAddr['name'], i)
+            self.__tcamRtlWrapLine.append(tempLine)
+        
+        # * create assign statements
+        for i in range(self._currConfig['tcamBlocks']):
+            tempLine1 = '{:4s}assign {:<s}{:d} = '.format(' ', awAddr['name'], i)
+            tempLine2 = '{:s}{:^d}{:s}{:<s}[{:d}]{:s} & {:<s}[{:d}:0];' \
+            .format('{ ', awAddr['width'], '{', self._currConfig['wireBlockSel']['name'], i, '} }', self._currConfig['ports'][4]['name'], awAddr['width']-1)
+            tempLine = tempLine1 + tempLine2
+            self.__tcamRtlWrapLine.append(tempLine)
+
 
 
 
@@ -243,6 +261,10 @@ class TcamRtlWrapperGenerator:
         
         self.insertComment('logic for write mask')
         self.insertWriteMask()
+        self.insertBlankLine(1)
+        
+        self.insertComment('logic for write addresses')
+        self.insertAwAddr()
         self.insertBlankLine(1)
 
 # ===========================================================================================
