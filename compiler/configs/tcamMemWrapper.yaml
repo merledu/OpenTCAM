@@ -1,0 +1,46 @@
+# =============================================================================
+#                  TCAM tables configuration list format
+# -----------------------------------------------------------------------------
+# tcamTableX      : config of Nth tcam table
+# queryStrLen     : total length (in bits) of the input query string
+# subStrLen       : total length (in bits) of each query sub string
+# totalSubStr     : total number of query sub strings
+#           queryStrLen = totalSubStr * subStrLen
+# potMatchAddr    : total number of potential math addresses in TCAM table
+# =============================================================================
+
+tcamMemWrapper_64x28:
+    tcamBlocks: 4
+    moduleName: "top_tcam_mem"
+    ports:
+    -   name: "in_clk"
+        direction: "input"
+        width: 0
+    -   name: "in_csb"
+        direction: "input"
+        width: 0
+    -   name: "in_web"
+        direction: "input"
+        width: 0
+    -   name: "in_wmask"
+        direction: "input"
+        width: 4
+    -   name: "in_addr"
+        direction: "input"
+        width: 28
+    -   name: "in_wdata"
+        direction: "input"
+        width: 32
+    -   name: "out_pma"
+        direction: "output"
+        width: 6
+    wireBlockSel:
+        name: block_sel
+        width: 4
+        inputAddr: [9, 8]
+    wireWriteMask:
+        name: wmask
+        width: 4
+    wireAwAddr:
+        name: aw_addr
+        width: 8
