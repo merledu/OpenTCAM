@@ -1,10 +1,7 @@
-from tabnanny import verbose
 from tcamRtlGenerator import * 
 import argparse
 import os
 os.system('clear')
-
-
 
 def new_main():
     # create logs dir if it doesnt exist
@@ -30,9 +27,6 @@ def new_main():
                         type=str,default='1ns',metavar='',required=False,nargs='?',help='specify timeunit scale')
     parser.add_argument('-tprecision','--timeprecision',
                         type=str,default='100ps',metavar='',required=False,nargs='?',help='specify timeprecision scale')
-    
-    
-    
     parser.add_argument('-d','--debug',
                         type=int,default=0,metavar='',required=False,nargs='?',help='print debugging mode')
     parser.add_argument('-v','--verbose',
@@ -59,14 +53,16 @@ def new_main():
         # print specific tcam config
         print(json.dumps(tempConfig, indent=4))
     # create rtl dir for specific tcam mem wrap config
-    trwg1.createWrapConfigDir(arg.tcamWrapConfig, verbose)
+    trwg1.createWrapConfigDir(arg.tcamWrapConfig, arg.verbose)
     # create top wrapper file for specific tcam mem wrap config
     trwg1.createWrapConfigFile(arg.tcamWrapConfig)
-    
     # generate wrapper
     trwg1.generateWrapper(arg.timeunit, arg.timeprecision)
     # print wrapper in sv
     trwg1.printWrapper()
+    # copy respective RTL file in tcam config folder
+    trwg1.copyRtlBlocks()
+
 
 
 if __name__ == '__main__':
