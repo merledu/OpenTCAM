@@ -1,3 +1,4 @@
+import shutil
 import logging
 import math
 import yaml
@@ -27,10 +28,8 @@ class TcamRtlWrapperGenerator:
 
         # * ------------------- private vars
         self.__tcamRtlWrapLine  = list()
-        # self.__inputWMask       = int()
-        # self.__inputAddress     = int()
-        # self.__outputReadData   = int()
-        # self.__blockSelect      = int()
+        self.__rtlBlocks        = [ 'and_gate.sv', 'priority_encoder_64x6.sv', 
+                                    'sky130_sram_1kbyte_1rw1r_32x256_8.sv', 'tcam_7x64.sv']
         
         # * logging config
         logging.basicConfig(level=logging.DEBUG, filename='./logs/TcamRtlWrapperGenerator.log',
@@ -431,6 +430,13 @@ class TcamRtlWrapperGenerator:
         self.insertComment('Priority Encoder instantiations')
         self.insertPriorityEncoder()
         self.insertBlankLine(1)
+    
+    
+    def copyRtlBlocks(self):
+        for file in self.__rtlBlocks:
+            srcPath = os.path.join(self.prjWorkDir, 'compiler/lib/tcam_block_rtl', file)
+            dstPath = os.path.join(self.prjWorkDir, self.tcamMemWrapperRTLFolderPath, file)
+            shutil.copy(srcPath, dstPath)
 
 
 
