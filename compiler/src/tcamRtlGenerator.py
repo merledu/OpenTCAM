@@ -294,6 +294,30 @@ class TcamRtlWrapperGenerator:
                 self.__tcamRtlWrapLine.append(tempLine)
             tempLine = '{:4s}{:s}'.format(' ', ');')
             self.__tcamRtlWrapLine.append(tempLine)
+    
+    
+    def insertAndGates(self):
+        outRData = self._currConfig['wireOutRData']['name']
+        
+        # * create wire/s for vtb_addr
+        for i in range(self._currConfig['tcamBlocks']-1):
+            tempLine = '{:4s}wire\t[{:^d}:0]\t{:s}{:d};'.format(' ', self._currConfig['wireOutRData']['width']-1, 'out_andgate', i)
+            self.__tcamRtlWrapLine.append(tempLine)
+        # andgate andgate_dut0 (.in_dataA (out_rdata0  ),  .in_dataB (out_rdata1   ),  .out_data (out_gate0    ));
+        
+        for i in range(self._currConfig['tcamBlocks']-1):
+            if i == 0:
+                tempLine = '{:4s}andgate andgate_dut{:d} (.out_data (out_gate{:d}), in_dataA ({:>s}{:d}), in_dataB ({:>s}{:d}));' \
+                .format(' ', i, i, outRData, i, outRData, i+1)
+            elif i == self._currConfig['tcamBlocks'] - 2:
+                tempLine = '{:4s}andgate andgate_dut{:d} (.out_data (out_andgate), in_dataA (out_gate{:d}), in_dataB ({:>s}{:d}));' \
+                .format(' ', i, i, outRData, i+1)
+            else:
+                tempLine = '{:4s}andgate andgate_dut{:d} (.out_data (out_gate{:d}), in_dataA (out_gate{:d}), in_dataB ({:>s}{:d}));' \
+                .format(' ', i, i, i-1, outRData, i+1)
+            
+            self.__tcamRtlWrapLine.append(tempLine)
+
 
 
 
@@ -326,7 +350,11 @@ class TcamRtlWrapperGenerator:
         
         self.insertComment('TCAM memory block instances')
         self.insertTcamInstances()
-        self.insertBlankLine(1) 
+        self.insertBlankLine(1)
+        
+        self.insertComment('AND gate instantiations')
+        self.insertAndGates()
+        self.insertBlankLine(1)
 
 # ===========================================================================================
 # ======================================== End Class ========================================
