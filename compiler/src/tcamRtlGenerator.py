@@ -242,6 +242,27 @@ class TcamRtlWrapperGenerator:
             .format('{ ', awAddr['width'], '{', self._currConfig['wireBlockSel']['name'], i, '} }', self._currConfig['ports'][4]['name'], awAddr['width']-1)
             tempLine = tempLine1 + tempLine2
             self.__tcamRtlWrapLine.append(tempLine)
+    
+    
+    def insertVtbAddr(self):
+        vtbAddr = self._currConfig['wireVtbAddr']
+        
+        # * create wire/s for vtb_addr
+        for i in range(self._currConfig['tcamBlocks']):
+            tempLine = '{:4s}wire\t[{:^d}:0]\t{:s}{:d};'.format(' ', vtbAddr['width']-1, vtbAddr['name'], i)
+            self.__tcamRtlWrapLine.append(tempLine)
+        
+        # assign vtb_addr1 = in_web ? {1'b0, in_addr[6:0]}   : aw_addr1;
+        # * create assign statements
+        for i in range(self._currConfig['tcamBlocks']):
+            lsb = 7 * i
+            msb = lsb + 6
+            tempLine1 = '{:4s}assign {:<s}{:d} = '.format(' ', vtbAddr['name'], i)
+            tempLine2 = "{:s} ? {:s} 1'b0, {:s}[{:>3d}:{:>3d}]{:s} : {:s}{:d};" \
+            .format(self._currConfig['ports'][2]['name'], '{', self._currConfig['ports'][4]['name'], msb, lsb, ' }', self._currConfig['wireAwAddr']['name'], i)
+            tempLine = tempLine1 + tempLine2
+            self.__tcamRtlWrapLine.append(tempLine)
+
 
 
 
@@ -265,6 +286,10 @@ class TcamRtlWrapperGenerator:
         
         self.insertComment('logic for write addresses')
         self.insertAwAddr()
+        self.insertBlankLine(1)
+        
+        self.insertComment('address mux for all N blocks (selects between read or write addresses)')
+        self.insertVtbAddr()
         self.insertBlankLine(1)
 
 # ===========================================================================================
