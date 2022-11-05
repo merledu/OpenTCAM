@@ -1,17 +1,24 @@
-# =============================================================================
-#                  TCAM tables configuration list format
-# -----------------------------------------------------------------------------
-# tcamTableX      : config of Nth tcam table
-# queryStrLen     : total length (in bits) of the input query string
-# subStrLen       : total length (in bits) of each query sub string
-# totalSubStr     : total number of query sub strings
-#           queryStrLen = totalSubStr * subStrLen
-# potMatchAddr    : total number of potential math addresses in TCAM table
-# =============================================================================
 
 tcamMemWrapper_64x28:
     tcamBlocks: 4
     moduleName: "top_tcam_mem"
+    instanceName: "tcam7x64"
+    wireBlockSel:
+        name: block_sel
+        width: 4
+        inputAddr: [9, 8]
+    wireWriteMask:
+        name: wmask
+        width: 4
+    wireAwAddr:
+        name: aw_addr
+        width: 8
+    wireVtbAddr:
+        name: vtb_addr
+        width: 7
+    wireOutRData:
+        name: out_rdata
+        width: 64
     ports:
     -   name: "in_clk"
         direction: "input"
@@ -34,13 +41,3 @@ tcamMemWrapper_64x28:
     -   name: "out_pma"
         direction: "output"
         width: 6
-    wireBlockSel:
-        name: block_sel
-        width: 4
-        inputAddr: [9, 8]
-    wireWriteMask:
-        name: wmask
-        width: 4
-    wireAwAddr:
-        name: aw_addr
-        width: 8
