@@ -146,6 +146,11 @@ class TcamRtlWrapperGenerator:
     
     
     def insertComment(self, comment):
+        """
+        what does this func do ?
+        input args:
+        return val:
+        """
         # * insert comment in code
         tempLine = '{:<4s}// {:<s}'.format(' ', comment)
         self.__tcamRtlWrapLine.append(tempLine)
@@ -153,6 +158,11 @@ class TcamRtlWrapperGenerator:
     
     
     def insertBlankLine(self, blankLines):
+        """
+        what does this func do ?
+        input args:
+        return val:
+        """
         for i in range(blankLines):
             tempLine = ''
             self.__tcamRtlWrapLine.append(tempLine)
@@ -160,6 +170,11 @@ class TcamRtlWrapperGenerator:
     
     
     def printWrapper(self):
+        """
+        what does this func do ?
+        input args:
+        return val:
+        """
         with open(self.tcamMemWrapperRTLFilePath, 'w') as file1:
             for line in self.__tcamRtlWrapLine:
                 file1.write(line + '\n')
@@ -167,12 +182,22 @@ class TcamRtlWrapperGenerator:
     
     
     def insertTimeScale(self, timeUnit, timePrecision):
+        """
+        what does this func do ?
+        input args:
+        return val:
+        """
         tempLine = '`timescale ' + str(timeUnit).replace(' ','') + '/' + str(timePrecision).replace(' ','')
         self.__tcamRtlWrapLine.append(tempLine)
         logging.info('Added timescale in: {:<s}'.format(self._topWrapperFileName))
     
     
     def insertModuleDefinition(self):
+        """
+        what does this func do ?
+        input args:
+        return val:
+        """
         # * write module definition
         tempLine = 'module ' +  self._currConfig['moduleName'] + ' ('
         self.__tcamRtlWrapLine.append(tempLine)
@@ -197,6 +222,11 @@ class TcamRtlWrapperGenerator:
     
     
     def insertBlockSelect(self):
+        """
+        what does this func do ?
+        input args:
+        return val:
+        """
         blockSel = self._currConfig['wireBlockSel']
         
         # * create wire/s for block_sel
@@ -211,6 +241,11 @@ class TcamRtlWrapperGenerator:
     
     
     def insertWriteMask(self):
+        """
+        what does this func do ?
+        input args:
+        return val:
+        """
         writeMask = self._currConfig['wireWriteMask']
         
         # * create wire/s for wmask
@@ -228,6 +263,11 @@ class TcamRtlWrapperGenerator:
     
     
     def insertAwAddr(self):
+        """
+        what does this func do ?
+        input args:
+        return val:
+        """
         awAddr = self._currConfig['wireAwAddr']
         
         # * create wire/s for awaddr
@@ -245,6 +285,11 @@ class TcamRtlWrapperGenerator:
     
     
     def insertVtbAddr(self):
+        """
+        what does this func do ?
+        input args:
+        return val:
+        """
         vtbAddr = self._currConfig['wireVtbAddr']
         
         # * create wire/s for vtb_addr
@@ -264,6 +309,11 @@ class TcamRtlWrapperGenerator:
     
     
     def insertTcamInstances(self):
+        """
+        what does this func do ?
+        input args:
+        return val:
+        """
         outRData = self._currConfig['wireOutRData']
         ports = self._currConfig['ports']
         
@@ -280,7 +330,6 @@ class TcamRtlWrapperGenerator:
             self.__tcamRtlWrapLine.append(tempLine)
             # * port instantiations
             for j in range(len(ports)):
-                print(ports[j]['name'])
                 # * append N for signal vtb_addr1
                 if ports[j]['name'] == 'in_addr':
                     tempLine = '{:8s}.{:<12s}({:>12s})'.format(' ', ports[j]['name'], 'vtb_addr'+str(i))
@@ -297,14 +346,19 @@ class TcamRtlWrapperGenerator:
     
     
     def insertAndGates(self):
+        """
+        what does this func do ?
+        input args:
+        return val:
+        """
         outRData = self._currConfig['wireOutRData']['name']
         
         # * create wire/s for vtb_addr
         for i in range(self._currConfig['tcamBlocks']-1):
             tempLine = '{:4s}wire\t[{:^d}:0]\t{:s}{:d};'.format(' ', self._currConfig['wireOutRData']['width']-1, 'out_andgate', i)
             self.__tcamRtlWrapLine.append(tempLine)
-        # andgate andgate_dut0 (.in_dataA (out_rdata0  ),  .in_dataB (out_rdata1   ),  .out_data (out_gate0    ));
         
+        # * create and gate instances
         for i in range(self._currConfig['tcamBlocks']-1):
             if i == 0:
                 tempLine = '{:4s}andgate andgate_dut{:d} (.out_data (out_gate{:d}), in_dataA ({:>s}{:d}), in_dataB ({:>s}{:d}));' \
@@ -315,17 +369,35 @@ class TcamRtlWrapperGenerator:
             else:
                 tempLine = '{:4s}andgate andgate_dut{:d} (.out_data (out_gate{:d}), in_dataA (out_gate{:d}), in_dataB ({:>s}{:d}));' \
                 .format(' ', i, i, i-1, outRData, i+1)
-            
             self.__tcamRtlWrapLine.append(tempLine)
-
-
-
-
-
-
-
-
+    
+    
+    def insertPriorityEncoder(self):
+        """
+        what does this func do ?
+        input args:
+        return val:
+        """
+        module = [
+            '{:4s}priority_encoder priority_encoder_dut0('.format(' '),
+            '{:8s}.in_data  (out_andgate  ),'.format(' '),
+            '{:8s}.out_data (out_data     )'.format(' '),
+            '{:4s});'.format(' ')
+        ]
+        for line in module:
+            self.__tcamRtlWrapLine.append(line)
+        
+        self.insertBlankLine(1)
+        tempLine = 'endmodule'
+        self.__tcamRtlWrapLine.append(tempLine)
+    
+    
     def generateWrapper(self, timeUnit, timePrecision):
+        """
+        what does this func do ?
+        input args:
+        return val:
+        """
         self.insertTimeScale(timeUnit, timePrecision)
         self.insertBlankLine(1)
         
@@ -355,6 +427,12 @@ class TcamRtlWrapperGenerator:
         self.insertComment('AND gate instantiations')
         self.insertAndGates()
         self.insertBlankLine(1)
+        
+        self.insertComment('Priority Encoder instantiations')
+        self.insertPriorityEncoder()
+        self.insertBlankLine(1)
+
+
 
 # ===========================================================================================
 # ======================================== End Class ========================================
