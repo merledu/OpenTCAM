@@ -252,7 +252,6 @@ class TcamRtlWrapperGenerator:
             tempLine = '{:4s}wire\t[{:^d}:0]\t{:s}{:d};'.format(' ', vtbAddr['width']-1, vtbAddr['name'], i)
             self.__tcamRtlWrapLine.append(tempLine)
         
-        # assign vtb_addr1 = in_web ? {1'b0, in_addr[6:0]}   : aw_addr1;
         # * create assign statements
         for i in range(self._currConfig['tcamBlocks']):
             lsb = 7 * i
@@ -261,6 +260,39 @@ class TcamRtlWrapperGenerator:
             tempLine2 = "{:s} ? {:s} 1'b0, {:s}[{:>3d}:{:>3d}]{:s} : {:s}{:d};" \
             .format(self._currConfig['ports'][2]['name'], '{', self._currConfig['ports'][4]['name'], msb, lsb, ' }', self._currConfig['wireAwAddr']['name'], i)
             tempLine = tempLine1 + tempLine2
+            self.__tcamRtlWrapLine.append(tempLine)
+    
+    
+    def insertTcamInstances(self):
+        outRData = self._currConfig['wireOutRData']
+        ports = self._currConfig['ports']
+        
+        # * create wire/s for out_rdata
+        for i in range(self._currConfig['tcamBlocks']):
+            tempLine = '{:4s}wire\t[{:^d}:0]\t{:s}{:d};'.format(' ', outRData['width']-1, outRData['name'], i)
+            self.__tcamRtlWrapLine.append(tempLine)
+        
+        self.insertBlankLine(1)
+        # * create instances
+        for i in range(self._currConfig['tcamBlocks']):
+            # * dut definition instantiation
+            tempLine = '{:4s}{:s} {:s}_dut{:d} ('.format(' ', self._currConfig['instanceName'], self._currConfig['instanceName'], i)
+            self.__tcamRtlWrapLine.append(tempLine)
+            # * port instantiations
+            for j in range(len(ports)):
+                print(ports[j]['name'])
+                # * append N for signal vtb_addr1
+                if ports[j]['name'] == 'in_addr':
+                    tempLine = '{:8s}.{:<12s}({:>12s})'.format(' ', ports[j]['name'], 'vtb_addr'+str(i))
+                elif ports[j]['name'] == 'out_pma':
+                    tempLine = '{:8s}.{:<12s}({:>12s}{:d})'.format(' ', 'out_rdata', 'out_rdata',i)
+                else:
+                    tempLine = '{:8s}.{:<12s}({:>12s})'.format(' ', ports[j]['name'], ports[j]['name'])
+                # * add a , for N-1 ports in definition
+                if i != len(self._currConfig['ports']) - 1:
+                    tempLine += ','            
+                self.__tcamRtlWrapLine.append(tempLine)
+            tempLine = '{:4s}{:s}'.format(' ', ');')
             self.__tcamRtlWrapLine.append(tempLine)
 
 
@@ -291,6 +323,10 @@ class TcamRtlWrapperGenerator:
         self.insertComment('address mux for all N blocks (selects between read or write addresses)')
         self.insertVtbAddr()
         self.insertBlankLine(1)
+        
+        self.insertComment('TCAM memory block instances')
+        self.insertTcamInstances()
+        self.insertBlankLine(1) 
 
 # ===========================================================================================
 # ======================================== End Class ========================================
