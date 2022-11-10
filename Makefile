@@ -37,12 +37,22 @@ opentcam_venv:
 	@ echo ------------------------------------ DONE ----------------------------------
 	@ echo " "
 
-tablemap:
+tcamtablemap:
 	@ echo " "
-	@ echo --------------------------------- OpenTCAM ---------------------------------
-	@ python3 $(DIR_COMP_SRC)/main.py \
+	@ echo ---------------------------- OpenTCAM Table Map ----------------------------
+	@ python3 $(DIR_COMP_SRC)/mainTableMapping.py \
 	--tcamConfig $(TCAMCONFIG) \
 	-excel $(EXCEL) -html $(HTML) -json $(JSON) -txt $(TXT) \
+	--debug $(DEBUG) --verbose $(VERBOSE)
+	@ echo ------------------------------------ DONE ----------------------------------
+	@ echo " "
+
+tcamrtl:
+	@ echo " "
+	@ echo ------------------------------- OpenTCAM RTL -------------------------------
+	@ python3 $(DIR_COMP_SRC)/mainTcamRTLGenerator.py \
+	--tcamWrapConfig $(TCAMWRAPCONFIG) \
+	--timeunit $(TIMEUNIT) --timeprecision $(TIMEPRECISION) \
 	--debug $(DEBUG) --verbose $(VERBOSE)
 	@ echo ------------------------------------ DONE ----------------------------------
 	@ echo " "
@@ -137,6 +147,13 @@ cleansramtables:
 	@ echo ------------------------------------ DONE ----------------------------------
 	@ echo " "
 
+cleantcamrtl:
+	@ echo " "
+	@ echo ------------------------- Deleting TCAM RTL File/s -------------------------
+	@ rm -rf tcam_mem_rtl
+	@ echo ------------------------------------ DONE ----------------------------------
+	@ echo " "
+
 cleantests:
 	@ echo " "
 	@ echo --------------------------- Deleting Test Cache ----------------------------
@@ -152,10 +169,7 @@ cleancoverage:
 	@ echo " "
 
 cleanall: 
-	@ make cleanlogs 
-	@ make cleansramtables 
-	@ make cleantests 
-	@ make cleancoverage
+	@ make cleanlogs cleansramtables cleantcamrtl cleantests cleancoverage
 
 deepclean:
 	clear
@@ -173,21 +187,41 @@ help:
 	@ echo ---------------------------- Targets in Makefile ---------------------------
 	@ echo ----------------------------------------------------------------------------
 	@ echo " "
-	@ echo " loadpaths:		display various loaded file paths"
-	@ echo " setupvenv:		create a virtual environemnt with all necessary dependencies"
+	@ echo " loadpaths:			display various loaded file paths"
+	@ echo " install_dependencies:		install basic dependencies"
+	@ echo " install_iverilog:		install Icarus Verilog (OPTIONAL)"
+	@ echo " install_yosys:			install Yosys Open SYnthesis Suite (OPTIONAL)"
 	@ echo " "
-	@ echo " runopentcam:		simulate openTCAM"
-	@ echo " 	TCAMCONFIG=tcamTableX	tcam table config name"
-	@ echo " 	DEBUG=1/0		debugging on/off"
-	@ echo " 	VERBOSE=1/0		verbosity on/off"
+	@ echo " opentcam_venv:			create virtual environment to simulate code "
 	@ echo " "
-	@ echo " cleanvenv:		remove the virtual env"
-	@ echo " cleanlogs:		remove all .log files"
-	@ echo " cleandumpfiles:	removes all files generated"
+	@ echo " tcamtablemap:			generate TCAM -> SRAM table mapping"
+	@ echo " 	TCAMCONFIG=tcamTableX			tcam table config name"
+	@ echo " 	DEBUG=1/0				debugging on/off"
+	@ echo " 	VERBOSE=1/0				verbosity on/off"
 	@ echo " "
-	@ echo " deepclean:		delete everything (cleandumpfiles + cleanvenv)"
+	@ echo " tcamrtl:			generate TCAM memory RTL wrapper"
+	@ echo "	TCAMWRAPCONFIG=tcamMemWrapper_XxY	tcam memory config name"
+	@ echo "	TIMEUNIT=1ns				set timeunit resolution" 
+	@ echo "	TIMEPRECISION=1ps			set timeprecision resolution"
+	@ echo "	DEBUG=1/0				debugging on/off"
+	@ echo "	VERBOSE=1/0				verbosity on/off"
 	@ echo " "
-	@ echo " help:			humble people ask for help :)"
+	@ echo " rununittest:			run single table mapping test case "
+	@ echo " runregression:			run pytest regression"
+	@ echo " testmarkers:			view opentcam table mapping test/s markers"
+	@ echo " coverage:			run opentcam table mapping test/s coverage"
+	@ echo " "
+	@ echo " cleanvenv:			delete python virtual environment/s"
+	@ echo " cleanlogs:			delete log files"
+	@ echo " cleansramtables:		delete TCAM -> SRAM table maps "
+	@ echo " cleantcamrtl:			delete TCAM memory block RTL files"
+	@ echo " cleantests:			delete py tests cache "
+	@ echo " cleancoverage:			delete coverage stats"
+	@ echo " cleanall:			delete all dump files"
+	@ echo " deepclean:			delete all dump files + virtual environment/s"
+	@ echo " "
+	@ echo " help:				humble people ask for help :)"
+	@ echo " "
 	@ echo ----------------------------------------------------------------------------
 	@ echo " "
 

@@ -15,7 +15,9 @@ An open-source Ternary Content Addressable Memory (TCAM) compiler.
 
 ## What is OpenTCAM?
 <!-- introduction -->
-OpenTCAM is an open source Python framework that can be used to create the design and layouts of a customizable TCAM memory to use in FPGA and ASIC designs. 
+OpenTCAM is an open source Python framework that can be used to create the design (RTL) and layouts (GDS-II) of a customizable SRAM-based TCAM memory to use in FPGA and ASIC designs respectively. 
+
+Currently the compilers are using SRAMs generated from OpenRAM Compiler, but the idea is to make a generalized compiler for any SRAM-based TCAM. The idea is to utilize 36KB BRAM blocks of FPGAs and OpenRAM generated 1Kb SRAM blocks (using sky130 nm PDKs) for ASIC to mimic any size of TCAM.
 
 ## Documentation
 <!-- links to documentation and FAQ -->
@@ -64,11 +66,11 @@ The OpenTCAM compiler requires [Python3](https://www.python.org/downloads/), [Pi
     ```
 To learn more about what are python virtual environments and how they work click [here](https://realpython.com/python-virtual-environments-a-primer/).
 
-### 3.  Generating TCAM Memories
+### 3.  Generating TCAM -> SRAM Memory Tables
 <!-- explain how to run and simulate the opentcam code -->
 -   Generate TCAM -> SRAM table map:
     ```bash
-	make tablemap \
+	make tcamtablemap \
 	TCAMCONFIG=tcamTableX \ # tcam table config name here X=1,2,..
     EXCEL=1/0 \             # generate SRAM table map as excel file
     HTML=1/0 \              # generate SRAM table map as html file
@@ -78,7 +80,19 @@ To learn more about what are python virtual environments and how they work click
     VERBOSE=1/0             # verbosity on/off    
 	```
 
-### 4.  Unit Tests
+### 4.  Generating TCAM Memory Blocks
+<!-- explain how to run and simulate the opentcam code -->
+-   Generate TCAM memory configs:
+    ```bash
+	make tcamrtl \			            # generate TCAM memory RTL wrapper
+	TCAMWRAPCONFIG=tcamMemWrapper_XxY \ # tcam memory config name
+	TIMEUNIT=1ns \                      # set timeunit resolution 
+	TIMEPRECISION=1ps \                 # set timeprecision resolution
+	DEBUG=1/0 \                         # debugging on/off
+	VERBOSE=1/0                         # verbosity on/off
+	```
+
+### 5.  Unit Tests
 <!-- explain how to run and simulate the opentcam tests -->
 Unit tests are an important part of regression testing to ensure that the code still functions as expected after making changes to the code and helps ensure code stability.
 
@@ -100,7 +114,7 @@ Use the following commands:
     make testmarkers
     ```
 
-### 5.  Code Coverage
+### 6.  Code Coverage
 <!-- explain how to run and simulate code coverage -->
 Used to gauge the effectiveness of tests. It can show which parts of your code are being exercised by tests, and which are not.
 -   To generate code coverage simply run the command:
@@ -109,7 +123,7 @@ Used to gauge the effectiveness of tests. It can show which parts of your code a
     ```
 A report will be created in the folder `coverage_html`. Simply open the file `coverage_html/index.html` in the web browser of your choice to view a detailed coverage report.
 
-### 6.  CleanUp
+### 7.  CleanUp
 -   Clean all files including tables, bins, logs generated:
     ```bash
     make cleanall
