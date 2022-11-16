@@ -6,7 +6,7 @@
 # subStrLen       : total length (in bits) of each query sub string
 # totalSubStr     : total number of query sub strings
 #           queryStrLen = totalSubStr * subStrLen
-# potMatchAddr    : total numbr of potential math addresses in TCAM table
+# potMatchAddr    : total number of potential math addresses in TCAM table
 # =============================================================================
 
 
@@ -27,3 +27,9 @@ tcamTable3:
     subStrLen: 4
     totalSubStr: 2
     potMatchAddr: 4
+
+tcamTable4:
+    queryStrLen: 28
+    subStrLen: 7
+    totalSubStr: 4
+    potMatchAddr: 64
