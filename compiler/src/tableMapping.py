@@ -35,9 +35,10 @@ class TableMapping:
         self.sramTableTxtFileName       = str()
         # * ------------------- protected vars
         self._tcamTableConfigs  = dict()
-        self._queryStrAddrTable = pd.DataFrame
         self._tcamTable         = pd.DataFrame
-        self._sramTable         = pd.DataFrame
+        self._sramTable         = pd.DataFrame        
+        self.__tcamQSAddrTable  = pd.DataFrame
+        self.__sramQSAddrTable  = pd.DataFrame
         # * ------------------- private vars
         self.__tcamQueryStrLen  = int()
         self.__tcamSubStrLen    = int()
@@ -297,6 +298,34 @@ class TableMapping:
         logging.info('SRAM table col vector: {0}'.format(self.__sramCols))
         printDebug(debug,'SRAM table col vector: {0}'.format(self.__sramCols))
         return [self.__tcamRows, self.__tcamColVec, self.__sramRowVec, self.__sramCols]
+    
+    
+    def isolateTCAMSearchQueries(self,verbose,debug):
+        """
+        what does this func do ?
+        input args:
+        return val:
+        """
+        tcamDF = self._tcamTable
+        count1 = 0
+        self.__tcamQSAddrTable = pd.DataFrame(columns=['TCAM Query Str Addr','PMA','QS col'])
+        
+        # * ----- add all original search queries in dataframe
+        # * iterate through tcam table rows
+        for row in range(len(tcamDF)):
+            # * iterate through tcam table cols
+            for col in range(len(self.__tcamColVec)):
+                # * search and concat search query string address in tcam table
+                tempAddr = [str(c) for c in list(tcamDF.iloc[row,self.__tcamColVec[col]])]
+                tempAddr = ''.join(tempAddr)
+                # * append row in sqSubStrAddrDf data frame
+                tempRow = [tempAddr, row, col]
+                self.__tcamQSAddrTable.loc[count1] = tempRow
+                count1 += 1
+                logging.info('TCAM Search Queries Table | Addr: {:>s} | TCAM Row: {:>5d} | Sub String Col: {:>5d} |'.format(tempAddr,row,col))
+                printDebug(debug,'TCAM Search Queries Table | Addr: {:>s} | TCAM Row: {:>3d} | Sub String Col: {:>3d} |'.format(tempAddr,row,col))
+        if verbose:
+            self.printDF(self.__tcamQSAddrTable,'Original TCAM Search Query Address Table')
     
     
     def generateSRAMSubStr(self,verbose,debug):
