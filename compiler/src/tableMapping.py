@@ -386,33 +386,31 @@ class TableMapping:
         return val:
         """
         sramDF = self._sramTable
-        sramAddrList = self._queryStrAddrTable['Query Str Addr'].to_list()
-        tcamRowList = self._queryStrAddrTable['PMA'].to_list()
-        sramColList = self._queryStrAddrTable['QS col'].to_list()
+        sramAddrList = self.__sramQSAddrTable['SRAM Query Str Addr'].to_list()
+        tcamRowList = self.__sramQSAddrTable['PMA'].to_list()
+        sramColList = self.__sramQSAddrTable['QS col'].to_list()
         
         if len(tcamRowList) == len(sramColList):
-            for tempSQ, a,b in itertools.zip_longest(sramAddrList, tcamRowList, sramColList):
+            for (queryStr, pma, qsCol) in itertools.zip_longest(sramAddrList, tcamRowList, sramColList):
                 # * create sram table subsections based on query str
-                tempSRAMTable = sramDF.iloc[self.__sramRowVec[b],self.__sramCols]
-                logging.info('Search Query mapping portion: {:d}'.format(b))
-                printDebug(debug,'Search Query mapping portion: {:d}'.format(b))
+                tempSRAMTable = sramDF.iloc[self.__sramRowVec[qsCol],self.__sramCols]
+                logging.info('Search Query mapping portion: {:d}'.format(qsCol))
+                printDebug(debug,'Search Query mapping portion: {:d}'.format(qsCol))
                 # print(tabulate(tempSRAMTable,headers='keys',tablefmt='github'),'\n')
                 # * find specific mapping cell in sram table
-                rowIndx = tempSRAMTable.index[tempSRAMTable['Addresses']==tempSQ].to_list()[0]
-                colIndx = len(self.__sramCols) - a - 1
-                # print('sram rowIndx: ',rowIndx,type(rowIndx))
-                # print('sram colIndx: ',colIndx,type(colIndx))
+                rowIndex = tempSRAMTable.index[tempSRAMTable['Addresses']==queryStr].to_list()[0]
+                colIndex = len(self.__sramCols) - pma - 1
+                # print('sram rowIndex: ',rowIndex,type(rowIndex))
+                # print('sram colIndex: ',colIndex,type(colIndex))                
                 # * find specific entry
-                tempData = sramDF.iloc[rowIndx,colIndx]
-                # print(sramDF.iloc[rowIndx,colIndx])
-                logging.info('SRAM table cell [{:d}, {:d}] | Old Value = {}'.format(rowIndx,colIndx,tempData))
-                printDebug(debug,'SRAM table cell [{:d}, {:d}] | Old Value = {}'.format(rowIndx,colIndx,tempData))
+                oldSramTableEntry = sramDF.iloc[rowIndex,colIndex]
+                # print(sramDF.iloc[rowIndex,colIndex])
                 # * replace specific entry
-                sramDF.iat[rowIndx,colIndx] = 1
-                # print(sramDF.iat[rowIndx, colIndx])
-                logging.info('SRAM table cell [{:d}, {:d}] | New Value = {}'.format(rowIndx,colIndx,sramDF.iloc[rowIndx,colIndx]))
+                sramDF.iat[rowIndex,colIndex] = 1
+                # * print before and after
                 if verbose or debug:
-                    print('SRAM table cell [{:d}, {:d}] | New Value = {}'.format(rowIndx,colIndx,sramDF.iloc[rowIndx,colIndx]))
+                    logging.info('SRAM table cell [{:d}, {:d}] | Value = {} -> {}'.format(rowIndex, colIndex, oldSramTableEntry, sramDF.iat[rowIndex,colIndex]))
+                    printDebug(debug,'SRAM table cell [{:d}, {:d}] | Value = {} -> {}'.format(rowIndex, colIndex, oldSramTableEntry, sramDF.iat[rowIndex,colIndex]))
             # * add zeros in empty cells
             sramDF = sramDF.fillna(0)
             self._sramTable = sramDF
