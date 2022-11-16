@@ -334,28 +334,8 @@ class TableMapping:
         input args:
         return val:
         """
-        tcamDF = self._tcamTable
-        count1 = 0
         count2 = 0
-        tempQSAddrTable = pd.DataFrame(columns=['Query Str Addr','QS col','PMA'])
-        self._queryStrAddrTable = pd.DataFrame(columns=['Query Str Addr','QS col','PMA'])
-        
-        # * ----- add all original search queries in dataframe
-        # * iterate through tcam table rows
-        for row in range(len(tcamDF)):
-            # * iterate through tcam table cols
-            for col in range(len(self.__tcamColVec)):
-                # * search and concat search query string address in tcam table
-                tempAddr = [str(c) for c in list(tcamDF.iloc[row,self.__tcamColVec[col]])]
-                tempAddr = ''.join(tempAddr)
-                # * append row in sqSubStrAddrDf data frame
-                tempRow = [tempAddr, col, row]
-                tempQSAddrTable.loc[count1] = tempRow
-                count1 += 1
-                logging.info('Address Mapping to SRAM | Addr: {:>s} | Sub String Col: {:>5d} | TCAM Row: {:>5d} |'.format(tempAddr,col,row))
-                printDebug(debug,'Address Mapping to SRAM | Addr: {:>s} | Sub String Col: {:>3d} | TCAM Row: {:>3d} |'.format(tempAddr,col,row))
-        if verbose:
-            self.printDF(tempQSAddrTable,'Original Search Query Address Table')
+        self.__sramQSAddrTable = pd.DataFrame(columns=['SRAM Query Str Addr','PMA','QS col'])
         
         # * ----- find all possible alternatives for X based addr
         # * create array of N bit bin addresses
@@ -371,31 +351,32 @@ class TableMapping:
             print('N bit bin addr list len: {0}'.format(len(queryStrBinAddrList)))
         
         # * get origSQ addr
-        tempQSAddrList = tempQSAddrTable['Query Str Addr'].to_list()
+        tempQSAddrList = self.__tcamQSAddrTable['TCAM Query Str Addr'].to_list()
+        tempQSPmaList = self.__tcamQSAddrTable['PMA'].to_list()
+        tempQSColList = self.__tcamQSAddrTable['QS col'].to_list()
+        
         printDebug(debug,'Search Query addr list: {0}'.format(tempQSAddrList))
         printDebug(debug,'Search Query addr list len: {0}\n'.format(len(tempQSAddrList)))
         # * map the 'bX in search queries to 0 and 1
-        for orig in tempQSAddrList:
-            # * if 'bX in search query them find alternatives and add in table
-            if 'x' in orig:
-                for new in queryStrBinAddrList:
-                    matching = jellyfish.damerau_levenshtein_distance(orig, new)
-                    if matching == len(re.findall('x',orig)):
-                        printVerbose(verbose,'orig Search Query = {} | new Search Query = {} | matching ratio = {} |'.format(orig, new, matching))
-                        logging.info('orig Search Query = {} | new Search Query = {} | matching ratio = {} |'.format(orig, new, matching))
-                        origRowData = tempQSAddrTable.loc[tempQSAddrTable['Query Str Addr'] == orig].values.flatten().tolist()
-                        # origRowIndex = tempQSAddrTable.index[tempQSAddrTable['Query Str Addr'] == orig].tolist()
-                        i = origRowData.index(orig)
-                        origRowData = origRowData[:i]+[new]+origRowData[i+1:]
-                        self._queryStrAddrTable.loc[count2] = origRowData
+        for (oldAddr, pma, qscol) in zip(tempQSAddrList, tempQSPmaList, tempQSColList):
+            # * if 'bX in search query then find all possible alternatives and add in table
+            if 'x' in oldAddr:
+                for newAddr in queryStrBinAddrList:
+                    matching = jellyfish.damerau_levenshtein_distance(oldAddr, newAddr)
+                    if matching == len(re.findall('x',oldAddr)):
+                        printVerbose(verbose,'count = {} | orig Search Query = {} | new Search Query = {} | matching ratio = {} |'.format(count2, oldAddr, newAddr, matching))
+                        logging.info('count = {} | orig Search Query = {} | new Search Query = {} | matching ratio = {} |'.format(count2, oldAddr, newAddr, matching))
+                        self.__sramQSAddrTable.loc[count2] = [newAddr, pma, qscol]
                         count2 += 1
             # * else simply add search query in table as is
             else:
-                printVerbose(verbose,'orig Search Query = {} | new Search Query = {} | matching ratio = {} |'.format(orig, orig, 0))
-                logging.info('orig Search Query = {} | new Search Query = {} | matching ratio = {} |'.format(orig, orig, 0))
-                origRowData = tempQSAddrTable.iloc[count2].to_list()
-                self._queryStrAddrTable.loc[count2] = origRowData
+                printVerbose(verbose,'count = {} | orig Search Query = {} | new Search Query = {} | matching ratio = {} |'.format(count2, oldAddr, oldAddr, 0))
+                logging.info('count = {} | orig Search Query = {} | new Search Query = {} | matching ratio = {} |'.format(count2, oldAddr, oldAddr, 0))
+                self.__sramQSAddrTable.loc[count2] = [oldAddr, pma, qscol]
                 count2 += 1
+        
+        if verbose:
+            self.printDF(self.__sramQSAddrTable,'Original SRAM Search Query Address Table')
     
     
     def mapTCAMtoSRAM(self,verbose,debug):
