@@ -1,5 +1,5 @@
 {
-    "editor.fontSize": 13,
+    "editor.fontSize": 12,
     "editor.tabSize": 4,
     "terminal.integrated.fontSize": 12,
     "terminal.integrated.lineHeight": 1,
@@ -19,9 +19,10 @@
     "cSpell.caseSensitive": true,
     "json.maxItemsComputed": 100000,
     "yaml.format.printWidth": 100,
-    "python.defaultInterpreterPath": ".pyVenvOpenTcam/bin/activate",
+    "python.defaultInterpreterPath": ".pyVenvOpenTcam/bin/python3",
     "cSpell.words": [
-        "Damerau",
+        "damerau",
+        "levenshtein",
         "tcam"
     ]
 }
