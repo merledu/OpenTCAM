@@ -1,13 +1,19 @@
 {
     "recommendations": [
-        "ms-python.python",
-        "ms-python.vscode-pylance",
-        "kevinrose.vsc-python-indent",
-        "oderwat.indent-rainbow",
         "njpwerner.autodocstring",
         "aaron-bond.better-comments",
         "streetsidesoftware.code-spell-checker",
+        "mhutchie.git-graph",
+        "oderwat.indent-rainbow",
+        "ms-python.isort",
+        "bierner.markdown-preview-github-styles",
+        "bierner.markdown-shiki",
         "esbenp.prettier-vscode",
+        "ms-python.vscode-pylance",
+        "ms-python.python",
+        "kevinrose.vsc-python-indent",
+        "mshr-h.systemverilog",
+        "mshr-h.veriloghdl",
         "redhat.vscode-yaml"
     ]
 }

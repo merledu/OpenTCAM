@@ -14,6 +14,7 @@
     "markdown.preview.fontSize": 10,
     "markdown.preview.lineHeight": 1.0,
     "markdown-preview-github-styles.colorTheme": "light",
+    "markdownShiki.theme": "min-light",
     "editor.minimap.enabled": false,
     "cSpell.enabled": true,
     "cSpell.caseSensitive": true,
