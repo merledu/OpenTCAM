@@ -429,10 +429,12 @@ class TableMapping:
         self.sramTableXlsxFileName = os.path.basename(self.tcamTableXlsxFileName.replace('tcam','sram'))
         self.sramTableXlsxFilePath = os.path.join(self.sramTableDir,self.sramTableXlsxFileName)
         # * create excel file in dir sramTables
-        writer = pd.ExcelWriter(self.sramTableXlsxFilePath,engine='xlsxwriter')
-        writer.save()
-        self._sramTable.to_excel(excel_writer=self.sramTableXlsxFilePath, sheet_name=self.sramTableXlsxFileName,
-                                    na_rep='', header=True, index=True, engine='xlsxwriter')
+        # writer = pd.ExcelWriter(self.sramTableXlsxFilePath,engine='xlsxwriter')
+        # writer.save()
+        # * apply formatting to dataframe
+        self._sramTable.style.applymap(highlightCell)\
+        .to_excel(excel_writer=self.sramTableXlsxFilePath, sheet_name=self.sramTableXlsxFileName,
+                                    na_rep='', header=True, index=True, engine='openpyxl')
         logging.info('Created SRAM table XLSX file: {:<s}'.format(self.sramTableXlsxFilePath))
         print('Created SRAM table XLSX file: {:<s}'.format(self.sramTableXlsxFilePath))
         return self.sramTableXlsxFilePath
@@ -499,3 +501,12 @@ def printVerbose(verbose,msg):
 def printDebug(debug,msg):
     if debug:
         print(str(msg))
+
+def highlightCell(val):
+    if val == 1:
+        color = '#E5961A'
+    elif val == 0:
+        color = '#E4EA15'
+    else:
+        color = '#D8C05A'
+    return 'background-color: {}'.format(color)
