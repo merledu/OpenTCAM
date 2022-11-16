@@ -1,48 +1,64 @@
-# https://pypi.org/project/pylint/
-# https://pypi.org/project/black/
-# https://pypi.org/project/bandit/
+# common dependencies
+tomli==2.0.1
+platformdirs==2.5.4
 
-# https://pypi.org/project/pandas/
-# https://pypi.org/project/tabulate/
-# https://pypi.org/project/openpyxl/
-# https://pypi.org/project/XlsxWriter/
+# pylint - static code analysis tool
+isort==5.10.1
+astroid==2.12.12
+tomlkit==0.11.6
+mccabe==0.7.0
+dill==0.3.6
+wrapt==1.14.1
+lazy-object-proxy==1.8.0
+pylint==2.15.5
 
-# https://pypi.org/project/PyYAML/
-# https://pypi.org/project/yamllint/
+# black - code formatter
+mypy-extensions==0.4.3
+click==8.1.3
+pathspec==0.10.2
+black==22.10.0
 
-# https://pypi.org/project/pytest/
-# https://pypi.org/project/coverage/
+# isort - sort your imports
+isort==5.10.1
 
-# https://pypi.org/project/jellyfish/
+# PyYAML - YAML parser and emitter
+PyYAML==6.0
 
-# static code analysis tool
-pylint
-# generate package and class diagrams
-# pyreverse
-# code formatter
-black
-# find common security issues in code
-bandit
-# sort your imports
-isort
+# yamllint - check YAML for syntax validity
+yamllint==1.28.0
 
-# data analysis toolkit
-pandas
-# pretty print tabular data
-tabulate
-# r/w excel 2010 xlsx/xlsm/xltx/xltm files
-openpyxl
-# writing files in the Excel 2007+ XLSX format
-XlsxWriter
-# library for approximate & phonetic matching of strings
-jellyfish
+# pandas - data analysis toolkit
+numpy==1.23.4
+python-dateutil==2.8.2
+pytz==2022.6
+six==1.16.0
+pandas==1.5.1
 
-# YAML parser and emitter
-PyYAML
-# check YAML for syntax validity
-yamllint
+# tabulate - pretty print tabular data
+tabulate==0.9.0
 
-# write tests for applications and libraries
-pytest
-# measures code coverage during test execution
-coverage
+# openpyxl - r/w excel 2010 xlsx/xlsm/xltx/xltm files
+et-xmlfile==1.1.0
+openpyxl==3.0.10
+
+# XlsxWriter - writing files in the Excel 2007+ XLSX format
+XlsxWriter==3.0.3
+
+# jellyfish - library for approximate & phonetic matching of strings
+jellyfish==0.9.0
+
+# jinja2 - fast, expressive, extensible templating engine
+MarkupSafe==2.1.1
+Jinja2==3.1.2
+
+# pytest - write tests for applications and libraries
+iniconfig==1.1.1
+exceptiongroup==1.0.4
+pluggy==1.0.0
+packaging==21.3
+attrs==22.1.0
+pyparsing==3.0.9
+pytest==7.2.0
+
+# coverage - measures code coverage during test execution
+coverage==6.5.0
