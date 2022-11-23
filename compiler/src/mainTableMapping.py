@@ -69,9 +69,8 @@ def main():
     # read various params and map the tcam table to sram table
     tm1.splitRowsAndCols(arg.debug)
     # generate all possible combinations of sram addr
+    tm1.isolateTCAMSearchQueries(arg.verbose,arg.debug)
     tm1.generateSRAMSubStr(arg.verbose,arg.debug)
-    # print search query addr table
-    tm1.printDF(tm1._queryStrAddrTable,'SRAM Search Query Addr Table')
     # map all possible tcam table addr to sram table
     tm1.mapTCAMtoSRAM(arg.verbose,arg.debug)
     # print updated sram table
