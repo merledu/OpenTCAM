@@ -18,6 +18,46 @@ import re
 class TableMapping:
     # * ----------------------------------------------------------------- Variables
     def __init__(self):
+        """
+        Constructor: Initializes all the class variables
+        
+        **Public Variables:**
+        :param str prjWorkDir:                  current project working dir
+        :param str sramTableDir:                abs path of SRAM table map folder 
+        :param str tcamTableConfigsFilePath:    abs path of TCAM table map config file
+        :param str tcamTableConfigsFileName:    TCAM table map config file name
+        :param str tcamTableXlsxFilePath:       abs path of TCAM table map XLSX file
+        :param str tcamTableXlsxFileName:       TCAM table map XLSX file name
+        :param str sramTableXlsxFilePath:       abs path of generated SRAM table map XLSX file
+        :param str sramTableXlsxFileName:       SRAM table map XLSX file name
+        :param str sramTableHtmlFilePath:       abs path of generated SRAM table map HTML file
+        :param str sramTableHtmlFileName:       SRAM table map HTML file name
+        :param str sramTableJsonFilePath:       abs path of generated SRAM table map JSON file
+        :param str sramTableJsonFileName:       SRAM table map JSON file name
+        :param str sramTableTxtFilePath:        abs path of generated SRAM table map TXT file
+        :param str sramTableTxtFileName:        SRAM table map TXT file name
+        
+        **Protected Variables:**
+        :param dict _tcamTableConfigs:      TCAM table map configs
+        :param DataFrame _tcamTable:        TCAM table map
+        :param DataFrame _sramTable:        SRAM table map
+        :param DataFrame _tcamQSAddrTable:  TCAM table map query addr sub str
+        :param DataFrame _sramQSAddrTable:  SRAM table map query addr sub str
+        
+        **Private Variables:**
+        :param int __tcamQueryStrLen:   `queryStrLen` of a particular TCAM table config
+        :param int __tcamSubStrLen:     `subStrLen` of a particular TCAM table config
+        :param int __tcamTotalSubStr:   `totalSubStr` of a particular TCAM table config
+        :param int __tcamPotMatchAddr:  `potMatchAddr` of a particular TCAM table config
+        :param int __sramTableRows:     SRAM table map row count
+        :param int __sramTableCols:     SRAM table map col count
+        :param list __tcamRows:         TCAM table map row count vector
+        :param list __tcamCols:         TCAM table map col count vector
+        :param list __tcamColVec:       TCAM table map sub string address col count vector 
+        :param list __sramRows:         SRAM table map row count vector
+        :param list __sramRowVec:       SRAM table map sub string address row count vector
+        :param list __sramCols:         SRAM table map col count vector
+        """    
         # * ------------------- public vars
         self.prjWorkDir                 = str()
         self.sramTableDir               = str()
@@ -34,11 +74,11 @@ class TableMapping:
         self.sramTableTxtFilePath       = str()
         self.sramTableTxtFileName       = str()
         # * ------------------- protected vars
-        self._tcamTableConfigs  = dict()
+        self._tcamTableConfigs  = dict() 
         self._tcamTable         = pd.DataFrame
-        self._sramTable         = pd.DataFrame        
-        self.__tcamQSAddrTable  = pd.DataFrame
-        self.__sramQSAddrTable  = pd.DataFrame
+        self._sramTable         = pd.DataFrame
+        self._tcamQSAddrTable   = pd.DataFrame
+        self._sramQSAddrTable   = pd.DataFrame
         # * ------------------- private vars
         self.__tcamQueryStrLen  = int()
         self.__tcamSubStrLen    = int()
@@ -60,9 +100,10 @@ class TableMapping:
     # * ----------------------------------------------------------------- Functions
     def getPrjDir(self,verbose):
         """
-        what does this func do ?
-        input args:
-        return val:
+        Obtain the absolute path of the current working directory.
+        
+        :param int verbose: print information in verbose mode.
+        :return str: absolute path of the current project working directory.
         """
         self.prjWorkDir=os.getcwd()
         logging.info('Project working dir: {:<s}'.format(self.prjWorkDir))
@@ -72,9 +113,10 @@ class TableMapping:
     
     def getYAMLFilePath(self,verbose):
         """
-        what does this func do ?
-        input args:
-        return val:
+        Obtain the absolute path of file tcamTables.yaml.
+        
+        :param int verbose: print information in verbose mode.
+        :return str: absolute path of the current project working directory.
         """
         # * get tcamTables config file path
         tempPath = os.path.join(self.prjWorkDir,'compiler/configs/tcamTables.yaml')
@@ -91,10 +133,12 @@ class TableMapping:
     
     def readYAML(self,filePath,verbose):
         """
-        what does this func do ?
-        input args:
-        return val:
-        """
+        Read a particular YAML config file
+        
+        :param str filePath: absolute path of file tcamTables.yaml.
+        :param int verbose: print information in verbose mode.
+        :return dict: dictionary containing all the TCAM table configs.
+        """             
         with open(filePath) as file:
             self._tcamTableConfigs=yaml.full_load(file)
         # print(json.dumps(self._tcamTableConfigs,indent=4))
@@ -106,9 +150,9 @@ class TableMapping:
     
     def printYAML(self,debug):
         """
-        what does this func do ?
-        input args:
-        return val:
+        Print all present configs of a YAML file either in JSON or YAML style.
+        
+        :param int debug: print information in debug mode.
         """
         printDebug(debug,'Printing TCAM table configs')
         print(json.dumps(self._tcamTableConfigs,indent=4))
@@ -118,9 +162,14 @@ class TableMapping:
     
     def getTCAMConfig(self,tcamConfig):
         """
-        what does this func do ?
-        input args:
-        return val:
+        Check if a particular tcamTable config exists in file tcamTables.yaml. If found store the config params in vars.
+        - **__tcamQueryStrLen:**    saves `queryStrLen`
+        - **__tcamSubStrLen:**      saves `subStrLen`
+        - **__tcamTotalSubStr:**    saves `totalSubStr`
+        - **__tcamPotMatchAddr:**   saves `potMatchAddr`
+        
+        :param str tcamConfig: TCAM table config name e.g. tcamTableX 
+        :return dict: dictionary containing the respective table map config.
         """
         # * look for specific tcam config in compiler/configs/tcamTables.yaml
         if tcamConfig in self._tcamTableConfigs.keys():
@@ -131,7 +180,7 @@ class TableMapping:
             self.__tcamTotalSubStr  = tempConfig['totalSubStr']
             self.__tcamPotMatchAddr = tempConfig['potMatchAddr']
             # * print specific tcam config
-            # print(tempConfig)
+            # print(type(tempConfig))
             logging.info('"FOUND" Required TCAM Config [{:<s}]'.format(tcamConfig))
             print('"FOUND" Required TCAM Config [{:<s}]'.format(tcamConfig))
             logging.info('TCAM Config Data [{:<s}] = {}'.format(tcamConfig,tempConfig))
@@ -143,9 +192,11 @@ class TableMapping:
     
     def getTCAMTableFilePath(self,tcamConfig,verbose):
         """
-        what does this func do ?
-        input args:
-        return val:
+        Obtain the absolute path of file **tcamTableX.xlsx** which represents the TCAM memory table map.
+        
+        :param str tcamConfig: TCAM table config name e.g. tcamTableX
+        :param int verbose: print information in verbose mode.
+        :return str: absolute path of the TCAM table mapping file.
         """
         # * find the specific tcam table map in compiler/lib/
         tempPath = os.path.join(self.prjWorkDir,'compiler/lib/'+tcamConfig+'.xlsx')
@@ -162,9 +213,10 @@ class TableMapping:
     
     def printDF(self,dataFrame,heading):
         """
-        what does this func do ?
-        input args:
-        return val:
+        Display the contents of a particular data frame.
+        
+        :param DataFrame dataFrame: particular data frame object.
+        :param str heading: Title above data frame.
         """
         print('\n')
         print('Printing dataframe: ' + str(heading))
@@ -174,9 +226,10 @@ class TableMapping:
     
     def readTCAMTable(self,verbose):
         """
-        what does this func do ?
-        input args:
-        return val:
+        Read the contents of a **tcamTableX.xlsx** TCAM memory table map as a data frame.
+        
+        :param int verbose: print information in verbose mode.
+        :return int: list containing dimensions of TCAM table memory map.
         """
         # * store tcam table in dataframe
         self._tcamTable = pd.read_excel(self.tcamTableXlsxFilePath, skiprows=2, index_col=None, engine='openpyxl')
@@ -199,10 +252,11 @@ class TableMapping:
     
     def getSRAMTableDim(self,verbose):
         """
-        what does this func do ?
-        input args:
-        return val:
-        """
+        Generate the dimensions of the SRAM table map data frame using TCAM table map configs.
+        
+        :param int verbose: print information in verbose mode.
+        :return int: list containing dimensions of SRAM table memory map.
+        """        
         self.__sramTableRows = self.__tcamTotalSubStr * pow(2,self.__tcamSubStrLen)
         self.__sramTableCols = self.__tcamPotMatchAddr
         logging.info('SRAM table rows [{:>4d}] cols [{:>4d}]'.format(self.__sramTableRows,self.__sramTableCols))
@@ -212,10 +266,10 @@ class TableMapping:
     
     def genSRAMTable(self,verbose):
         """
-        what does this func do ?
-        input args:
-        return val:
-        """
+        Create an empty SRAM table map data frame containing respective row addresses and column headings.
+        
+        :param int verbose: print information in verbose mode.
+        """        
         # * create temp vars
         sramTableAddrList = list()
         sramColHeadings = list()
@@ -245,11 +299,12 @@ class TableMapping:
     
     def createSRAMTableDir(self,verbose):
         """
-        what does this func do ?
-        input args:
-        return val:
+        Create a directory to store SRAM table maps in various formats.
+        
+        :param int verbose: print information in verbose mode.
+        :return str: absolute path of the SRAM table map directory.
         """
-        # * create sramTables dir if it doesnt exist
+        # * create sramTables dir if it doesn't exist
         self.sramTableDir = os.path.join(self.prjWorkDir,'sramTables')
         if os.path.exists(self.sramTableDir) is False:
             os.makedirs('sramTables')
@@ -260,10 +315,11 @@ class TableMapping:
     
     def splitRowsAndCols(self,debug):
         """
-        what does this func do ?
-        input args:
-        return val:
-        """        
+        Create TCAM and SRAM table map row and column vectors based on TCAM table config parameters.
+        
+        :param int debug: print information in debug mode.
+        :return list: list containing TCAM and SRAM row and column vectors.
+        """
         # * store tcam and sram table in temp vars
         tcamDF = self._tcamTable
         sramDF = self._sramTable
@@ -302,13 +358,14 @@ class TableMapping:
     
     def isolateTCAMSearchQueries(self,verbose,debug):
         """
-        what does this func do ?
-        input args:
-        return val:
+        Create a data frame containing all the sub strings in original format from all the TCAM table search queries.
+        
+        :param int verbose: print information in verbose mode.
+        :param int debug: print information in debug mode.
         """
         tcamDF = self._tcamTable
         count1 = 0
-        self.__tcamQSAddrTable = pd.DataFrame(columns=['TCAM Query Str Addr','PMA','QS col'])
+        self._tcamQSAddrTable = pd.DataFrame(columns=['TCAM Query Str Addr','PMA','QS col'])
         
         # * ----- add all original search queries in dataframe
         # * iterate through tcam table rows
@@ -320,22 +377,23 @@ class TableMapping:
                 tempAddr = ''.join(tempAddr)
                 # * append row in sqSubStrAddrDf data frame
                 tempRow = [tempAddr, row, col]
-                self.__tcamQSAddrTable.loc[count1] = tempRow
+                self._tcamQSAddrTable.loc[count1] = tempRow
                 count1 += 1
                 logging.info('TCAM Search Queries Table | Addr: {:>s} | TCAM Row: {:>5d} | Sub String Col: {:>5d} |'.format(tempAddr,row,col))
                 printDebug(debug,'TCAM Search Queries Table | Addr: {:>s} | TCAM Row: {:>3d} | Sub String Col: {:>3d} |'.format(tempAddr,row,col))
         if verbose:
-            self.printDF(self.__tcamQSAddrTable,'Original TCAM Search Query Address Table')
+            self.printDF(self._tcamQSAddrTable,'Original TCAM Search Query Address Table')
     
     
     def generateSRAMSubStr(self,verbose,debug):
         """
-        what does this func do ?
-        input args:
-        return val:
+        Generate all possible combinations of all sub strings from the original TCAM table search queries.
+        
+        :param int verbose: print information in verbose mode.
+        :param int debug: print information in debug mode.
         """
         count2 = 0
-        self.__sramQSAddrTable = pd.DataFrame(columns=['SRAM Query Str Addr','PMA','QS col'])
+        self._sramQSAddrTable = pd.DataFrame(columns=['SRAM Query Str Addr','PMA','QS col'])
         
         # * ----- find all possible alternatives for X based addr
         # * create array of N bit bin addresses
@@ -351,9 +409,9 @@ class TableMapping:
             print('N bit bin addr list len: {0}'.format(len(queryStrBinAddrList)))
         
         # * get origSQ addr
-        tempQSAddrList = self.__tcamQSAddrTable['TCAM Query Str Addr'].to_list()
-        tempQSPmaList = self.__tcamQSAddrTable['PMA'].to_list()
-        tempQSColList = self.__tcamQSAddrTable['QS col'].to_list()
+        tempQSAddrList = self._tcamQSAddrTable['TCAM Query Str Addr'].to_list()
+        tempQSPmaList = self._tcamQSAddrTable['PMA'].to_list()
+        tempQSColList = self._tcamQSAddrTable['QS col'].to_list()
         
         printDebug(debug,'Search Query addr list: {0}'.format(tempQSAddrList))
         printDebug(debug,'Search Query addr list len: {0}\n'.format(len(tempQSAddrList)))
@@ -366,29 +424,30 @@ class TableMapping:
                     if matching == len(re.findall('x',oldAddr)):
                         printVerbose(verbose,'count = {} | orig Search Query = {} | new Search Query = {} | matching ratio = {} |'.format(count2, oldAddr, newAddr, matching))
                         logging.info('count = {} | orig Search Query = {} | new Search Query = {} | matching ratio = {} |'.format(count2, oldAddr, newAddr, matching))
-                        self.__sramQSAddrTable.loc[count2] = [newAddr, pma, qscol]
+                        self._sramQSAddrTable.loc[count2] = [newAddr, pma, qscol]
                         count2 += 1
             # * else simply add search query in table as is
             else:
                 printVerbose(verbose,'count = {} | orig Search Query = {} | new Search Query = {} | matching ratio = {} |'.format(count2, oldAddr, oldAddr, 0))
                 logging.info('count = {} | orig Search Query = {} | new Search Query = {} | matching ratio = {} |'.format(count2, oldAddr, oldAddr, 0))
-                self.__sramQSAddrTable.loc[count2] = [oldAddr, pma, qscol]
+                self._sramQSAddrTable.loc[count2] = [oldAddr, pma, qscol]
                 count2 += 1
         
         if verbose:
-            self.printDF(self.__sramQSAddrTable,'Original SRAM Search Query Address Table')
+            self.printDF(self._sramQSAddrTable,'Original SRAM Search Query Address Table')
     
     
     def mapTCAMtoSRAM(self,verbose,debug):
         """
-        what does this func do ?
-        input args:
-        return val:
+        Map all possible combinations of TCAM table map sub strings to SRAM table map sub strings.
+        
+        :param int verbose: print information in verbose mode.
+        :param int debug: print information in debug mode.
         """
         sramDF = self._sramTable
-        sramAddrList = self.__sramQSAddrTable['SRAM Query Str Addr'].to_list()
-        tcamRowList = self.__sramQSAddrTable['PMA'].to_list()
-        sramColList = self.__sramQSAddrTable['QS col'].to_list()
+        sramAddrList = self._sramQSAddrTable['SRAM Query Str Addr'].to_list()
+        tcamRowList = self._sramQSAddrTable['PMA'].to_list()
+        sramColList = self._sramQSAddrTable['QS col'].to_list()
         
         if len(tcamRowList) == len(sramColList):
             for (queryStr, pma, qsCol) in itertools.zip_longest(sramAddrList, tcamRowList, sramColList):
@@ -421,9 +480,9 @@ class TableMapping:
     
     def writeSRAMtoXlsx(self):
         """
-        what does this func do ?
-        input args:
-        return val:
+        Generates an SRAM table map in XLSX format.
+        
+        :return str: absolute path of the SRAM table map `.xlsx` file.
         """
         # * create sram table file path and name
         self.sramTableXlsxFileName = os.path.basename(self.tcamTableXlsxFileName.replace('tcam','sram'))
@@ -442,9 +501,9 @@ class TableMapping:
     
     def writeSRAMtoHtml(self):
         """
-        what does this func do ?
-        input args:
-        return val:
+        Generates an SRAM table map in HTML format.
+        
+        :return str: absolute path of the SRAM table map `.html` file.
         """
         # * create sram table file path and name
         self.sramTableHtmlFileName = os.path.basename(self.tcamTableXlsxFileName.replace('tcam','sram').replace('.xlsx','.html'))
@@ -458,9 +517,9 @@ class TableMapping:
     
     def writeSRAMtoJson(self):
         """
-        what does this func do ?
-        input args:
-        return val:
+        Generates an SRAM table map in JSON format.
+        
+        :return str: absolute path of the SRAM table map `.json` file.
         """
         # * create sram table file path and name
         self.sramTableJsonFileName = os.path.basename(self.tcamTableXlsxFileName.replace('tcam','sram').replace('.xlsx','.json'))
@@ -474,9 +533,9 @@ class TableMapping:
     
     def writeSRAMtoTxt(self):
         """
-        what does this func do ?
-        input args:
-        return val:
+        Generates an SRAM table map in TXT format.
+        
+        :return str: absolute path of the SRAM table map `.txt` file.
         """
         # * create sram table file path and name
         self.sramTableTxtFileName = os.path.basename(self.tcamTableXlsxFileName.replace('tcam','sram').replace('.xlsx','.txt'))
@@ -495,14 +554,32 @@ class TableMapping:
 # ===========================================================================================
 
 def printVerbose(verbose,msg):
+    """
+    Prints a string if verbose flag is active.
+    
+    :param int verbose: print information in verbose mode.
+    :param str msg: Message to be printed in verbose mode.
+    """
     if verbose:
         print(str(msg))
 
 def printDebug(debug,msg):
+    """
+    Prints a string if debug flag is active.
+    
+    :param int debug: print information in debug mode.
+    :param str msg: Message to be printed in debug mode.
+    """
     if debug:
         print(str(msg))
 
 def highlightCell(val):
+    """
+    Colors SRAM table map cells in XLSX file depending upon their value.
+    
+    :param int val: numerical value of a particular cell.
+    :return str: cell background color code as a hex RBG value.
+    """
     if val == 1:
         color = '#E5961A'
     elif val == 0:
