@@ -22,8 +22,5 @@ coverage*
 .py*
 .venv*
 
-# mkdocs documentation
-
-# sphinx documentation
-
-
+# pdoc documentation
+docs

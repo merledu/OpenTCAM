@@ -3,15 +3,20 @@
     <!-- <img src="./images/opentcam_logo.svg"> -->
 </div>
 
-<!-- insert badges here -->
-<!-- python -->
-<!-- license -->
-<!-- commits -->
-<!-- PRs -->
-<!-- forks -->
 
 # OpenTCAM
-An open-source Ternary Content Addressable Memory (TCAM) compiler.
+An open-source Ternary Content Addressable Memory (TCAM) compiler framework.
+
+[![made-with-python](https://img.shields.io/badge/Made%20with-Python-1f425f.svg)](https://www.python.org/)
+[![made-with-bash](https://img.shields.io/badge/Made%20with-Bash-1f425f.svg)](https://www.gnu.org/software/bash/)
+[![made-for-VSCode](https://img.shields.io/badge/Made%20for-VSCode-1f425f.svg)](https://code.visualstudio.com/)
+[![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://github.com/merledu/OpenTCAM/commits/main)
+[![Linux](https://svgshare.com/i/Zhy.svg)](https://svgshare.com/i/Zhy.svg)
+[![macOS](https://svgshare.com/i/ZjP.svg)](https://svgshare.com/i/ZjP.svg)
+[![GitHub branches](https://badgen.net/github/branches/Naereen/Strapdown.js)](https://github.com/merledu/OpenTCAM/branches)
+[![GitHub commits](https://badgen.net/github/commits/Naereen/Strapdown.js)](https://github.com/merledu/OpenTCAM/commits/main)
+[![GitHub issues](https://img.shields.io/github/issues/Naereen/StrapDown.js.svg)](https://github.com/merledu/OpenTCAM/issues)
+[![GitHub pull-requests](https://img.shields.io/github/issues-pr/Naereen/StrapDown.js.svg)](https://github.com/merledu/OpenTCAM/pulls)
 
 ## What is OpenTCAM?
 <!-- introduction -->
@@ -19,10 +24,31 @@ OpenTCAM is an open source Python framework that can be used to create the desig
 
 Currently the compilers are using SRAMs generated from OpenRAM Compiler, but the idea is to make a generalized compiler for any SRAM-based TCAM. The idea is to utilize 36KB BRAM blocks of FPGAs and OpenRAM generated 1Kb SRAM blocks (using sky130 nm PDKs) for ASIC to mimic any size of TCAM.
 
-## Documentation
-<!-- links to documentation and FAQ -->
-<!-- We have created a detailed presentation that serves as our documentation (for now). Take a look at it [here](). -->
-Currently in the making. For now refer to this README.
+## Directory Structure
+```bash
+.
+├── compiler
+│   ├── configs                         # contains TCAM table map and RTL block config parameters.
+│   ├── lib                             # contains TCAM table maps and RTl blocks.
+│   │   └── tcam_block_rtl
+│   ├── src                             # contains py scripts for code compilation
+│   │   ├── mainTableMapping.py         # contains class TableMapping
+│   │   ├── mainTcamRTLGenerator.py     # contains main func for class TableMapping
+│   │   ├── tableMapping.py             # contains class TcamRtlWrapperGenerator
+│   │   └── tcamRtlGenerator.py         # contains main func for class TcamRtlWrapperGenerator
+│   └── tests                           # contains unit tests for various py classes 
+├── docs                                # contains API generated docs
+├── example_design                      # TCAM memory design
+├── images                              # logos etc
+├── scripts                             # contains bash scripts for compilation, variable storage etc.
+├── CHANGELOG.md    
+├── CONTRIBUTING.md
+├── LICENSE
+├── Makefile                            # contains various targets for simulation. Run `make help` for more info.
+├── pytest.ini                          # pytest config file
+├── README.md       
+└── requirements.txt
+```
 
 ## How to Install
 The OpenTCAM compiler requires [Python3](https://www.python.org/downloads/), [Pip3](https://pypi.org/) and [MAKE](https://www.gnu.org/software/make/) inorder to run properly:
@@ -123,8 +149,15 @@ Used to gauge the effectiveness of tests. It can show which parts of your code a
     ```
 A report will be created in the folder `coverage_html`. Simply open the file `coverage_html/index.html` in the web browser of your choice to view a detailed coverage report.
 
-### 7.  CleanUp
--   Clean all files including tables, bins, logs generated:
+### 7.  Documentation
+<!-- We have created a detailed presentation that serves as our documentation (for now). Take a look at it [here](). -->
+-   To generate API documentation locally.
+    ```bash
+    make apidocs
+    ```
+
+### 8.  CleanUp
+-   Clean all files including tables, bins, logs, etc generated:
     ```bash
     make cleanall
     ```

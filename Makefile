@@ -93,6 +93,13 @@ coverage:
 	@ echo ------------------------------------ DONE ----------------------------------
 	@ echo " "
 
+apidocs:
+	@ echo " "
+	@ echo ------------------------ OpenTCAM API Documentation ------------------------
+	@ pdoc ./compiler/src/tableMapping.py -o ${DIR_DOCS}
+	@ echo ------------------------------------ DONE ----------------------------------
+	@ echo " "
+
 runpylint:
 	@ echo " "
 	@ echo ------------------------------ Running PyLint ------------------------------
@@ -129,7 +136,7 @@ cleanvenv:
 	@ echo " "
 	@ echo ------------------- Deleting Python Virtual Environment/s ------------------
 	@ echo " "
-	@ rm -rf .py*
+	@ rm -rf .py* venv* .venv*
 	@ echo ------------------------------------ DONE ----------------------------------
 	@ echo " "
 
@@ -144,6 +151,13 @@ cleansramtables:
 	@ echo " "
 	@ echo ---------------------- Deleting SRAM Table Map File/s ----------------------
 	@ rm -rf sramTables
+	@ echo ------------------------------------ DONE ----------------------------------
+	@ echo " "
+
+cleanapidocs:
+	@ echo " "
+	@ echo --------------------- Deleting API Documentation File/s --------------------
+	@ rm -rf docs
 	@ echo ------------------------------------ DONE ----------------------------------
 	@ echo " "
 
@@ -169,7 +183,7 @@ cleancoverage:
 	@ echo " "
 
 cleanall: 
-	@ make cleanlogs cleansramtables cleantcamrtl cleantests cleancoverage
+	@ make cleanlogs cleansramtables cleantcamrtl cleantests cleancoverage cleanapidocs
 
 deepclean:
 	clear
@@ -206,6 +220,8 @@ help:
 	@ echo "	DEBUG=1/0				debugging on/off"
 	@ echo "	VERBOSE=1/0				verbosity on/off"
 	@ echo " "
+	@ echo " apidocs:			generate OpenTCAM API Documentation"
+	@ echo " "
 	@ echo " rununittest:			run single table mapping test case "
 	@ echo " runregression:			run pytest regression"
 	@ echo " testmarkers:			view opentcam table mapping test/s markers"
@@ -213,6 +229,7 @@ help:
 	@ echo " "
 	@ echo " cleanvenv:			delete python virtual environment/s"
 	@ echo " cleanlogs:			delete log files"
+	@ echo " cleanapidocs:			delete generated API documentation"
 	@ echo " cleansramtables:		delete TCAM -> SRAM table maps "
 	@ echo " cleantcamrtl:			delete TCAM memory block RTL files"
 	@ echo " cleantests:			delete py tests cache "
