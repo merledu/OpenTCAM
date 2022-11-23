@@ -15,12 +15,8 @@ permissions:
 
 jobs:
   # Build the documentation and upload the static HTML files as an artifact.
-  build_unix:
-    matrix:
-      os: [ubuntu-latest, macos-latest]
-    strategy:
-      fail-fast: false
-    runs-on: ${{matrix.os}}
+  build:
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v4
@@ -40,7 +36,7 @@ jobs:
   # Deploy the artifact to GitHub pages.
   # This is a separate job so that only actions/deploy-pages has the necessary permissions.
   deploy:
-    needs: build_unix
+    needs: build
     runs-on: ubuntu-latest
     permissions:
       pages: write
