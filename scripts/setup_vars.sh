@@ -27,3 +27,10 @@ MARKER      :=
 # python coverage args
 COV_TITLE   := "OpenTCAM Coverage"
 COV_FOLDER  := "coverage_html"
+
+# python pylint args
+# to configure OUTPUT_FMT see output-format flag in compiler/configs/.pylintrc
+FORMAT      := msvs
+COLOR       := colorized
+SCORE       := y
+REPORTS     := y
