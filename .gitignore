@@ -24,3 +24,6 @@ coverage*
 
 # pdoc documentation
 docs
+
+# pylint config file
+!.pylintrc
