@@ -224,6 +224,24 @@ class TableMapping:
         logging.info('Printing dataframe: ' + str(heading))
     
     
+    def getTcamTableMap(self):
+        """
+        Getter function for the TCAM table map
+        
+        :return DataFrame: TCAM table map dataframe object
+        """
+        return self._tcamTable
+    
+    
+    def getSramTableMap(self):
+        """
+        Getter function for the SRAM table map
+        
+        :return DataFrame: SRAM table map dataframe object
+        """
+        return self._sramTable
+    
+    
     def readTCAMTable(self,verbose):
         """
         Read the contents of a **tcamTableX.xlsx** TCAM memory table map as a data frame.
