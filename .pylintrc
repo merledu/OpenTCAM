@@ -1,0 +1,178 @@
+[CUSTOM]
+
+# allow all trailing whitespaces
+[C0303(trailing-whitespace)]
+disable=C0303
+
+# disable recommend using enumerate in for loops 
+[C0200(consider-using-enumerate)]
+disable=C0200
+
+# allow unlimited number of instance attributes
+[R0902(too-many-instance-attributes)]
+disable=R0902
+
+# allow dataframe cells to be directly assigned
+[E1137(unsupported-assignment-operation)]
+disable=E1137
+
+# diable unsubscriptable object 
+[E1136(unsubscriptable-object)]
+disable=E1136
+
+
+# =======================================================================================
+# =======================================================================================
+
+[REPORTS]
+# Python expression which should return a score less than or equal to 10. You
+# have access to the variables 'fatal', 'error', 'warning', 'refactor',
+# 'convention', and 'info' which contain the number of messages in each
+# category, as well as 'statement' which is the total number of statements
+# analyzed. This score is used by the global evaluation report (RP0004).
+evaluation=max(0, 0 if fatal else 10.0 - ((float(5 * error + warning + refactor + convention) / statement) * 10))
+# Template used to display messages. This is a python new-style format string
+# used to format the message information. See doc for all details.
+msg-template=
+# Set the output format. Available formats are text, parseable, colorized, json
+# and msvs (visual studio). You can also give a reporter class, e.g.
+# mypackage.mymodule.MyReporterClass.
+output-format=msvs
+# Tells whether to display a full report or only the messages.
+reports=yes
+# Activate the evaluation score.
+score=yes
+
+
+[DESIGN]
+# List of regular expressions of class ancestor names to ignore when counting
+# public methods (see R0903)
+exclude-too-few-public-methods=
+# List of qualified class names to ignore when counting class parents (see R0901)
+ignored-parents=
+# Maximum number of arguments for function / method.
+max-args=10
+# Maximum number of attributes for a class (see R0902).
+max-attributes=7
+# Maximum number of boolean expressions in an if statement (see R0916).
+max-bool-expr=5
+# Maximum number of branch for function / method body.
+max-branches=15
+# Maximum number of locals for function / method body.
+max-locals=20
+# Maximum number of parents for a class (see R0901).
+max-parents=7
+# Maximum number of public methods for a class (see R0904).
+max-public-methods=20
+# Maximum number of return / yield for function / method body.
+max-returns=5
+# Maximum number of statements in function / method body.
+max-statements=50
+# Minimum number of public methods for a class (see R0903).
+min-public-methods=2
+
+
+[CLASSES]
+# Warn about protected attribute access inside special methods
+check-protected-access-in-special-methods=no
+# List of method names used to declare (i.e. assign) instance attributes.
+defining-attr-methods=__init__, __new__, setUp, __post_init__
+# List of member names, which should be excluded from the protected access warning.
+exclude-protected=_asdict, _fields, _replace, _source, _make
+# List of valid names for the first argument in a class method.
+valid-classmethod-first-arg=cls
+# List of valid names for the first argument in a metaclass class method.
+valid-metaclass-classmethod-first-arg=cls
+
+
+[FORMAT]
+# Expected format of line ending, e.g. empty (any line ending), LF or CRLF.
+expected-line-ending-format=
+# Regexp for a line that is allowed to be longer than the limit.
+ignore-long-lines=^\s*(# )?<?https?://\S+>?$
+# Number of spaces of indent required inside a hanging or continued line.
+indent-after-paren=4
+# String used as indentation unit. This is usually "    " (4 spaces) or "\t" (1
+# tab).
+indent-string='    '
+# Maximum number of characters on a single line.
+max-line-length=150
+# Maximum number of lines in a module.
+max-module-lines=1000
+# Allow the body of a class to be on the same line as the declaration if body contains single statement.
+single-line-class-stmt=no
+# Allow the body of an if to be on the same line as the test if there is no else.
+single-line-if-stmt=no
+
+
+[STRING]
+# This flag controls whether inconsistent-quotes generates a warning when the
+# character used as a quote delimiter is used inconsistently within a module.
+check-quote-consistency=no
+# This flag controls whether the implicit-str-concat should generate a warning
+# on implicit string concatenation in sequences defined over several lines.
+check-str-concat-over-line-jumps=no
+
+
+[LOGGING]
+# The type of string formatting that logging methods do. `old` means using
+# % formatting, `new` is for `{}` formatting.
+logging-format-style=old
+# Logging modules to check that the string format arguments are in logging
+# function parameter format.
+logging-modules=logging
+
+
+[BASIC]
+# Naming style matching correct argument names.
+argument-naming-style=camelCase
+# Naming style matching correct attribute names.
+attr-naming-style=camelCase
+# Regular expression matching correct attribute names. Overrides attr-naming-
+# style. If left empty, attribute names will be checked with the set naming
+# style.
+attr-rgx=([a-z][a-zA-Z]|^_[a-z][a-zA-Z]|^__[a-z][a-zA-Z])
+# Bad variable names which should always be refused, separated by a comma.
+bad-names=foo, bar, baz, toto, tutu, tata
+# Naming style matching correct class attribute names.
+class-attribute-naming-style=camelCase
+# Naming style matching correct class constant names.
+class-const-naming-style=UPPER_CASE
+# Naming style matching correct class names.
+class-naming-style=PascalCase
+# Naming style matching correct constant names.
+const-naming-style=UPPER_CASE
+# Minimum line length for functions/classes that require docstrings, shorter
+# ones are exempt.
+docstring-min-length=-1
+# Naming style matching correct function names.
+function-naming-style=camelCase
+# Good variable names which should always be accepted, separated by a comma.
+good-names=i, j, k, ex, run
+# Include a hint for the correct naming format with invalid-name.
+include-naming-hint=no
+# Naming style matching correct inline iteration names.
+inlinevar-naming-style=camelCase
+# Naming style matching correct method names.
+method-naming-style=camelCase
+# Naming style matching correct module names.
+module-naming-style=camelCase
+# List of decorators that produce properties, such as abc.abstractproperty. Add
+# to this list to register other decorators that produce valid properties.
+# These decorators are taken in consideration only for invalid-name.
+property-classes=abc.abstractproperty
+# Naming style matching correct variable names.
+variable-naming-style=camelCase
+
+
+[SIMILARITIES]
+# Comments are removed from the similarity computation
+ignore-comments=yes
+# Docstrings are removed from the similarity computation
+ignore-docstrings=yes
+# Imports are removed from the similarity computation
+ignore-imports=yes
+# Signatures are removed from the similarity computation
+ignore-signatures=yes
+# Minimum lines number of a similarity.
+min-similarity-lines=4
