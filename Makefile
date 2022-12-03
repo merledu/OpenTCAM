@@ -20,6 +20,7 @@ loadpaths:
 	$(info DIR_VENV:		$(DIR_VENV))
 	$(info DIR_DOCS:		$(DIR_DOCS))
 	$(info DIR_IMAGES:		$(DIR_IMAGES))
+	$(info DIR_LOGS:		$(DIR_LOGS))
 
 install_dependencies:
 	@ clear
@@ -29,7 +30,7 @@ install_dependencies:
 	@ echo ------------------------------------ DONE ----------------------------------
 	@ echo " "
 
-opentcam_venv:
+venv_opentcam:
 	clear
 	@ echo ------------------- Creating OpenTCAM Virtual Environment ------------------
 	@ echo " "
@@ -37,9 +38,10 @@ opentcam_venv:
 	@ echo ------------------------------------ DONE ----------------------------------
 	@ echo " "
 
-tcamtablemap:
+sram_tablemap:
 	@ echo " "
 	@ echo ---------------------------- OpenTCAM Table Map ----------------------------
+	@ [ -d ${DIR_LOGS} ] || mkdir -p ${DIR_LOGS}
 	@ python3 $(DIR_COMP_SRC)/mainTableMapping.py \
 	--tcamConfig $(TCAMCONFIG) \
 	-excel $(EXCEL) -html $(HTML) -json $(JSON) -txt $(TXT) \
@@ -47,9 +49,10 @@ tcamtablemap:
 	@ echo ------------------------------------ DONE ----------------------------------
 	@ echo " "
 
-tcamrtl:
+tcam_rtl:
 	@ echo " "
 	@ echo ------------------------------- OpenTCAM RTL -------------------------------
+	@ [ -d ${DIR_LOGS} ] || mkdir -p ${DIR_LOGS}
 	@ python3 $(DIR_COMP_SRC)/mainTcamRTLGenerator.py \
 	--tcamWrapConfig $(TCAMWRAPCONFIG) \
 	--timeunit $(TIMEUNIT) --timeprecision $(TIMEPRECISION) \
@@ -57,7 +60,7 @@ tcamrtl:
 	@ echo ------------------------------------ DONE ----------------------------------
 	@ echo " "
 
-rununittest:
+run_unittest:
 	@ echo " "
 	@ echo --------------------------- OpenTCAM Unit Test -----------------------------
 	@ python3 -m pytest -v -m ${MARKER} compiler/tests/*.py
@@ -66,7 +69,7 @@ rununittest:
 # run single test using test_class_name and test_name
 # @ python3 -m pytest -v compiler/tests/${TESTCLASS}.pytepy::${TESTCLASS}::${TESTNAME}
 
-runregression:
+run_regression:
 	@ echo " "
 	@ echo --------------------------- OpenTCAM Unit Tests ----------------------------
 	@ python3 -m pytest -v -s --ff --cache-clear ${DIR_COMP_TESTS}/*.py
@@ -80,7 +83,7 @@ testmarkers:
 	@ echo ------------------------------------ DONE ----------------------------------
 	@ echo " "
 
-coverage:
+run_coverage:
 	@ echo " "
 	@ echo -------------------------- OpenTCAM Test Coverage --------------------------
 	@ coverage erase
@@ -93,30 +96,39 @@ coverage:
 	@ echo ------------------------------------ DONE ----------------------------------
 	@ echo " "
 
-apidocs:
+gen_apidocs:
 	@ echo " "
 	@ echo ------------------------ OpenTCAM API Documentation ------------------------
 	@ pdoc ./compiler/src/tableMapping.py -o ${DIR_DOCS}
 	@ echo ------------------------------------ DONE ----------------------------------
 	@ echo " "
 
-runpylint:
+run_pylint:
 	@ echo " "
 	@ echo ------------------------------ Running PyLint ------------------------------
-	pylint ${DIR_COMP_SRC}/*.py --output-format=parseable:./logs/pylint.log,colorized \
-	--msg-template='{path:s}: (Ln {line:d}, Col {column}) -- {obj} -- {msg_id} -- {msg}' \
-	--rcfile=${OPENTCAM_ROOT}/.pylintrc
+	@ [ -d ${DIR_LOGS} ] || mkdir -p ${DIR_LOGS}
+	@ pylint ${DIR_COMP_SRC}/*.py \
+	--output-format=${FORMAT}:./logs/pylint.log,${COLOR} \
+	--score=${SCORE} --reports=${REPORTS} \
+	--rcfile=.pylintrc
 	@ echo ------------------------------------ DONE ----------------------------------
 	@ echo " "
 
-runblack:
+run_isort:
+	@ echo " "
+	@ echo ------------------------------ Running iSort ------------------------------
+	@ isort -v compiler/src/*.py
+	@ echo ------------------------------------ DONE ----------------------------------
+	@ echo " "
+
+run_black:
 	@ echo " "
 	@ echo ------------------------------ Running Black ------------------------------
-	@ black --check --target-version=py35 ${DIR_COMP_SRC}/*.py
-	@ echo " "
-	@ black --target-version=py35 ${DIR_COMP_SRC}/.py
+	@ black -v compiler/src/*.py
 	@ echo ---------------------------------- DONE -----------------------------------
 	@ echo " "
+
+format_pycode: run_isort run_black
 
 install_iverilog:
 	@ echo " "
@@ -132,7 +144,7 @@ install_yosys:
 	@ echo ----------------------------------- DONE -----------------------------------
 	@ echo " "
 
-cleanvenv:
+clean_venv:
 	@ echo " "
 	@ echo ------------------- Deleting Python Virtual Environment/s ------------------
 	@ echo " "
@@ -140,50 +152,50 @@ cleanvenv:
 	@ echo ------------------------------------ DONE ----------------------------------
 	@ echo " "
 
-cleanlogs:
+clean_logs:
 	@ echo " "
 	@ echo --------------------------- Deleting Log File/s ----------------------------
 	@ rm -rf logs
 	@ echo ------------------------------------ DONE ----------------------------------
 	@ echo " "
 
-cleansramtables:
+clean_sramtablemap:
 	@ echo " "
 	@ echo ---------------------- Deleting SRAM Table Map File/s ----------------------
 	@ rm -rf sramTables
 	@ echo ------------------------------------ DONE ----------------------------------
 	@ echo " "
 
-cleanapidocs:
+clean_apidocs:
 	@ echo " "
 	@ echo --------------------- Deleting API Documentation File/s --------------------
 	@ rm -rf docs
 	@ echo ------------------------------------ DONE ----------------------------------
 	@ echo " "
 
-cleantcamrtl:
+clean_tcamrtl:
 	@ echo " "
 	@ echo ------------------------- Deleting TCAM RTL File/s -------------------------
 	@ rm -rf tcam_mem_rtl
 	@ echo ------------------------------------ DONE ----------------------------------
 	@ echo " "
 
-cleantests:
+clean_tests:
 	@ echo " "
 	@ echo --------------------------- Deleting Test Cache ----------------------------
 	@ rm -rf ${DIR_COMP_TESTS}/.test_cache
 	@ echo ------------------------------------ DONE ----------------------------------
 	@ echo " "
 
-cleancoverage:
+clean_coverage:
 	@ echo " "
 	@ echo ------------------------- Deleting Coverage File/s -------------------------
 	@ rm -rf coverage* htmlcov .coverage
 	@ echo ------------------------------------ DONE ----------------------------------
 	@ echo " "
 
-cleanall: 
-	@ make cleanlogs cleansramtables cleantcamrtl cleantests cleancoverage cleanapidocs
+clean_all: 
+	@ make clean_logs clean_sramtablemap clean_tcamrtl clean_tests clean_coverage clean_apidocs
 
 deepclean:
 	clear
@@ -241,4 +253,3 @@ help:
 	@ echo " "
 	@ echo ----------------------------------------------------------------------------
 	@ echo " "
-
