@@ -12,19 +12,19 @@ from migen.fhdl.verilog import convert
 
 class andGate(Module):
     """
-    _summary_
-
+    Generates the verilog code for an AND gate with N inputs each input M bits wide.
+    The output is M bits wide.
     """
 
     # * ----------------------------------------------------------------- Variables
-    # Constructor: setup IO ports and logic here
-    def __init__(self, ports, dataWidth) -> None:
+    def __init__(self, ports, dataWidth):
         """
-        _summary_
+        Constructor: call IO ports and logic here
 
-        :param _type_ ports: _description_
-        :param _type_ dataWidth: _description_
-        :return _type_ verilogCode: _description_
+        **Public Variables:**
+        :param int ports:           number of input ports.
+        :param int dataWidth:       width of input ports.
+        :return str verilogCode:    store RTL code of the gate.
         """
         self.numInputs = ports
         self.numInputWidth = dataWidth
@@ -37,10 +37,7 @@ class andGate(Module):
 
     def ioPorts(self):
         """
-        declare all the input output ports here
-
-        :param _type_ inputs: _description_
-        :param _type_ dataWidth: _description_
+        Create a list of Signal objects for N input ports each of width M. Create a Signal object for an output port of width M.
         """
         self.inputs = []
         for port in range(self.numInputs):
@@ -52,7 +49,7 @@ class andGate(Module):
 
     def logicBlock(self):
         """
-        Example of using reduce() to create an AND gate
+        Setup the combinatorial logic for creating an AND gate using migen. Using the reduce() function to combine all input signals into a single output signal.
         """
         self.comb += self.outputs.eq(reduce(lambda x, y: x & y, self.inputs))
         logging.info('Generated AND gate logic')
@@ -63,27 +60,29 @@ class andGate(Module):
 
 def genVerilogAndGate(ports, dataWidth, filePath):
     """
-    _summary_
+    Main user function for class andGate.
+    Creates the IO ports for the verilog RTL module definition.
+    Generates the verilog code for an AND gate with N inputs each input M bits wide. The output is M bits wide.
 
-    :param _type_ ports: _description_
-    :param _type_ dataWidth: _description_
-    :param _type_ filePath: _description_
-    :return _type_: _description_
+    :param int ports:           number of input ports.
+    :param int dataWidth:       width of input ports.
+    :param str filePath:        absolute path for the verilog file.
+    :return str:                RTL code of the gate.
     """
     # * instantiate the module
     gate = andGate(ports=ports, dataWidth=dataWidth)
 
     # * ----- setup the IO ports for the verilog module definition
     # * input port set
-    myinputs = {gate.inputs[i] for i in range(ports)}
+    inPortsSet = {gate.inputs[i] for i in range(ports)}
     # * output port set
-    myoutputs = {gate.outputs}
+    outPortsSet = {gate.outputs}
     # * combine input and output sets
-    myports = myinputs.union(myoutputs)
+    moduleIOs = inPortsSet.union(outPortsSet)
     logging.info('Generated AND gate verilog module definition')
 
     # * generate the verilog code
-    gate.verilogCode = convert(gate, name='andGate', ios=myports)
+    gate.verilogCode = convert(gate, name='andGate', ios=moduleIOs)
     logging.info('Generated AND gate verilog module RTL')
 
     # * write verilog code to a file
