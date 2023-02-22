@@ -31,11 +31,11 @@ class andGate(Module):
         self.verilogCode = ""
 
         # * setup IO ports
-        self.ioPorts(self, self.numInputs, self.numInputWidth)
-        # * generate module RTL
-        self.logicBlock(self)
+        self.ioPorts()
+        # * generate block RTL
+        self.logicBlock()
 
-    def ioPorts(self, inputs, dataWidth):
+    def ioPorts(self):
         """
         declare all the input output ports here
 
@@ -43,12 +43,12 @@ class andGate(Module):
         :param _type_ dataWidth: _description_
         """
         self.inputs = []
-        for inputs in range(inputs):
-            tempPort = Signal(dataWidth, name_override='in_data{}'.format(inputs))
+        for port in range(self.numInputs):
+            tempPort = Signal(self.numInputWidth, name_override='in_data{}'.format(port))
             self.inputs.append(tempPort)
-            logging.info('Created AND gate input port: {:>s}{:d}'.format('in_data', inputs))
-        self.outputs = Signal(dataWidth, name_override='out_data')
-        logging.info('Created AND gate output port: {:>s}{:d}'.format('in_data', inputs))
+            logging.info('Created AND gate input port: {:>s}{:d}'.format('in_data', port))
+        self.outputs = Signal(self.numInputWidth, name_override='out_data')
+        logging.info('Created AND gate output port: {:>s}{:d}'.format('out_data', port))
 
     def logicBlock(self):
         """
@@ -57,9 +57,38 @@ class andGate(Module):
         self.comb += self.outputs.eq(reduce(lambda x, y: x & y, self.inputs))
         logging.info('Generated AND gate logic')
 
-
-
-
 # ===========================================================================================
 # ======================================== End Class ========================================
 # ===========================================================================================
+
+def genVerilogAndGate(ports, dataWidth, filePath):
+    """
+    _summary_
+
+    :param _type_ ports: _description_
+    :param _type_ dataWidth: _description_
+    :param _type_ filePath: _description_
+    :return _type_: _description_
+    """
+    # * instantiate the module
+    gate = andGate(ports=ports, dataWidth=dataWidth)
+
+    # * ----- setup the IO ports for the verilog module definition
+    # * input port set
+    myinputs = {gate.inputs[i] for i in range(ports)}
+    # * output port set
+    myoutputs = {gate.outputs}
+    # * combine input and output sets
+    myports = myinputs.union(myoutputs)
+    logging.info('Generated AND gate verilog module definition')
+
+    # * generate the verilog code
+    gate.verilogCode = convert(gate, name='andGate', ios=myports)
+    logging.info('Generated AND gate verilog module RTL')
+
+    # * write verilog code to a file
+    with open(filePath, 'w', encoding='utf-8') as rtl:
+        rtl.write(str(gate.verilogCode))
+    logging.info('Created rtl file {:s}'.format(filePath))
+
+    return str(gate.verilogCode)
