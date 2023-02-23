@@ -65,3 +65,7 @@ coverage==6.5.0
 # pdoc - API documentation for python
 Pygments==2.13.0
 pdoc==12.3.0
+
+# migen - toolbox for building complex digital hardware
+colorama==0.4.6
+migen==0.9.2
