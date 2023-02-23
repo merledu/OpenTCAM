@@ -66,7 +66,7 @@ class priorityEncoder(Module):
             # * generate one hot encoding
             oneHotEncode = bin(pow(2,i))
             # * add ith priority case
-            priorityCases[oneHotEncode] = self.outputs.eq(i)
+            priorityCases[int(oneHotEncode, 2)] = self.outputs.eq(i)
             logging.info('Created priority case for {:3d} input bit'.format(i))
         # * concat using case
         self.comb += Case(self.inputs, priorityCases)
@@ -74,3 +74,34 @@ class priorityEncoder(Module):
 # ===========================================================================================
 # ======================================== End Class ========================================
 # ===========================================================================================
+
+def genVerilogPriorityEncoder(ports, filePath):
+    """
+    _summary_
+
+    :param _type_ ports: _description_
+    :param _type_ filePath: _description_
+    :return _type_: _description_
+    """
+    # * instantiate the module
+    encoder = priorityEncoder(ports=ports)
+
+    # * ----- setup the IO ports for the verilog module definition
+    # * input port set
+    inPortsSet = {encoder.inputs}
+    # * output port set
+    outPortsSet = {encoder.outputs}
+    # * combine input and output sets
+    moduleIOs = inPortsSet.union(outPortsSet)
+    logging.info('Generated Priority Encoder verilog module definition')
+
+    # * generate the verilog code
+    encoder.verilogCode = convert(encoder, name='priorityEncoder', ios=moduleIOs)
+    logging.info('Generated Priority Encoder verilog module RTL')
+
+    # * write verilog code to a file
+    with open(filePath, 'w', encoding='utf-8') as rtl:
+        rtl.write(str(encoder.verilogCode))
+    logging.info('Created rtl file {:s}'.format(filePath))
+
+    return str(encoder.verilogCode)
