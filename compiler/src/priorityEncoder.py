@@ -14,17 +14,17 @@ from migen.fhdl.verilog import convert
 
 class priorityEncoder(Module):
     """
-    _summary_
-
-    :param _type_ Module: _description_
-    :return _type_: _description_
+    Generates the verilog code for a Priority Encoder with N-bit input and log2(N) bit output.
     """
+
     # * ----------------------------------------------------------------- Functions
     def __init__(self, ports):
         """
-        _summary_
+        Constructor: call IO ports and logic here
 
-        :param _type_ ports: _description_
+        **Public Variables:**
+        :param int ports:           number of input ports.
+        :return str verilogCode:    store RTL code of the encoder.
         """
         self.inputWidth = ports
         self.outputWidth = 0
@@ -37,7 +37,7 @@ class priorityEncoder(Module):
 
     def ioPorts(self):
         """
-        _summary_
+        Create a Signal object for an input port of width N bits and an output port of width log2(N) bits.
         """
         # * check if input port width is of 2^N
         if math.floor(math.log2(self.inputWidth)) == math.ceil(math.log2(self.inputWidth)):
@@ -57,7 +57,7 @@ class priorityEncoder(Module):
 
     def logicBlock(self):
         """
-        _summary_
+        Setup the sequential logic for creating a priority encoder using migen.
         """
         # * dict to store priority cases
         priorityCases = {}
@@ -77,11 +77,13 @@ class priorityEncoder(Module):
 
 def genVerilogPriorityEncoder(ports, filePath):
     """
-    _summary_
+    Main user function for class priorityEncoder.
+    Creates the IO ports for the verilog RTL module definition.
+    Generates the verilog code for a Priority Encoder with N-bit input and log2(N) bit output.
 
-    :param _type_ ports: _description_
-    :param _type_ filePath: _description_
-    :return _type_: _description_
+    :param int ports:           number of input ports.
+    :param str filePath:        absolute path for the verilog file.
+    :return str:                RTL code of the encoder.
     """
     # * instantiate the module
     encoder = priorityEncoder(ports=ports)
