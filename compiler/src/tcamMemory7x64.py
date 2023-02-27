@@ -57,3 +57,52 @@ class tcamMemory7x64(Module):
         # * add all output ports to an output list
         self.outputs = self.outRdata
         logging.info('Created list of all output ports')
+
+    def logicBlock(self):
+        """
+        _summary_
+        """
+        # * ----- setup write address logic
+        awAddr = Signal(8, name_override='aw_addr')
+        self.comb += awAddr.eq(Cat(Replicate(~self.inWeb, 8)) & self.inAddr)
+        logging.info('Created write address logic')
+
+        # * ----- setup Read/Search address
+        arAddr1 = Signal(8, name_override='ar_addr1')
+        arAddr2 = Signal(8, name_override='ar_addr2')
+        # * always read/search lower 128 rows
+        self.comb += arAddr1.eq(Cat(self.inAddr[0:6], 0))
+        # * always read/search upper 128 rows
+        self.comb += arAddr2.eq(Cat(self.inAddr[0:6], 1) & Cat(Replicate(self.inWeb, 8)))
+        logging.info('Created read/search address logic')
+
+        # * ----- PMA
+        rdataLower  = Signal(32, name_override='rdata_lower')
+        rdataUpper  = Signal(32, name_override='rdata_upper')
+        rdata       = Signal(64, name_override='rdata')
+
+        self.comb += rdata.eq(Cat(rdataLower, rdataUpper))
+        self.comb += self.outputs.eq(rdata)
+        logging.info('Created upper and lower potential matcha address logic')
+
+        # * ----- instantiate the sky130 1KB RAM module as submodule
+        self.specials += Instance(
+            of=self.__sramModule,                       # module name
+            name='dut_vtb',                             # instance name
+            i_clk0=self.inClk,                          # input port (use i_<portName>)
+            i_csb0=self.inCsb,                          # input port (use i_<portName>)
+            i_web0=self.inWeb,                          # input port (use i_<portName>)
+            i_wmask0=self.inWmask,                      # input port (use i_<portName>)
+            i_addr0=Mux(self.inWeb, arAddr1, awAddr),   # input port (use i_<portName>)
+            i_din0=self.inWdata,                        # input port (use i_<portName>)
+            o_dout0=rdataLower,                         # input port (use i_<portName>)
+            i_clk1=self.inClk,                          # input port (use i_<portName>)
+            i_csb1=self.inCsb,                          # input port (use i_<portName>)
+            i_addr1=arAddr2,                            # input port (use i_<portName>)
+            o_dout1=rdataUpper                          # output port (use o_<portName>)
+        )
+        logging.info('Instantiated {:s} module'.format(self.__sramModule))
+
+# ===========================================================================================
+# ======================================== End Class ========================================
+# ===========================================================================================
