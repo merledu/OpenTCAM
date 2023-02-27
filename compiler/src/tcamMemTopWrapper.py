@@ -25,6 +25,8 @@ class tcamMemTopWrapper(Module):
         # * variables
         self.memBlocks = memBlocks  # 4
         self.__inAddrWidth = 0
+        self.verilogCode = ''
+
         # * setup IO ports
         self.ioPorts()
         # * generate block RTL
@@ -58,3 +60,33 @@ class tcamMemTopWrapper(Module):
         # * add all output ports to an output list
         self.outputs = self.outPma
         logging.info('Created list of all output ports')
+
+
+
+
+
+
+# ===========================================================================================
+# ======================================== End Class ========================================
+# ===========================================================================================
+
+def genVerilogTcamMemTopWrapper(memBlocks, filePath):
+    """
+    _summary_
+
+    :param _type_ filePath: _description_
+    :return _type_: _description_
+    """
+    # * instantiate the module
+    tcamMemTop = tcamMemTopWrapper(memBlocks)
+
+    # * generate the verilog code
+    tcamMemTop.verilogCode = convert(tcamMemTop, name='tcamMemBlock7x64')
+    logging.info('Generated TCAM Memory Top Wrapper verilog module RTL')
+
+    # * write verilog code to a file
+    with open(filePath, 'w', encoding='utf-8') as rtl:
+        rtl.write(str(tcamMemTop.verilogCode))
+    logging.info('Created rtl file {:s}'.format(filePath))
+
+    return str(tcamMemTop.verilogCode)
