@@ -12,18 +12,21 @@ from migen.fhdl.verilog import convert
 
 class tcamMemory7x64(Module):
     """
-    _summary_
-
-    :param _type_ Module: _description_
+    Generates the verilog code for a TCAM 7x64 memory block.
     """
 
     # * ----------------------------------------------------------------- Variables
     def __init__(self):
         """
-        _summary_
+        Constructor: call IO ports and logic here
+
+        **Variables:**
+        :param str __sramModule:    module definition name of the SRAM block.
+        :return str verilogCode:    store RTL code of the encoder.
         """
         # * variables
         self.__sramModule = 'sky130_sram_1kbyte_1rw1r_32x256_8'
+        self.verilogCode = ''
 
         # * setup IO ports
         self.ioPorts()
@@ -32,7 +35,7 @@ class tcamMemory7x64(Module):
 
     def ioPorts(self):
         """
-        _summary_
+        Create Signal objects for all the input ports of various widths and output ports of various widths.
         """
         self.inputs = []
         # * setup input ports
@@ -60,7 +63,7 @@ class tcamMemory7x64(Module):
 
     def logicBlock(self):
         """
-        _summary_
+        Setup the sequential logic for creating a TCAM 7x64 memory block using migen.
         """
         # * ----- setup write address logic
         awAddr = Signal(8, name_override='aw_addr')
@@ -110,6 +113,14 @@ class tcamMemory7x64(Module):
 # ===========================================================================================
 
 def genVerilogTcamMemory7x64(filePath):
+    """
+    Main user function for class tcamMemory7x64.
+    Creates the IO ports for the verilog RTL module definition.
+    Generates the verilog code for a TCAM 7x64 memory block.
+
+    :param str filePath:        absolute path for the verilog file.
+    :return str:                RTL code of the TCAM 7x64 memory.
+    """
     # * instantiate the module
     tcamMem = tcamMemory7x64()
 
