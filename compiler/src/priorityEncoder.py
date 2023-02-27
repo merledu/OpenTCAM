@@ -47,9 +47,9 @@ class priorityEncoder(Module):
             logging.info('priority encoder output width: {:d}'.format(self.outputWidth))
             # * create IO port objects
             self.inputs = Signal(self.inputWidth, name_override='in_data')
-            logging.info('Created priority encoder input port: {:>s}'.format('in_data'))
+            logging.info('Created priority encoder input port: {:>s}[{:d}:0]'.format('in_data', self.inputWidth-1))
             self.outputs = Signal(self.outputWidth, name_override='out_data')
-            logging.info('Created priority encoder output port: {:>s}'.format('out_data'))
+            logging.info('Created priority encoder output port: {:>s}[{:d}:0]'.format('out_data', self.outputWidth-1))
         else:
             print('num isnt 2^N', type(self.inputWidth))
             logging.error('"INVALID": priority encoder input width {:d} isnt of 2^N'.format(self.inputWidth))

@@ -43,9 +43,9 @@ class andGate(Module):
         for port in range(self.numInputs):
             tempPort = Signal(self.numInputWidth, name_override='in_data{}'.format(port))
             self.inputs.append(tempPort)
-            logging.info('Created AND gate input port: {:>s}{:d}'.format('in_data', port))
+            logging.info('Created AND gate input port: {:>s}{:d}[{:d}:0]'.format('in_data', port, self.numInputWidth-1))
         self.outputs = Signal(self.numInputWidth, name_override='out_data')
-        logging.info('Created AND gate output port: {:>s}{:d}'.format('out_data', port))
+        logging.info('Created AND gate output port: {:>s}[{:d}:0]'.format('out_data', self.numInputWidth-1))
 
     def logicBlock(self):
         """
