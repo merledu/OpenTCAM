@@ -89,13 +89,15 @@ class tcamMemory7x64(Module):
         self.specials += Instance(
             of=self.__sramModule,                       # module name
             name='dut_vtb',                             # instance name
+            # Port 0: RW
             i_clk0=self.inClk,                          # input port (use i_<portName>)
             i_csb0=self.inCsb,                          # input port (use i_<portName>)
             i_web0=self.inWeb,                          # input port (use i_<portName>)
             i_wmask0=self.inWmask,                      # input port (use i_<portName>)
             i_addr0=Mux(self.inWeb, arAddr1, awAddr),   # input port (use i_<portName>)
             i_din0=self.inWdata,                        # input port (use i_<portName>)
-            o_dout0=rdataLower,                         # input port (use i_<portName>)
+            o_dout0=rdataLower,                         # output port (use o_<portName>)
+            # Port 1: R
             i_clk1=self.inClk,                          # input port (use i_<portName>)
             i_csb1=self.inCsb,                          # input port (use i_<portName>)
             i_addr1=arAddr2,                            # input port (use i_<portName>)
@@ -106,3 +108,18 @@ class tcamMemory7x64(Module):
 # ===========================================================================================
 # ======================================== End Class ========================================
 # ===========================================================================================
+
+def genVerilogTcamMemory7x64(filePath):
+    # * instantiate the module
+    tcamMem = tcamMemory7x64()
+
+    # * generate the verilog code
+    tcamMem.verilogCode = convert(tcamMem, name='tcamMemory7x64')
+    logging.info('Generated TCAM Memory 7x64 verilog module RTL')
+
+    # * write verilog code to a file
+    with open(filePath, 'w', encoding='utf-8') as rtl:
+        rtl.write(str(tcamMem.verilogCode))
+    logging.info('Created rtl file {:s}'.format(filePath))
+
+    return str(tcamMem.verilogCode)
