@@ -81,6 +81,15 @@ class tcamMemTopWrapper(Module):
             # * combinational logic for write mask
             self.comb += wMaskList[i].eq(Replicate(blockSel[i], 4) & self.inWmask)
 
+        # * ----- generating logic for write addresses
+        awAddrList = []
+        for i in range(self.memBlocks):
+            # * setup wire
+            tempWire = Signal(8, name_override='aw_addr{:d}'.format(i))
+            awAddrList.append(tempWire)
+            # * combinational logic for write addresses
+            self.comb += awAddrList[i].eq(Replicate(blockSel[i], 8) & self.inAddr[0:8])
+
 
 
 
