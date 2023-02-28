@@ -146,6 +146,14 @@ class tcamMemTopWrapper(Module):
                     o_out_gate=outAndGateList[i]    # out_gate1
                 )
 
+        # * ------ Priority encoder instantiations
+        self.specials += Instance(
+            of='priority_encoder',
+            name='priority_encoder_dut0',
+            i_in_data=outAndGateList[-1],
+            o_out_data=self.outputs
+        )
+
 # ===========================================================================================
 # ======================================== End Class ========================================
 # ===========================================================================================
