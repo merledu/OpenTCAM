@@ -90,7 +90,18 @@ class tcamMemTopWrapper(Module):
             # * combinational logic for write addresses
             self.comb += awAddrList[i].eq(Replicate(blockSel[i], 8) & self.inAddr[0:8])
 
-
+        # * ----- generating address mux for all N blocks (selects between read or write addresses)
+        vtbAddrList = []
+        for i in range(self.memBlocks):
+            # * setup wire
+            tempWire = Signal(7, name_override='vtb_addr{:d}'.format(i))
+            vtbAddrList.append(tempWire)
+            # * combinational logic for address mux
+            self.comb += If(self.inWeb,
+                            vtbAddrList[i].eq(Cat(self.inAddr[i*7 : (i*7)+7], 0b0)),
+                        ).Else(
+                            vtbAddrList[i].eq(awAddrList[i])
+                        )
 
 
 
