@@ -103,6 +103,26 @@ class tcamMemTopWrapper(Module):
                             vtbAddrList[i].eq(awAddrList[i])
                         )
 
+        # * ----- adding TCAM memory block instances
+        # * setup rdata output signals
+        outRdataList = []
+        for i in range(self.memBlocks):
+            tempWire = Signal(64, name_override='out_rdata{:d}'.format(i))
+            outRdataList.append(tempWire)
+
+            # * tcam memory block 7x64 instantiations
+            self.specials += Instance(
+                of='tcamMemBlock7x64',
+                name='tcam_mem_7x64_dut{:d}'.format(i),
+                i_in_clk=self.inClk,
+                i_in_csb=self.inCsb,
+                i_in_web=self.inWeb,
+                i_in_wmask=self.inWmask,
+                i_in_addr=vtbAddrList[i],
+                i_in_wdata=self.inWdata,
+                o_out_rdata=outRdataList[i]
+            )
+
 
 
 # ===========================================================================================
