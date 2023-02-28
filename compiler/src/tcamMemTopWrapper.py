@@ -3,6 +3,7 @@ List of all pip packages imported
 """
 
 import logging
+import math
 from migen import *
 from migen.fhdl.verilog import convert
 
@@ -30,7 +31,7 @@ class tcamMemTopWrapper(Module):
         # * setup IO ports
         self.ioPorts()
         # * generate block RTL
-        # self.logicBlock()
+        self.logicBlock()
 
     def ioPorts(self):
         """
@@ -61,7 +62,8 @@ class tcamMemTopWrapper(Module):
         self.outputs = self.outPma
         logging.info('Created list of all output ports')
 
-
+    def logicBlock(self):
+        pass
 
 
 
