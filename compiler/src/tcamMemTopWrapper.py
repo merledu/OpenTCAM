@@ -63,7 +63,16 @@ class tcamMemTopWrapper(Module):
         logging.info('Created list of all output ports')
 
     def logicBlock(self):
-        pass
+        # * ----- memory block selection for write logic
+        # * setup wire
+        blockSel = Signal(self.memBlocks, name_override='block_sel')
+        # * calculate width for inAddr slice
+        inAddrWidth = int(math.ceil(math.log2(self.memBlocks))) + 8
+        # * combinational logic for block sel
+        for i in range(self.memBlocks):
+            self.comb += blockSel[i].eq(self.inAddr[8:inAddrWidth] == i)
+        
+
 
 
 
