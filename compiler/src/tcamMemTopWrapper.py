@@ -71,7 +71,15 @@ class tcamMemTopWrapper(Module):
         # * combinational logic for block sel
         for i in range(self.memBlocks):
             self.comb += blockSel[i].eq(self.inAddr[8:inAddrWidth] == i)
-        
+
+        # * ----- generating logic for write mask
+        wMaskList = []
+        for i in range(self.memBlocks):
+            # * setup wire
+            tempWire = Signal(4, name_override='wmask{:d}'.format(i))
+            wMaskList.append(tempWire)
+            # * combinational logic for write mask
+            self.comb += wMaskList[i].eq(Replicate(blockSel[i], 4) & self.inWmask)
 
 
 
