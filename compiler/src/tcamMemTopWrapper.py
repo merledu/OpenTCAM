@@ -123,7 +123,28 @@ class tcamMemTopWrapper(Module):
                 o_out_rdata=outRdataList[i]
             )
 
-
+        # * ------ AND gate instantiations
+        outAndGateList = []
+        for i in range(self.memBlocks-1):
+            # * setup AND gate output signals
+            tempWire = Signal(64, name_override='out_gate{:d}'.format(i))
+            outAndGateList.append(tempWire)
+            if i == 0:
+                self.specials += Instance(
+                    of='and_gate',
+                    name='and_gate_dut{:d}'.format(i),
+                    i_in_dataA=outRdataList[i],     # out_rdata0
+                    i_in_dataB=outRdataList[i+1],   # out_rdata1
+                    o_out_data=outAndGateList[i]    # out_gate0
+                )
+            else:
+                self.specials += Instance(
+                    of='and_gate',
+                    name='and_gate_dut{:d}'.format(i),
+                    i_in_dataA=outRdataList[i+1],   # out_rdata2
+                    i_in_dataB=outAndGateList[i-1], # out_gate0
+                    o_out_gate=outAndGateList[i]    # out_gate1
+                )
 
 # ===========================================================================================
 # ======================================== End Class ========================================
