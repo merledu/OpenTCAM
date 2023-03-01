@@ -22,6 +22,8 @@ class tcamMemTopWrapper(Module):
         Constructor: call IO ports and logic here
 
         **Signals:**
+        :param list inputs              list containing objects for all input ports.
+        :param list outputs             list containing objects for all output ports.
         :param Signal __blockSel:       signals object for block_sel
         :param list __wMaskList:        list to store signal objects for wmaskN
         :param list __awAddrList:       list to store signal objects for aw_addrN
@@ -46,6 +48,8 @@ class tcamMemTopWrapper(Module):
         self.__vtbAddrList = []
         self.__outRdataList = []
         self.__outAndGateList = []
+        self.inputs = []
+        self.outputs = []
 
         # * setup IO ports
         self.ioPorts()
@@ -56,7 +60,7 @@ class tcamMemTopWrapper(Module):
         """
         Create Signal objects for all the input ports of various widths and output ports of various widths.
         """
-        self.inputs = []
+        self.inputs = {}
         # * setup input ports
         self.inClk     = Signal(1, name_override='in_clk')
         logging.info('Created tcamMemTopWrapper input port: {:>s}'.format(self.inClk.name_override))
@@ -78,7 +82,7 @@ class tcamMemTopWrapper(Module):
         self.outPma  = Signal(6, name_override='out_pma')
         logging.info('Created tcamMemTopWrapper output port: {:>s}[{:d}:0]'.format(self.outPma.name_override, 5))
         # * add all output ports to an output list
-        self.outputs = self.outPma
+        self.outputs = [self.outPma]
         logging.info('Created list of all output ports')
 
     def logicBlock(self):
@@ -183,7 +187,7 @@ class tcamMemTopWrapper(Module):
             of='priority_encoder',
             name='priority_encoder_dut0',
             i_in_data=self.__outAndGateList[-1],
-            o_out_data=self.outputs
+            o_out_data=self.outputs[0]
         )
         logging.info('Created instance "priority_encoder_dut0" of module "priority_encoder"')
 
@@ -204,8 +208,16 @@ def genVerilogTcamMemTopWrapper(memBlocks, filePath):
     # * instantiate the module
     tcamMemTop = tcamMemTopWrapper(memBlocks)
 
+    # * ----- setup the IO ports for the verilog module definition
+    # * input port set
+    inPortsSet = set(tcamMemTop.inputs)
+    # * output port set
+    outPortsSet = set(tcamMemTop.outputs)
+    # * combine input and output sets
+    moduleIOs = inPortsSet.union(outPortsSet)
+
     # * generate the verilog code
-    tcamMemTop.verilogCode = convert(tcamMemTop, name='tcamMemBlock7x64')
+    tcamMemTop.verilogCode = convert(tcamMemTop, name='tcamMemBlock7x64', ios=moduleIOs)
     logging.info('Generated TCAM Memory Top Wrapper verilog module RTL')
 
     # * write verilog code to a file

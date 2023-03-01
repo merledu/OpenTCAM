@@ -22,13 +22,20 @@ class andGate(Module):
         Constructor: call IO ports and logic here
 
         **Public Variables:**
+        :param list inputs          list containing objects for all input ports.
+        :param list outputs         list containing objects for all output ports.
         :param int ports:           number of input ports.
         :param int dataWidth:       width of input ports.
         :return str verilogCode:    store RTL code of the gate.
         """
+        # * variables
         self.numInputs = ports
         self.numInputWidth = dataWidth
         self.verilogCode = ""
+
+        # * signals
+        self.inputs = []
+        self.outputs = []
 
         # * setup IO ports
         self.ioPorts()
@@ -39,7 +46,6 @@ class andGate(Module):
         """
         Create a list of Signal objects for N input ports each of width M. Create a Signal object for an output port of width M.
         """
-        self.inputs = []
         for port in range(self.numInputs):
             tempPort = Signal(self.numInputWidth, name_override='in_data{}'.format(port))
             self.inputs.append(tempPort)

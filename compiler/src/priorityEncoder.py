@@ -23,12 +23,19 @@ class priorityEncoder(Module):
         Constructor: call IO ports and logic here
 
         **Public Variables:**
+        :param list inputs          list containing objects for all input ports.
+        :param list outputs         list containing objects for all output ports.
         :param int ports:           number of input ports.
         :return str verilogCode:    store RTL code of the encoder.
         """
+        # * variables
         self.inputWidth = ports
         self.outputWidth = 0
         self.verilogCode = ''
+
+        # * signals
+        self.inputs = []
+        self.outputs = []
 
         # * setup IO ports
         self.ioPorts()

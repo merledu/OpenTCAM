@@ -21,12 +21,18 @@ class tcamMemBlock7x64(Module):
         Constructor: call IO ports and logic here
 
         **Variables:**
+        :param list inputs          list containing objects for all input ports.
+        :param list outputs         list containing objects for all output ports.
         :param str __sramModule:    module definition name of the SRAM block.
         :return str verilogCode:    store RTL code of the encoder.
         """
         # * variables
         self.__sramModule = 'sky130_sram_1kbyte_1rw1r_32x256_8'
         self.verilogCode = ''
+
+        # * signals
+        self.inputs = []
+        self.outputs = []
 
         # * setup IO ports
         self.ioPorts()
@@ -37,7 +43,6 @@ class tcamMemBlock7x64(Module):
         """
         Create Signal objects for all the input ports of various widths and output ports of various widths.
         """
-        self.inputs = []
         # * setup input ports
         self.inClk     = Signal(1, name_override='in_clk')
         logging.info('Created tcamMemBlock7x64 input port: {:>s}'.format(self.inClk.name_override))
@@ -58,7 +63,7 @@ class tcamMemBlock7x64(Module):
         self.outRdata  = Signal(64, name_override='out_rdata')
         logging.info('Created tcamMemBlock7x64 output port: {:>s}[{:d}:0]'.format(self.outRdata.name_override, 64))
         # * add all output ports to an output list
-        self.outputs = self.outRdata
+        self.outputs = [self.outRdata]
         logging.info('Created list of all output ports')
 
     def logicBlock(self):
@@ -74,9 +79,9 @@ class tcamMemBlock7x64(Module):
         arAddr1 = Signal(8, name_override='ar_addr1')
         arAddr2 = Signal(8, name_override='ar_addr2')
         # * always read/search lower 128 rows
-        self.comb += arAddr1.eq(Cat(self.inAddr[0:6], 0))
+        self.comb += arAddr1.eq(Cat(self.inAddr[0:7], 0b0))
         # * always read/search upper 128 rows
-        self.comb += arAddr2.eq(Cat(self.inAddr[0:6], 1) & Cat(Replicate(self.inWeb, 8)))
+        self.comb += arAddr2.eq(Cat(self.inAddr[0:7], 0b1) & Cat(Replicate(self.inWeb, 8)))
         logging.info('Created read/search address logic')
 
         # * ----- PMA
@@ -85,7 +90,7 @@ class tcamMemBlock7x64(Module):
         rdata       = Signal(64, name_override='rdata')
 
         self.comb += rdata.eq(Cat(rdataLower, rdataUpper))
-        self.comb += self.outputs.eq(rdata)
+        self.comb += self.outRdata.eq(rdata)
         logging.info('Created upper and lower potential matcha address logic')
 
         # * ----- instantiate the sky130 1KB RAM module as submodule
@@ -124,8 +129,16 @@ def genVerilogtcamMemBlock7x64(filePath):
     # * instantiate the module
     tcamMem = tcamMemBlock7x64()
 
+    # * ----- setup the IO ports for the verilog module definition
+    # * input port set
+    inPortsSet = set(tcamMem.inputs)
+    # * output port set
+    outPortsSet = set(tcamMem.outputs)
+    # * combine input and output sets
+    moduleIOs = inPortsSet.union(outPortsSet)
+
     # * generate the verilog code
-    tcamMem.verilogCode = convert(tcamMem, name='tcamMemBlock7x64')
+    tcamMem.verilogCode = convert(tcamMem, name='tcamMemBlock7x64', ios=moduleIOs)
     logging.info('Generated TCAM Memory 7x64 verilog module RTL')
 
     # * write verilog code to a file
