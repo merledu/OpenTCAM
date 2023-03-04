@@ -5,6 +5,7 @@ List of all pip packages imported
 import logging
 import math
 import sys
+import os
 from migen import *
 from migen.fhdl.verilog import convert
 
@@ -18,7 +19,7 @@ class priorityEncoder(Module):
     """
 
     # * ----------------------------------------------------------------- Functions
-    def __init__(self, ports):
+    def __init__(self, inDataWidth):
         """
         Constructor: call IO ports and logic here
 
@@ -29,7 +30,7 @@ class priorityEncoder(Module):
         :return str verilogCode:    store RTL code of the encoder.
         """
         # * variables
-        self.inputWidth = ports
+        self.inputWidth = inDataWidth
         self.outputWidth = 0
         self.verilogCode = ''
 
@@ -82,7 +83,7 @@ class priorityEncoder(Module):
 # ======================================== End Class ========================================
 # ===========================================================================================
 
-def genVerilogPriorityEncoder(ports, filePath):
+def genVerilogPriorityEncoder(inDataWidth, filePath):
     """
     Main user function for class priorityEncoder.
     Creates the IO ports for the verilog RTL module definition.
@@ -93,7 +94,7 @@ def genVerilogPriorityEncoder(ports, filePath):
     :return str:                RTL code of the encoder.
     """
     # * instantiate the module
-    encoder = priorityEncoder(ports=ports)
+    encoder = priorityEncoder(inDataWidth=inDataWidth)
 
     # * ----- setup the IO ports for the verilog module definition
     # * input port set
@@ -105,12 +106,13 @@ def genVerilogPriorityEncoder(ports, filePath):
     logging.info('Generated Priority Encoder verilog module definition')
 
     # * generate the verilog code
-    encoder.verilogCode = convert(encoder, name='priorityEncoder', ios=moduleIOs)
+    moduleName = os.path.basename(filePath).replace('.sv', '')
+    encoder.verilogCode = convert(encoder, name=moduleName, ios=moduleIOs)
     logging.info('Generated Priority Encoder verilog module RTL')
 
     # * write verilog code to a file
     with open(filePath, 'w', encoding='utf-8') as rtl:
         rtl.write(str(encoder.verilogCode))
-    logging.info('Created rtl file {:s}'.format(filePath))
+    logging.info('Created rtl file "{:s}"'.format(filePath))
 
     return str(encoder.verilogCode)

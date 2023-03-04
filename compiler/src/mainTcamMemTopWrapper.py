@@ -65,9 +65,8 @@ def main():
     if arg.tcamConfig:
         memLength=int(arg.tcamConfig[5:7])
         memWidth=int(arg.tcamConfig[8:10])
-        print(memLength, memWidth, memWidth%7, memWidth/7)
         if (memLength == 64) and (memWidth%7 == 0):
-            print('"VALID" TCAM memory wrapper config. tcam_[64]x[7*N] == {:s}'.format(arg.tcamConfig))
+            print('"VALID" TCAM memory wrapper config. tcam_[64]x[7*N] == {:s}\n'.format(arg.tcamConfig))
             logging.info('"VALID" TCAM memory wrapper config. tcam_[64]x[7*N] == {:s}'.format(arg.tcamConfig))
             logging.info('Total TCAM memory 64x7 blocks required: {:d}'.format(int(memWidth/7)))
             # * create rtl dir for specific tcam mem wrap config

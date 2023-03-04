@@ -3,6 +3,7 @@ List of all pip packages imported
 """
 
 import logging
+import os
 from migen import *
 from migen.fhdl.verilog import convert
 
@@ -117,7 +118,7 @@ class tcamMemBlock7x64(Module):
 # ======================================== End Class ========================================
 # ===========================================================================================
 
-def genVerilogtcamMemBlock7x64(filePath):
+def genVerilogTcamMemBlock7x64(filePath):
     """
     Main user function for class tcamMemBlock7x64.
     Creates the IO ports for the verilog RTL module definition.
@@ -138,12 +139,13 @@ def genVerilogtcamMemBlock7x64(filePath):
     moduleIOs = inPortsSet.union(outPortsSet)
 
     # * generate the verilog code
-    tcamMem.verilogCode = convert(tcamMem, name='tcamMemBlock7x64', ios=moduleIOs)
+    moduleName = os.path.basename(filePath).replace('.sv', '')
+    tcamMem.verilogCode = convert(tcamMem, name=moduleName, ios=moduleIOs)
     logging.info('Generated TCAM Memory 7x64 verilog module RTL')
 
     # * write verilog code to a file
     with open(filePath, 'w', encoding='utf-8') as rtl:
         rtl.write(str(tcamMem.verilogCode))
-    logging.info('Created rtl file {:s}'.format(filePath))
+    logging.info('Created rtl file "{:s}"'.format(filePath))
 
     return str(tcamMem.verilogCode)

@@ -3,6 +3,7 @@ List of all pip packages imported
 """
 
 import logging
+import os
 from migen import *
 from migen.fhdl.verilog import convert
 
@@ -17,19 +18,19 @@ class andGate(Module):
     """
 
     # * ----------------------------------------------------------------- Variables
-    def __init__(self, ports, dataWidth):
+    def __init__(self, inputPorts, dataWidth):
         """
         Constructor: call IO ports and logic here
 
         **Public Variables:**
         :param list inputs          list containing objects for all input ports.
         :param list outputs         list containing objects for all output ports.
-        :param int ports:           number of input ports.
+        :param int inputPorts:      number of input ports.
         :param int dataWidth:       width of input ports.
         :return str verilogCode:    store RTL code of the gate.
         """
         # * variables
-        self.numInputs = ports
+        self.numInputs = inputPorts
         self.numInputWidth = dataWidth
         self.verilogCode = ""
 
@@ -64,23 +65,23 @@ class andGate(Module):
 # ======================================== End Class ========================================
 # ===========================================================================================
 
-def genVerilogAndGate(ports, dataWidth, filePath):
+def genVerilogAndGate(inputPorts, dataWidth, filePath):
     """
     Main user function for class andGate.
     Creates the IO ports for the verilog RTL module definition.
     Generates the verilog code for an AND gate with N inputs each input M bits wide. The output is M bits wide.
 
-    :param int ports:           number of input ports.
+    :param int inputPorts:      number of input ports.
     :param int dataWidth:       width of input ports.
     :param str filePath:        absolute path for the verilog file.
     :return str:                RTL code of the gate.
     """
     # * instantiate the module
-    gate = andGate(ports=ports, dataWidth=dataWidth)
+    gate = andGate(inputPorts=inputPorts, dataWidth=dataWidth)
 
     # * ----- setup the IO ports for the verilog module definition
     # * input port set
-    inPortsSet = {gate.inputs[i] for i in range(ports)}
+    inPortsSet = {gate.inputs[i] for i in range(inputPorts)}
     # * output port set
     outPortsSet = {gate.outputs}
     # * combine input and output sets
@@ -88,12 +89,13 @@ def genVerilogAndGate(ports, dataWidth, filePath):
     logging.info('Generated AND gate verilog module definition')
 
     # * generate the verilog code
-    gate.verilogCode = convert(gate, name='andGate', ios=moduleIOs)
+    moduleName = os.path.basename(filePath).replace('.sv', '')
+    gate.verilogCode = convert(gate, name=moduleName, ios=moduleIOs)
     logging.info('Generated AND gate verilog module RTL')
 
     # * write verilog code to a file
     with open(filePath, 'w', encoding='utf-8') as rtl:
         rtl.write(str(gate.verilogCode))
-    logging.info('Created rtl file {:s}'.format(filePath))
+    logging.info('Created rtl file "{:s}"'.format(filePath))
 
     return str(gate.verilogCode)

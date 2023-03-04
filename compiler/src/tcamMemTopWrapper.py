@@ -4,6 +4,7 @@ List of all pip packages imported
 
 import logging
 import math
+import os
 from migen import *
 from migen.fhdl.verilog import convert
 
@@ -124,7 +125,7 @@ class tcamMemTopWrapper(Module):
         # * ----- generating address mux for all N blocks (selects between read or write addresses)
         for i in range(self.memBlocks):
             # * setup wire
-            tempVtbAddr = Signal(7, name_override='vtb_addr{:d}'.format(i))
+            tempVtbAddr = Signal(8, name_override='vtb_addr{:d}'.format(i))
             self.__vtbAddrList.append(tempVtbAddr)
             logging.info('Created wire {:s}[{:d}:0]'.format(self.__vtbAddrList[i].name_override, self.__vtbAddrList[i].nbits-1))
             # * combinational logic for address mux
@@ -145,7 +146,7 @@ class tcamMemTopWrapper(Module):
             # * tcam memory block 7x64 instantiations
             dutName = 'tcam_mem_7x64_dut{:d}'.format(i)
             self.specials += Instance(
-                of='tcamMemBlock7x64',
+                of='tcam_mem_7x64',
                 name=dutName,
                 i_in_clk=self.inClk,
                 i_in_csb=self.inCsb,
@@ -168,23 +169,23 @@ class tcamMemTopWrapper(Module):
                 self.specials += Instance(
                     of='and_gate',
                     name=dutName,
-                    i_in_dataA=self.__outRdataList[i],     # out_rdata0
-                    i_in_dataB=self.__outRdataList[i+1],   # out_rdata1
-                    o_out_data=self.__outAndGateList[i]    # out_gate0
+                    i_in_data0=self.__outRdataList[i],
+                    i_in_data1=self.__outRdataList[i+1],
+                    o_out_data=self.__outAndGateList[i]
                 )
             else:
                 self.specials += Instance(
                     of='and_gate',
                     name=dutName,
-                    i_in_dataA=self.__outRdataList[i+1],   # out_rdata2
-                    i_in_dataB=self.__outAndGateList[i-1], # out_gate0
-                    o_out_gate=self.__outAndGateList[i]    # out_gate1
+                    i_in_data0=self.__outRdataList[i+1],
+                    i_in_data1=self.__outAndGateList[i-1],
+                    o_out_data=self.__outAndGateList[i]
                 )
             logging.info('Created instance "{:s}" of module "tcamMemBlock7x64"'.format(dutName))
 
         # * ------ Priority encoder instantiations
         self.specials += Instance(
-            of='priority_encoder',
+            of='priority_encoder_64x6',
             name='priority_encoder_dut0',
             i_in_data=self.__outAndGateList[-1],
             o_out_data=self.outputs[0]
@@ -217,12 +218,13 @@ def genVerilogTcamMemTopWrapper(memBlocks, filePath):
     moduleIOs = inPortsSet.union(outPortsSet)
 
     # * generate the verilog code
-    tcamMemTop.verilogCode = convert(tcamMemTop, name='tcamMemBlock7x64', ios=moduleIOs)
+    moduleName = os.path.basename(filePath).replace('.sv', '')
+    tcamMemTop.verilogCode = convert(tcamMemTop, name=moduleName, ios=moduleIOs)
     logging.info('Generated TCAM Memory Top Wrapper verilog module RTL')
 
     # * write verilog code to a file
     with open(filePath, 'w', encoding='utf-8') as rtl:
         rtl.write(str(tcamMemTop.verilogCode))
-    logging.info('Created rtl file {:s}'.format(filePath))
+    logging.info('Created rtl file "{:s}"'.format(filePath))
 
     return str(tcamMemTop.verilogCode)
