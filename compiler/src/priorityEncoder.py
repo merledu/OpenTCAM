@@ -4,14 +4,16 @@ List of all pip packages imported
 
 import logging
 import math
-import sys
 import os
+import sys
+
 from migen import *
 from migen.fhdl.verilog import convert
 
 # ===========================================================================================
 # ======================================= Begin Class =======================================
 # ===========================================================================================
+
 
 class PriorityEncoder(Module):
     """
@@ -32,7 +34,7 @@ class PriorityEncoder(Module):
         # * variables
         self.inputWidth = inDataWidth
         self.outputWidth = 0
-        self.verilogCode = ''
+        self.verilogCode = ""
 
         # * signals
         self.inputs = []
@@ -52,14 +54,14 @@ class PriorityEncoder(Module):
             logging.info('"VALID": priority encoder input width %d is of 2^N', self.inputWidth)
             # * set output port width of log2(N)
             self.outputWidth = int(math.log2(self.inputWidth))
-            logging.info('priority encoder output width: %d', self.outputWidth)
+            logging.info("priority encoder output width: %d", self.outputWidth)
             # * create IO port objects
-            self.inputs = Signal(self.inputWidth, name_override='in_data')
-            logging.info('Created priority encoder input port: in_data[%d:0]', self.inputWidth-1)
-            self.outputs = Signal(self.outputWidth, name_override='out_data')
-            logging.info('Created priority encoder output port: out_data[%d:0]', self.outputWidth-1)
+            self.inputs = Signal(self.inputWidth, name_override="in_data")
+            logging.info("Created priority encoder input port: in_data[%d:0]", self.inputWidth - 1)
+            self.outputs = Signal(self.outputWidth, name_override="out_data")
+            logging.info("Created priority encoder output port: out_data[%d:0]", self.outputWidth - 1)
         else:
-            print('num isnt 2^N', type(self.inputWidth))
+            print("num isnt 2^N", type(self.inputWidth))
             logging.error('"INVALID": priority encoder input width %d isnt of 2^N', self.inputWidth)
             sys.exit('"INVALID": priority encoder input width %d isnt of 2^N', self.inputWidth)
 
@@ -72,16 +74,18 @@ class PriorityEncoder(Module):
         # * create N priority cases
         for i in reversed(range(self.inputWidth)):
             # * generate one hot encoding
-            oneHotEncode = bin(pow(2,i))
+            oneHotEncode = bin(pow(2, i))
             # * add ith priority case
             priorityCases[int(oneHotEncode, 2)] = self.outputs.eq(i)
-            logging.info('Created priority case for %3d input bit', i)
+            logging.info("Created priority case for %3d input bit", i)
         # * concat using case
         self.comb += Case(self.inputs, priorityCases)
+
 
 # ===========================================================================================
 # ======================================== End Class ========================================
 # ===========================================================================================
+
 
 def genVerilogPriorityEncoder(inDataWidth, filePath):
     """
@@ -103,15 +107,15 @@ def genVerilogPriorityEncoder(inDataWidth, filePath):
     outPortsSet = {encoder.outputs}
     # * combine input and output sets
     moduleIOs = inPortsSet.union(outPortsSet)
-    logging.info('Generated Priority Encoder verilog module definition')
+    logging.info("Generated Priority Encoder verilog module definition")
 
     # * generate the verilog code
-    moduleName = os.path.basename(filePath).replace('.sv', '')
+    moduleName = os.path.basename(filePath).replace(".sv", "")
     encoder.verilogCode = convert(encoder, name=moduleName, ios=moduleIOs)
-    logging.info('Generated Priority Encoder verilog module RTL')
+    logging.info("Generated Priority Encoder verilog module RTL")
 
     # * write verilog code to a file
-    with open(filePath, 'w', encoding='utf-8') as rtl:
+    with open(filePath, "w", encoding="utf-8") as rtl:
         rtl.write(str(encoder.verilogCode))
     logging.info('Created rtl file "%s"', filePath)
 

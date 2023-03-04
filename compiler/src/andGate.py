@@ -4,12 +4,14 @@ List of all pip packages imported
 
 import logging
 import os
+
 from migen import *
 from migen.fhdl.verilog import convert
 
 # ===========================================================================================
 # ======================================= Begin Class =======================================
 # ===========================================================================================
+
 
 class AndGate(Module):
     """
@@ -50,9 +52,9 @@ class AndGate(Module):
         for port in range(self.numInputs):
             tempPort = Signal(self.numInputWidth, name_override=f"in_data{port}")
             self.inputs.append(tempPort)
-            logging.info('Created AND gate input port: in_data%d[%d:%d]', port, self.numInputWidth-1, 0)
-        self.outputs = Signal(self.numInputWidth, name_override='out_data')
-        logging.info('Created AND gate output port: out_data%d[%d:%d]', port, self.numInputWidth-1, 0)
+            logging.info("Created AND gate input port: in_data%d[%d:%d]", port, self.numInputWidth - 1, 0)
+        self.outputs = Signal(self.numInputWidth, name_override="out_data")
+        logging.info("Created AND gate output port: out_data%d[%d:%d]", port, self.numInputWidth - 1, 0)
 
     def logicBlock(self):
         """
@@ -60,11 +62,13 @@ class AndGate(Module):
         Using the reduce() function to combine all input signals into a single output signal.
         """
         self.comb += self.outputs.eq(reduce(lambda x, y: x & y, self.inputs))
-        logging.info('Generated AND gate logic')
+        logging.info("Generated AND gate logic")
+
 
 # ===========================================================================================
 # ======================================== End Class ========================================
 # ===========================================================================================
+
 
 def genVerilogAndGate(inputPorts, dataWidth, filePath):
     """
@@ -87,15 +91,15 @@ def genVerilogAndGate(inputPorts, dataWidth, filePath):
     outPortsSet = {gate.outputs}
     # * combine input and output sets
     moduleIOs = inPortsSet.union(outPortsSet)
-    logging.info('Generated AND gate verilog module definition')
+    logging.info("Generated AND gate verilog module definition")
 
     # * generate the verilog code
-    moduleName = os.path.basename(filePath).replace('.sv', '')
+    moduleName = os.path.basename(filePath).replace(".sv", "")
     gate.verilogCode = convert(gate, name=moduleName, ios=moduleIOs)
-    logging.info('Generated AND gate verilog module RTL')
+    logging.info("Generated AND gate verilog module RTL")
 
     # * write verilog code to a file
-    with open(filePath, 'w', encoding='utf-8') as rtl:
+    with open(filePath, "w", encoding="utf-8") as rtl:
         rtl.write(str(gate.verilogCode))
     logging.info('Created rtl file "%s"', filePath)
 

@@ -4,12 +4,14 @@ List of all pip packages imported
 
 import logging
 import os
+
 from migen import *
 from migen.fhdl.verilog import convert
 
 # ===========================================================================================
 # ======================================= Begin Class =======================================
 # ===========================================================================================
+
 
 class TcamMemBlock7x64(Module):
     """
@@ -28,8 +30,8 @@ class TcamMemBlock7x64(Module):
         :return str verilogCode:    store RTL code of the encoder.
         """
         # * variables
-        self.__sramModule = 'sky130_sram_1kbyte_1rw1r_32x256_8'
-        self.verilogCode = ''
+        self.__sramModule = "sky130_sram_1kbyte_1rw1r_32x256_8"
+        self.verilogCode = ""
 
         # * signals
         self.inputs = []
@@ -45,59 +47,59 @@ class TcamMemBlock7x64(Module):
         Create Signal objects for all the input ports of various widths and output ports of various widths.
         """
         # * setup input ports
-        self.inClk     = Signal(1, name_override='in_clk')
-        logging.info('Created TcamMemBlock7x64 input port: %s', self.inClk.name_override)
-        self.inCsb     = Signal(1, name_override='in_csb')
-        logging.info('Created TcamMemBlock7x64 input port: %s', self.inCsb.name_override)
-        self.inWeb     = Signal(1, name_override='in_web')
-        logging.info('Created TcamMemBlock7x64 input port: %s', self.inWeb.name_override)
-        self.inWmask   = Signal(4, name_override='in_wmask')
-        logging.info('Created TcamMemBlock7x64 input port: %s[%d:0]', self.inWmask.name_override, 4)
-        self.inAddr    = Signal(8, name_override='in_addr')
-        logging.info('Created TcamMemBlock7x64 input port: %s[%d:0]', self.inAddr.name_override, 8)
-        self.inWdata   = Signal(32, name_override='in_wdata')
-        logging.info('Created TcamMemBlock7x64 input port: %s[%d:0]', self.inWdata.name_override, 32)
+        self.inClk = Signal(1, name_override="in_clk")
+        logging.info("Created TcamMemBlock7x64 input port: %s", self.inClk.name_override)
+        self.inCsb = Signal(1, name_override="in_csb")
+        logging.info("Created TcamMemBlock7x64 input port: %s", self.inCsb.name_override)
+        self.inWeb = Signal(1, name_override="in_web")
+        logging.info("Created TcamMemBlock7x64 input port: %s", self.inWeb.name_override)
+        self.inWmask = Signal(4, name_override="in_wmask")
+        logging.info("Created TcamMemBlock7x64 input port: %s[%d:0]", self.inWmask.name_override, 4)
+        self.inAddr = Signal(8, name_override="in_addr")
+        logging.info("Created TcamMemBlock7x64 input port: %s[%d:0]", self.inAddr.name_override, 8)
+        self.inWdata = Signal(32, name_override="in_wdata")
+        logging.info("Created TcamMemBlock7x64 input port: %s[%d:0]", self.inWdata.name_override, 32)
         # * add all input ports to an input list
         self.inputs = [self.inClk, self.inCsb, self.inWeb, self.inWmask, self.inAddr, self.inWdata]
-        logging.info('Created list of all input ports')
+        logging.info("Created list of all input ports")
         # * setup output ports
-        self.outRdata  = Signal(64, name_override='out_rdata')
-        logging.info('Created TcamMemBlock7x64 output port: %s[%d:0]', self.outRdata.name_override, 64)
+        self.outRdata = Signal(64, name_override="out_rdata")
+        logging.info("Created TcamMemBlock7x64 output port: %s[%d:0]", self.outRdata.name_override, 64)
         # * add all output ports to an output list
         self.outputs = [self.outRdata]
-        logging.info('Created list of all output ports')
+        logging.info("Created list of all output ports")
 
     def logicBlock(self):
         """
         Setup the sequential logic for creating a TCAM 7x64 memory block using migen.
         """
         # * ----- setup write address logic
-        awAddr = Signal(8, name_override='aw_addr')
+        awAddr = Signal(8, name_override="aw_addr")
         self.comb += awAddr.eq(Cat(Replicate(~self.inWeb, 8)) & self.inAddr)
-        logging.info('Created write address logic')
+        logging.info("Created write address logic")
 
         # * ----- setup Read/Search address
-        arAddr1 = Signal(8, name_override='ar_addr1')
-        arAddr2 = Signal(8, name_override='ar_addr2')
+        arAddr1 = Signal(8, name_override="ar_addr1")
+        arAddr2 = Signal(8, name_override="ar_addr2")
         # * always read/search lower 128 rows
         self.comb += arAddr1.eq(Cat(self.inAddr[0:7], 0b0))
         # * always read/search upper 128 rows
         self.comb += arAddr2.eq(Cat(self.inAddr[0:7], 0b1) & Cat(Replicate(self.inWeb, 8)))
-        logging.info('Created read/search address logic')
+        logging.info("Created read/search address logic")
 
         # * ----- PMA
-        rdataLower  = Signal(32, name_override='rdata_lower')
-        rdataUpper  = Signal(32, name_override='rdata_upper')
-        rdata       = Signal(64, name_override='rdata')
+        rdataLower = Signal(32, name_override="rdata_lower")
+        rdataUpper = Signal(32, name_override="rdata_upper")
+        rdata = Signal(64, name_override="rdata")
 
         self.comb += rdata.eq(Cat(rdataLower, rdataUpper))
         self.comb += self.outRdata.eq(rdata)
-        logging.info('Created upper and lower potential match address logic')
+        logging.info("Created upper and lower potential match address logic")
 
         # * ----- instantiate the sky130 1KB RAM module as submodule
         self.specials += Instance(
             of=self.__sramModule,
-            name='dut_vtb',
+            name="dut_vtb",
             # Port 0: RW
             i_clk0=self.inClk,
             i_csb0=self.inCsb,
@@ -110,13 +112,15 @@ class TcamMemBlock7x64(Module):
             i_clk1=self.inClk,
             i_csb1=self.inCsb,
             i_addr1=arAddr2,
-            o_dout1=rdataUpper
+            o_dout1=rdataUpper,
         )
-        logging.info('Instantiated %s module', self.__sramModule)
+        logging.info("Instantiated %s module", self.__sramModule)
+
 
 # ===========================================================================================
 # ======================================== End Class ========================================
 # ===========================================================================================
+
 
 def genVerilogTcamMemBlock7x64(filePath):
     """
@@ -139,12 +143,12 @@ def genVerilogTcamMemBlock7x64(filePath):
     moduleIOs = inPortsSet.union(outPortsSet)
 
     # * generate the verilog code
-    moduleName = os.path.basename(filePath).replace('.sv', '')
+    moduleName = os.path.basename(filePath).replace(".sv", "")
     tcamMem.verilogCode = convert(tcamMem, name=moduleName, ios=moduleIOs)
-    logging.info('Generated TCAM Memory 7x64 verilog module RTL')
+    logging.info("Generated TCAM Memory 7x64 verilog module RTL")
 
     # * write verilog code to a file
-    with open(filePath, 'w', encoding='utf-8') as rtl:
+    with open(filePath, "w", encoding="utf-8") as rtl:
         rtl.write(str(tcamMem.verilogCode))
     logging.info('Created rtl file "%s"', filePath)
 
