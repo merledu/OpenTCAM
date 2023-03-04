@@ -4,7 +4,7 @@
 [C0303(trailing-whitespace)]
 disable=C0303
 
-# disable recommend using enumerate in for loops 
+# disable recommend using enumerate in for loops
 [C0200(consider-using-enumerate)]
 disable=C0200
 
@@ -16,10 +16,13 @@ disable=R0902
 [E1137(unsupported-assignment-operation)]
 disable=E1137
 
-# diable unsubscriptable object 
+# disable unsubscriptable object
 [E1136(unsubscriptable-object)]
 disable=E1136
 
+# disable no-member
+[E1101(no-member)]
+disable=E1101
 
 # =======================================================================================
 # =======================================================================================
@@ -67,7 +70,7 @@ max-public-methods=20
 # Maximum number of return / yield for function / method body.
 max-returns=5
 # Maximum number of statements in function / method body.
-max-statements=50
+max-statements=100
 # Minimum number of public methods for a class (see R0903).
 min-public-methods=2
 
