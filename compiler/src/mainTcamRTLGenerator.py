@@ -1,7 +1,7 @@
-from tcamRtlGenerator import * 
+from tcamRtlGenerator import *
 import argparse
 import os
-os.system('clear')
+# os.system('clear')
 
 def new_main():
     # create logs dir if it doesnt exist
@@ -32,12 +32,12 @@ def new_main():
     parser.add_argument('-v','--verbose',
                         type=int,default=0,metavar='',required=False,nargs='?',help='print verbose mode')
     arg = parser.parse_args()
-    
-    # ====================================================== code main body    
-    
+
+    # ====================================================== code main body
+
     # class objects
     trwg1=TcamRtlWrapperGenerator()
-    
+
     # get project dir
     trwg1.getPrjDir(arg.verbose)
     # get tcam table config yaml file path

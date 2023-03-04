@@ -11,7 +11,7 @@ from migen.fhdl.verilog import convert
 # ======================================= Begin Class =======================================
 # ===========================================================================================
 
-class tcamMemBlock7x64(Module):
+class TcamMemBlock7x64(Module):
     """
     Generates the verilog code for a TCAM 7x64 memory block.
     """
@@ -46,23 +46,23 @@ class tcamMemBlock7x64(Module):
         """
         # * setup input ports
         self.inClk     = Signal(1, name_override='in_clk')
-        logging.info('Created tcamMemBlock7x64 input port: {:>s}'.format(self.inClk.name_override))
+        logging.info('Created TcamMemBlock7x64 input port: %s', self.inClk.name_override)
         self.inCsb     = Signal(1, name_override='in_csb')
-        logging.info('Created tcamMemBlock7x64 input port: {:>s}'.format(self.inCsb.name_override))
+        logging.info('Created TcamMemBlock7x64 input port: %s', self.inCsb.name_override)
         self.inWeb     = Signal(1, name_override='in_web')
-        logging.info('Created tcamMemBlock7x64 input port: {:>s}'.format(self.inWeb.name_override))
+        logging.info('Created TcamMemBlock7x64 input port: %s', self.inWeb.name_override)
         self.inWmask   = Signal(4, name_override='in_wmask')
-        logging.info('Created tcamMemBlock7x64 input port: {:>s}[{:d}:0]'.format(self.inWmask.name_override, 4))
+        logging.info('Created TcamMemBlock7x64 input port: %s[%d:0]', self.inWmask.name_override, 4)
         self.inAddr    = Signal(8, name_override='in_addr')
-        logging.info('Created tcamMemBlock7x64 input port: {:>s}[{:d}:0]'.format(self.inAddr.name_override, 8))
+        logging.info('Created TcamMemBlock7x64 input port: %s[%d:0]', self.inAddr.name_override, 8)
         self.inWdata   = Signal(32, name_override='in_wdata')
-        logging.info('Created tcamMemBlock7x64 input port: {:>s}[{:d}:0]'.format(self.inWdata.name_override, 32))
+        logging.info('Created TcamMemBlock7x64 input port: %s[%d:0]', self.inWdata.name_override, 32)
         # * add all input ports to an input list
         self.inputs = [self.inClk, self.inCsb, self.inWeb, self.inWmask, self.inAddr, self.inWdata]
         logging.info('Created list of all input ports')
         # * setup output ports
         self.outRdata  = Signal(64, name_override='out_rdata')
-        logging.info('Created tcamMemBlock7x64 output port: {:>s}[{:d}:0]'.format(self.outRdata.name_override, 64))
+        logging.info('Created TcamMemBlock7x64 output port: %s[%d:0]', self.outRdata.name_override, 64)
         # * add all output ports to an output list
         self.outputs = [self.outRdata]
         logging.info('Created list of all output ports')
@@ -92,27 +92,27 @@ class tcamMemBlock7x64(Module):
 
         self.comb += rdata.eq(Cat(rdataLower, rdataUpper))
         self.comb += self.outRdata.eq(rdata)
-        logging.info('Created upper and lower potential matcha address logic')
+        logging.info('Created upper and lower potential match address logic')
 
         # * ----- instantiate the sky130 1KB RAM module as submodule
         self.specials += Instance(
-            of=self.__sramModule,                       # module name
-            name='dut_vtb',                             # instance name
+            of=self.__sramModule,
+            name='dut_vtb',
             # Port 0: RW
-            i_clk0=self.inClk,                          # input port (use i_<portName>)
-            i_csb0=self.inCsb,                          # input port (use i_<portName>)
-            i_web0=self.inWeb,                          # input port (use i_<portName>)
-            i_wmask0=self.inWmask,                      # input port (use i_<portName>)
-            i_addr0=Mux(self.inWeb, arAddr1, awAddr),   # input port (use i_<portName>)
-            i_din0=self.inWdata,                        # input port (use i_<portName>)
-            o_dout0=rdataLower,                         # output port (use o_<portName>)
+            i_clk0=self.inClk,
+            i_csb0=self.inCsb,
+            i_web0=self.inWeb,
+            i_wmask0=self.inWmask,
+            i_addr0=Mux(self.inWeb, arAddr1, awAddr),
+            i_din0=self.inWdata,
+            o_dout0=rdataLower,
             # Port 1: R
-            i_clk1=self.inClk,                          # input port (use i_<portName>)
-            i_csb1=self.inCsb,                          # input port (use i_<portName>)
-            i_addr1=arAddr2,                            # input port (use i_<portName>)
-            o_dout1=rdataUpper                          # output port (use o_<portName>)
+            i_clk1=self.inClk,
+            i_csb1=self.inCsb,
+            i_addr1=arAddr2,
+            o_dout1=rdataUpper
         )
-        logging.info('Instantiated {:s} module'.format(self.__sramModule))
+        logging.info('Instantiated %s module', self.__sramModule)
 
 # ===========================================================================================
 # ======================================== End Class ========================================
@@ -120,7 +120,7 @@ class tcamMemBlock7x64(Module):
 
 def genVerilogTcamMemBlock7x64(filePath):
     """
-    Main user function for class tcamMemBlock7x64.
+    Main user function for class TcamMemBlock7x64.
     Creates the IO ports for the verilog RTL module definition.
     Generates the verilog code for a TCAM 7x64 memory block.
 
@@ -128,7 +128,7 @@ def genVerilogTcamMemBlock7x64(filePath):
     :return str:                RTL code of the TCAM 7x64 memory.
     """
     # * instantiate the module
-    tcamMem = tcamMemBlock7x64()
+    tcamMem = TcamMemBlock7x64()
 
     # * ----- setup the IO ports for the verilog module definition
     # * input port set
@@ -146,6 +146,6 @@ def genVerilogTcamMemBlock7x64(filePath):
     # * write verilog code to a file
     with open(filePath, 'w', encoding='utf-8') as rtl:
         rtl.write(str(tcamMem.verilogCode))
-    logging.info('Created rtl file "{:s}"'.format(filePath))
+    logging.info('Created rtl file "%s"', filePath)
 
     return str(tcamMem.verilogCode)

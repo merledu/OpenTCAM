@@ -12,7 +12,7 @@ from migen.fhdl.verilog import convert
 # ======================================= Begin Class =======================================
 # ===========================================================================================
 
-class tcamMemTopWrapper(Module):
+class TcamMemTopWrapper(Module):
     """
     Generates the verilog code for a TCAM memory block N*64 Wrapper.
     """
@@ -64,24 +64,24 @@ class tcamMemTopWrapper(Module):
         self.inputs = {}
         # * setup input ports
         self.inClk     = Signal(1, name_override='in_clk')
-        logging.info('Created tcamMemTopWrapper input port: {:>s}'.format(self.inClk.name_override))
+        logging.info('Created TcamMemTopWrapper input port: %s', self.inClk.name_override)
         self.inCsb     = Signal(1, name_override='in_csb')
-        logging.info('Created tcamMemTopWrapper input port: {:>s}'.format(self.inCsb.name_override))
+        logging.info('Created TcamMemTopWrapper input port: %s', self.inCsb.name_override)
         self.inWeb     = Signal(1, name_override='in_web')
-        logging.info('Created tcamMemTopWrapper input port: {:>s}'.format(self.inWeb.name_override))
+        logging.info('Created TcamMemTopWrapper input port: %s', self.inWeb.name_override)
         self.inWmask   = Signal(4, name_override='in_wmask')
-        logging.info('Created tcamMemTopWrapper input port: {:>s}[{:d}:0]'.format(self.inWmask.name_override, 3))
+        logging.info('Created TcamMemTopWrapper input port: %s[%d:0]', self.inWmask.name_override, 3)
         self.__inAddrWidth = self.memBlocks * 7
         self.inAddr    = Signal(self.__inAddrWidth, name_override='in_addr')
-        logging.info('Created tcamMemTopWrapper input port: {:>s}[{:d}:0]'.format(self.inAddr.name_override, self.__inAddrWidth-1))
+        logging.info('Created TcamMemTopWrapper input port: %s[%d:0]', self.inAddr.name_override, self.__inAddrWidth-1)
         self.inWdata   = Signal(32, name_override='in_wdata')
-        logging.info('Created tcamMemTopWrapper input port: {:>s}[{:d}:0]'.format(self.inWdata.name_override, 31))
+        logging.info('Created TcamMemTopWrapper input port: %s[%d:0]', self.inWdata.name_override, 31)
         # * add all input ports to an input list
         self.inputs = [self.inClk, self.inCsb, self.inWeb, self.inWmask, self.inAddr, self.inWdata]
         logging.info('Created list of all input ports')
         # * setup output ports
         self.outPma  = Signal(6, name_override='out_pma')
-        logging.info('Created tcamMemTopWrapper output port: {:>s}[{:d}:0]'.format(self.outPma.name_override, 5))
+        logging.info('Created TcamMemTopWrapper output port: %s[%d:0]', self.outPma.name_override, 5)
         # * add all output ports to an output list
         self.outputs = [self.outPma]
         logging.info('Created list of all output ports')
@@ -93,58 +93,58 @@ class tcamMemTopWrapper(Module):
         # * ----- memory block selection for write logic
         # * setup wire
         self.__blockSel = Signal(self.memBlocks, name_override='block_sel')
-        logging.info('Created wire {:s}[{:d}:0]'.format(self.__blockSel.name_override, self.__blockSel.nbits-1))
+        logging.info('Created wire %s[%d:0]', self.__blockSel.name_override, self.__blockSel.nbits-1)
         # * calculate width for inAddr slice
         inAddrWidth = int(math.ceil(math.log2(self.memBlocks))) + 8
-        logging.info('Calculated bit slice for signal in_addr[{:2d}:{:2d}]'.format(inAddrWidth, 8))
+        logging.info('Calculated bit slice for signal in_addr[%d:%d]', inAddrWidth, 8)
         # * combinational logic for block sel
         for i in range(self.memBlocks):
             self.comb += self.__blockSel[i].eq(self.inAddr[8:inAddrWidth] == i)
-            logging.info('Created logic for signal {:s}[{:d}]'.format(self.__blockSel.name_override, i))
+            logging.info('Created logic for signal %s[%d]', self.__blockSel.name_override, i)
 
         # * ----- generating logic for write mask
         for i in range(self.memBlocks):
             # * setup wire
-            tempWmask = Signal(4, name_override='wmask{:d}'.format(i))
+            tempWmask = Signal(4, name_override=f"wmask{i}")
             self.__wMaskList.append(tempWmask)
-            logging.info('Created wire {:s}[{:d}:0]'.format(self.__wMaskList[i].name_override, self.__wMaskList[i].nbits-1))
+            logging.info('Created wire %s[%d:0]', self.__wMaskList[i].name_override, self.__wMaskList[i].nbits-1)
             # * combinational logic for write mask
             self.comb += self.__wMaskList[i].eq(Replicate(self.__blockSel[i], 4) & self.inWmask)
-            logging.info('Created logic for signal {:s}'.format(self.__wMaskList[i].name_override))
+            logging.info('Created logic for signal %s', self.__wMaskList[i].name_override)
 
         # * ----- generating logic for write addresses
         for i in range(self.memBlocks):
             # * setup wire
-            tempAwAddr = Signal(8, name_override='aw_addr{:d}'.format(i))
+            tempAwAddr = Signal(8, name_override=f"aw_addr{i}")
             self.__awAddrList.append(tempAwAddr)
-            logging.info('Created wire {:s}[{:d}:0]'.format(self.__awAddrList[i].name_override, self.__awAddrList[i].nbits-1))
+            logging.info('Created wire %s[%d:0]', self.__awAddrList[i].name_override, self.__awAddrList[i].nbits-1)
             # * combinational logic for write addresses
             self.comb += self.__awAddrList[i].eq(Replicate(self.__blockSel[i], 8) & self.inAddr[0:8])
-            logging.info('Created logic for signal {:s}'.format(self.__awAddrList[i].name_override))
+            logging.info('Created logic for signal %s', self.__awAddrList[i].name_override)
 
         # * ----- generating address mux for all N blocks (selects between read or write addresses)
         for i in range(self.memBlocks):
             # * setup wire
-            tempVtbAddr = Signal(8, name_override='vtb_addr{:d}'.format(i))
+            tempVtbAddr = Signal(8, name_override=f"vtb_addr{i}")
             self.__vtbAddrList.append(tempVtbAddr)
-            logging.info('Created wire {:s}[{:d}:0]'.format(self.__vtbAddrList[i].name_override, self.__vtbAddrList[i].nbits-1))
+            logging.info('Created wire %s[%d:0]', self.__vtbAddrList[i].name_override, self.__vtbAddrList[i].nbits-1)
             # * combinational logic for address mux
             self.comb += If(self.inWeb,
                             self.__vtbAddrList[i].eq(Cat(self.inAddr[i*7 : (i*7)+7], 0b0)),
                         ).Else(
                             self.__vtbAddrList[i].eq(self.__awAddrList[i])
                         )
-            logging.info('Created logic for signal {:s}'.format(self.__vtbAddrList[i].name_override))
+            logging.info('Created logic for signal %s', self.__vtbAddrList[i].name_override)
 
         # * ----- adding TCAM memory block instances
         # * setup rdata output signals
         for i in range(self.memBlocks):
-            tempRdata = Signal(64, name_override='out_rdata{:d}'.format(i))
+            tempRdata = Signal(64, name_override=f"out_rdata{i}")
             self.__outRdataList.append(tempRdata)
-            logging.info('Created wire {:s}[{:d}:0]'.format(self.__outRdataList[i].name_override, self.__outRdataList[i].nbits-1))
+            logging.info('Created wire %s[%d:0]', self.__outRdataList[i].name_override, self.__outRdataList[i].nbits-1)
 
             # * tcam memory block 7x64 instantiations
-            dutName = 'tcam_mem_7x64_dut{:d}'.format(i)
+            dutName = f"tcam_mem_7x64_dut{i}"
             self.specials += Instance(
                 of='tcam_mem_7x64',
                 name=dutName,
@@ -156,15 +156,15 @@ class tcamMemTopWrapper(Module):
                 i_in_wdata=self.inWdata,
                 o_out_rdata=self.__outRdataList[i]
             )
-            logging.info('Created instance "{:s}" of module "tcamMemBlock7x64"'.format(dutName))
+            logging.info('Created instance "%s" of module "tcamMemBlock7x64"', dutName)
 
         # * ------ AND gate instantiations
         for i in range(self.memBlocks-1):
             # * setup AND gate output signals
-            tempOutAndGate = Signal(64, name_override='out_andgate{:d}'.format(i))
+            tempOutAndGate = Signal(64, name_override=f"out_andgate{i}")
             self.__outAndGateList.append(tempOutAndGate)
-            logging.info('Created wire {:s}[{:d}:0]'.format(self.__outAndGateList[i].name_override, self.__outAndGateList[i].nbits-1))
-            dutName = 'and_gate_dut{:d}'.format(i)
+            logging.info('Created wire %s[%d:0]', self.__outAndGateList[i].name_override, self.__outAndGateList[i].nbits-1)
+            dutName = f"and_gate_dut{i}"
             if i == 0:
                 self.specials += Instance(
                     of='and_gate',
@@ -181,7 +181,7 @@ class tcamMemTopWrapper(Module):
                     i_in_data1=self.__outAndGateList[i-1],
                     o_out_data=self.__outAndGateList[i]
                 )
-            logging.info('Created instance "{:s}" of module "tcamMemBlock7x64"'.format(dutName))
+            logging.info('Created instance "%s" of module "tcamMemBlock7x64"', dutName)
 
         # * ------ Priority encoder instantiations
         self.specials += Instance(
@@ -198,7 +198,7 @@ class tcamMemTopWrapper(Module):
 
 def genVerilogTcamMemTopWrapper(memBlocks, filePath):
     """
-    Main user function for class tcamMemTopWrapper.
+    Main user function for class TcamMemTopWrapper.
     Creates the IO ports for the verilog RTL module definition.
     Generates the verilog code for a TCAM Mx64 memory block wrapper.
 
@@ -207,7 +207,7 @@ def genVerilogTcamMemTopWrapper(memBlocks, filePath):
     :return str:                RTL code of the TCAM 7x64 memory.
     """
     # * instantiate the module
-    tcamMemTop = tcamMemTopWrapper(memBlocks)
+    tcamMemTop = TcamMemTopWrapper(memBlocks)
 
     # * ----- setup the IO ports for the verilog module definition
     # * input port set
@@ -225,6 +225,6 @@ def genVerilogTcamMemTopWrapper(memBlocks, filePath):
     # * write verilog code to a file
     with open(filePath, 'w', encoding='utf-8') as rtl:
         rtl.write(str(tcamMemTop.verilogCode))
-    logging.info('Created rtl file "{:s}"'.format(filePath))
+    logging.info('Created rtl file "%s"', filePath)
 
     return str(tcamMemTop.verilogCode)
