@@ -76,7 +76,7 @@ The OpenTCAM compiler requires [Python3](https://www.python.org/downloads/), [Pi
 <!-- explain how to create virtual environments -->
 - To setup and build the python virtual environment required for running the compiler simply run the following command in the project directory. It will automatically setup and install all the required pip packages.
     ```bash
-    make opentcam_venv
+    make venv_opentcam
     ```
 
 ### 2.  Virtual Environment Basics
