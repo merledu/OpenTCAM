@@ -125,15 +125,15 @@ Unit tests are an important part of regression testing to ensure that the code s
 Use the following commands:
 -   Run a specific test:
     ```bash
-    make rununittest MARKER=test_name
+    make run_unittest MARKER=test_name
     ```
 -   Run all tests of a specific test class:
     ```bash
-    make rununittest MARKER=test_class_name
+    make run_unittest MARKER=test_class_name
     ```
 -   Run all regression tests:
     ```bash
-    make runregression
+    make run_regression
     ```
 -   Display all test markers:
     ```bash
@@ -145,7 +145,7 @@ Use the following commands:
 Used to gauge the effectiveness of tests. It can show which parts of your code are being exercised by tests, and which are not.
 -   To generate code coverage simply run the command:
     ```bash
-    make coverage
+    make run_coverage
     ```
 A report will be created in the folder `coverage_html`. Simply open the file `coverage_html/index.html` in the web browser of your choice to view a detailed coverage report.
 
@@ -153,7 +153,7 @@ A report will be created in the folder `coverage_html`. Simply open the file `co
 <!-- We have created a detailed presentation that serves as our documentation (for now). Take a look at it [here](). -->
 -   To generate API documentation locally.
     ```bash
-    make apidocs
+    make gen_apidocs
     ```
 
 ### 8.  CleanUp
