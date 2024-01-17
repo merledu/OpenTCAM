@@ -205,7 +205,7 @@ deepclean:
 	@ echo ------------------------- Deep Cleaning Environment ------------------------
 	@ echo " "
 	@ make cleanvenv
-	@ make cleanall
+	@ make clean_all
 	@ echo ------------------------------------ DONE ----------------------------------
 	@ echo " "
 
@@ -248,7 +248,7 @@ help:
 	@ echo " cleantcamrtl:			delete TCAM memory block RTL files"
 	@ echo " cleantests:			delete py tests cache "
 	@ echo " cleancoverage:			delete coverage stats"
-	@ echo " cleanall:			delete all dump files"
+	@ echo " clean_all:			delete all dump files"
 	@ echo " deepclean:			delete all dump files + virtual environment/s"
 	@ echo " "
 	@ echo " help:				humble people ask for help :)"
