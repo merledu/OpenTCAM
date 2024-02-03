@@ -205,7 +205,7 @@ deepclean:
 	@ echo ------------------------- Deep Cleaning Environment ------------------------
 	@ echo " "
 	@ make cleanvenv
-	@ make cleanall
+	@ make clean_all
 	@ echo ------------------------------------ DONE ----------------------------------
 	@ echo " "
 
@@ -234,12 +234,12 @@ help:
 	@ echo "	DEBUG=1/0				debugging on/off"
 	@ echo "	VERBOSE=1/0				verbosity on/off"
 	@ echo " "
-	@ echo " apidocs:			generate OpenTCAM API Documentation"
+	@ echo " gen_apidocs:			generate OpenTCAM API Documentation"
 	@ echo " "
-	@ echo " rununittest:			run single table mapping test case "
-	@ echo " runregression:			run pytest regression"
+	@ echo " run_unittest:			run single table mapping test case "
+	@ echo " run_regression:			run pytest regression"
 	@ echo " testmarkers:			view opentcam table mapping test/s markers"
-	@ echo " coverage:			run opentcam table mapping test/s coverage"
+	@ echo " run_coverage:			run opentcam table mapping test/s coverage"
 	@ echo " "
 	@ echo " cleanvenv:			delete python virtual environment/s"
 	@ echo " cleanlogs:			delete log files"
@@ -248,7 +248,7 @@ help:
 	@ echo " cleantcamrtl:			delete TCAM memory block RTL files"
 	@ echo " cleantests:			delete py tests cache "
 	@ echo " cleancoverage:			delete coverage stats"
-	@ echo " cleanall:			delete all dump files"
+	@ echo " clean_all:			delete all dump files"
 	@ echo " deepclean:			delete all dump files + virtual environment/s"
 	@ echo " "
 	@ echo " help:				humble people ask for help :)"
