@@ -164,8 +164,9 @@ A report will be created in the folder `coverage_html`. Simply open the file `co
 -   OpenTCAM is licensed under the [Apache License Version 2.0](https://www.apache.org/licenses/LICENSE-2.0).
 
 ## Contributors & Acknowledgements
-<!-- -   [Dr. Ali Ahmed](https://github.com/aliahmedphd) is the -->
-<!-- -   [Usman Siddique](https://github.com/usman1515) is the  -->
-<!-- -   [Sajjad Ahmed](https://github.com/sajjadahmed677) is the -->
+[Dr. Ali Ahmed](https://github.com/aliahmedphd)
+[Usman Siddique](https://github.com/usman1515)
+[Sajjad Ahmed](https://github.com/sajjadahmed677)
+[Mohammed Abdullah](https://github.com/mohammed1916)
 
 <!-- If I forgot to add you, please let me know! -->
