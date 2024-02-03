@@ -7,17 +7,6 @@
 # OpenTCAM
 An open-source Ternary Content Addressable Memory (TCAM) compiler framework.
 
-[![made-with-python](https://img.shields.io/badge/Made%20with-Python-1f425f.svg)](https://www.python.org/)
-[![made-with-bash](https://img.shields.io/badge/Made%20with-Bash-1f425f.svg)](https://www.gnu.org/software/bash/)
-[![made-for-VSCode](https://img.shields.io/badge/Made%20for-VSCode-1f425f.svg)](https://code.visualstudio.com/)
-[![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://github.com/merledu/OpenTCAM/commits/main)
-[![Linux](https://svgshare.com/i/Zhy.svg)](https://svgshare.com/i/Zhy.svg)
-[![macOS](https://svgshare.com/i/ZjP.svg)](https://svgshare.com/i/ZjP.svg)
-[![GitHub branches](https://badgen.net/github/branches/Naereen/Strapdown.js)](https://github.com/merledu/OpenTCAM/branches)
-[![GitHub commits](https://badgen.net/github/commits/Naereen/Strapdown.js)](https://github.com/merledu/OpenTCAM/commits/main)
-[![GitHub issues](https://img.shields.io/github/issues/Naereen/StrapDown.js.svg)](https://github.com/merledu/OpenTCAM/issues)
-[![GitHub pull-requests](https://img.shields.io/github/issues-pr/Naereen/StrapDown.js.svg)](https://github.com/merledu/OpenTCAM/pulls)
-
 ## What is OpenTCAM?
 <!-- introduction -->
 OpenTCAM is an open source Python framework that can be used to create the design (RTL) and layouts (GDS-II) of a customizable SRAM-based TCAM memory to use in FPGA and ASIC designs respectively. 
