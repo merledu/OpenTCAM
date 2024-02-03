@@ -99,7 +99,7 @@ run_coverage:
 gen_apidocs:
 	@ echo " "
 	@ echo ------------------------ OpenTCAM API Documentation ------------------------
-	@ pdoc ./compiler/src/tableMapping.py -o ${DIR_DOCS}
+	@ pdoc ./compiler/src/*.py -o ${DIR_DOCS}
 	@ echo ------------------------------------ DONE ----------------------------------
 	@ echo " "
 
@@ -107,26 +107,24 @@ run_pylint:
 	@ echo " "
 	@ echo ------------------------------ Running PyLint ------------------------------
 	@ [ -d ${DIR_LOGS} ] || mkdir -p ${DIR_LOGS}
-	@ pylint ${DIR_COMP_SRC}/mainTableMapping.py \
+	@ pylint ${DIR_COMP_SRC}/*.py \
 	--output-format=${FORMAT}:./logs/pylint.log,${COLOR} \
 	--score=${SCORE} --reports=${REPORTS} \
 	--rcfile=.pylintrc
 	@ echo ------------------------------------ DONE ----------------------------------
 	@ echo " "
 
-# @ pylint ${DIR_COMP_SRC}/*.py \
-
 run_isort:
 	@ echo " "
 	@ echo ------------------------------ Running iSort ------------------------------
-	@ isort -v compiler/src/mainTableMapping.py
+	@ isort -v compiler/src/*.py
 	@ echo ------------------------------------ DONE ----------------------------------
 	@ echo " "
 
 run_black:
 	@ echo " "
 	@ echo ------------------------------ Running Black ------------------------------
-	@ black -v compiler/src/mainTableMapping.py
+	@ black -v compiler/src/*.py
 	@ echo ---------------------------------- DONE -----------------------------------
 	@ echo " "
 
@@ -196,7 +194,7 @@ clean_coverage:
 	@ echo ------------------------------------ DONE ----------------------------------
 	@ echo " "
 
-clean_all: 
+clean_all:
 	@ make clean_logs clean_sramtablemap clean_tcamrtl clean_tests clean_coverage clean_apidocs
 
 deepclean:
@@ -229,7 +227,7 @@ help:
 	@ echo " "
 	@ echo " tcamrtl:			generate TCAM memory RTL wrapper"
 	@ echo "	TCAMWRAPCONFIG=tcamMemWrapper_XxY	tcam memory config name"
-	@ echo "	TIMEUNIT=1ns				set timeunit resolution" 
+	@ echo "	TIMEUNIT=1ns				set timeunit resolution"
 	@ echo "	TIMEPRECISION=1ps			set timeprecision resolution"
 	@ echo "	DEBUG=1/0				debugging on/off"
 	@ echo "	VERBOSE=1/0				verbosity on/off"

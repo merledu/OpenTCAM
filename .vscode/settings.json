@@ -1,6 +1,11 @@
 {
+    // only change these settings as you prefer
+    "editor.fontSize": 13,
+    "terminal.integrated.fontSize": 13,
+    "editor.fontFamily": "'CaskaydiaCove Nerd Font Mono'",
+    "terminal.integrated.fontFamily": "CaskaydiaCove Nerd Font Mono",
+    // dont change these settings
     "python.defaultInterpreterPath": ".pyVenvOpenTcam/bin/python",
-    "editor.fontSize": 12,
     "editor.tabSize": 4,
     "editor.insertSpaces": true,
     "editor.bracketPairColorization.enabled": true,
@@ -9,10 +14,9 @@
     "editor.detectIndentation": true,
     "editor.lineHeight": 0,
     "editor.minimap.enabled": false,
-    "terminal.integrated.fontSize": 11,
     "terminal.integrated.lineHeight": 1,
     "terminal.integrated.shellIntegration.enabled": true,
-    // "files.trimTrailingWhitespace": true,
+    "files.trimTrailingWhitespace": true,
     "markdown.preview.fontSize": 10,
     "markdown.preview.lineHeight": 1.0,
     "markdown-preview-github-styles.colorTheme": "light",
@@ -26,10 +30,14 @@
     "cSpell.enabled": true,
     "cSpell.caseSensitive": true,
     "cSpell.words": [
+        "combinational",
         "damerau",
+        "dataframe",
         "levenshtein",
-        "tcam", "TCAM",
-        "sram", "SRAM",
-        "dataframe"
+        "sram",
+        "SRAM",
+        "tcam",
+        "TCAM",
+        "verilog"
     ]
 }
