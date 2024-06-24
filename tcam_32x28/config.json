@@ -1,6 +1,6 @@
 {
-    "DESIGN_NAME": "top_tcam",
-    "VERILOG_FILES": "dir::src/top_tcam.sv",
+    "DESIGN_NAME": "top_tcam_32x56",
+    "VERILOG_FILES": "dir::src/top_tcam_32x56.sv",
     "CLOCK_PORT": "clk_i",
     "CLOCK_PERIOD": 25.0,
     "FP_PDN_MULTILAYER": true,

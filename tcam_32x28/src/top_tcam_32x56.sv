@@ -72,7 +72,7 @@ module top_tcam_32x56 (
 endmodule
 
 module priority_encoder_32x5 (
-    input   logic [63:0]    in_data,
+    input   logic [31:0]    in_data,
     output  logic [5:0]     out_data
 );    
 
@@ -115,9 +115,9 @@ module priority_encoder_32x5 (
 endmodule
 
 module and_gate (
-    input   logic   [63:0]  in_dataA,
-    input   logic   [63:0]  in_dataB,
-    output  logic   [63:0]  out_data
+    input   logic   [31:0]  in_dataA,
+    input   logic   [31:0]  in_dataB,
+    output  logic   [31:0]  out_data
 );
 
     assign out_data = in_dataA & in_dataB;
@@ -284,11 +284,7 @@ module tcam_32x28 (
 // SRAM/Virtual TCAM blocks                         //
 ////////////////////////////////////////////////////// 
 
-    sky130_sram_1kbyte_1rw1r_32x256_8 vtb_sb1(
-        `ifdef USE_POWER_PINS
-        .vccd1  (),
-        .vssd1  (),
-        `endif
+    sky130_sram_1kbyte_1rw1r_32x256_8 sram0(
         // Port 0: RW
         .clk0   (clk_i),
         .csb0   (csb_i),
@@ -304,11 +300,7 @@ module tcam_32x28 (
         .dout1  (vtb_out2)
     );
 
-    sky130_sram_1kbyte_1rw1r_32x256_8 vtb_sb2(
-        `ifdef USE_POWER_PINS
-        .vccd1	(),
-        .vssd1	(),
-        `endif
+    sky130_sram_1kbyte_1rw1r_32x256_8 sram1(
         // Port 0: RW
         .clk0	(clk_i),
         .csb0	(csb_i),
