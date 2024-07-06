@@ -1,130 +1,4 @@
-`timescale 1ns/100ps
-
-module top_tcam_32x56 (
-    input	logic	clk_i,
-    input	logic	csb_i,
-    input	logic	web_i,
-    input	logic	[3:0]	wmask_i,
-    input	logic	[55:0]	addr_i,
-    input	logic	[31:0]	wdata_i,
-    output	logic	[5:0]	rdata_o
-);
-
-    // memory block selection for write logic
-    wire	[1:0]	block_sel;
-    always_comb begin :
-        block_sel = 2'b1;
-    end
-
-    // logic for write mask
-    wire	[3:0]	wmask0;
-    wire	[3:0]	wmask1;
-    assign wmask0 = { 4{block_sel[0]} } & wmask_i;
-    assign wmask1 = { 4{block_sel[1]} } & wmask_i;
-
-    // logic for write addresses
-    wire	[7:0]	aw_addr0;
-    wire	[7:0]	aw_addr1;
-    assign aw_addr0 = { 28{block_sel[0]} } & addr_i[27:0];
-    assign aw_addr1 = { 28{block_sel[1]} } & addr_i[55:28];
-
-    // address mux for all N blocks (selects between read or write addresses)
-    wire	[6:0]	vtb_addr0;
-    wire	[6:0]	vtb_addr1;
-    assign vtb_addr0 = web_i ? addr_i[27:0] : aw_addr0;
-    assign vtb_addr1 = web_i ? addr_i[55:28] : aw_addr1;
-
-    // TCAM memory block instances
-    wire	[31:0]	out_rdata0;
-    wire	[31:0]	out_rdata1;
-
-    tcam_32x28 tcam_32x28_dut0(
-        .clk_i      (      clk_i),
-        .csb_i      (      csb_i),
-        .web_i      (      web_i),
-        .wmask_i    (    wmask_i),
-        .addr_i     (   vtb_addr0),
-        .wdata_i    (    wdata_i),
-        .out_rdata   (   out_rdata0)
-    );
-    tcam_32x28 tcam_32x28_dut1(
-        .clk_i      (      clk_i),
-        .csb_i      (      csb_i),
-        .web_i      (      web_i),
-        .wmask_i    (    wmask_i),
-        .addr_i     (   vtb_addr1),
-        .wdata_i    (    wdata_i),
-        .out_rdata   (   out_rdata1)
-    );
-
-    // AND gate instantiations
-    wire	[31:0]	out_andgate0;
-    wire	[31:0]	out_andgate1;
-    wire	[31:0]	out_andgate2;
-    andgate andgate_dut0 (.out_data (out_andgate), in_dataA (out_rdata0), in_dataB (out_rdata1));
-
-    // Priority Encoder instantiations
-    priority_encoder_32x5 priority_encoder_dut0(
-        .in_data  (out_andgate  ),
-        .out_data (rdata_o     )
-    );
-
-endmodule
-
-module priority_encoder_32x5 (
-    input   logic [31:0]    in_data,
-    output  logic [5:0]     out_data
-);    
-
-    always @(*) begin
-        if(in_data[31] == 1)   out_data=6'd31;
-        else if(in_data[30] == 1)   out_data=6'd30;
-        else if(in_data[29] == 1)   out_data=6'd29;
-        else if(in_data[28] == 1)   out_data=6'd28;
-        else if(in_data[27] == 1)   out_data=6'd27;
-        else if(in_data[26] == 1)   out_data=6'd26;
-        else if(in_data[25] == 1)   out_data=6'd25;
-        else if(in_data[24] == 1)   out_data=6'd24;
-        else if(in_data[23] == 1)   out_data=6'd23;
-        else if(in_data[22] == 1)   out_data=6'd22;
-        else if(in_data[21] == 1)   out_data=6'd21;
-        else if(in_data[20] == 1)   out_data=6'd20;
-        else if(in_data[19] == 1)   out_data=6'd19;
-        else if(in_data[18] == 1)   out_data=6'd18;
-        else if(in_data[17] == 1)   out_data=6'd17;
-        else if(in_data[16] == 1)   out_data=6'd16;
-        else if(in_data[15] == 1)   out_data=6'd15;
-        else if(in_data[14] == 1)   out_data=6'd14;
-        else if(in_data[13] == 1)   out_data=6'd13;
-        else if(in_data[12] == 1)   out_data=6'd12;
-        else if(in_data[11] == 1)   out_data=6'd11;
-        else if(in_data[10] == 1)   out_data=6'd10;
-        else if(in_data[9] == 1)    out_data=6'd9;
-        else if(in_data[8] == 1)    out_data=6'd8;
-        else if(in_data[7] == 1)    out_data=6'd7;
-        else if(in_data[6] == 1)    out_data=6'd6;
-        else if(in_data[5] == 1)    out_data=6'd5;
-        else if(in_data[4] == 1)    out_data=6'd4;
-        else if(in_data[3] == 1)    out_data=6'd3;
-        else if(in_data[2] == 1)    out_data=6'd2;
-        else if(in_data[1] == 1)    out_data=6'd1;
-        else
-            out_data=6'd0;
-    end
-
-endmodule
-
-module and_gate (
-    input   logic   [31:0]  in_dataA,
-    input   logic   [31:0]  in_dataB,
-    output  logic   [31:0]  out_data
-);
-
-    assign out_data = in_dataA & in_dataB;
-
-endmodule
-
-module tcam_32x28 (
+module tcam_32x28_mem (
     input   logic           clk_i,
     input   logic           csb_i,
     input   logic           web_i,
@@ -316,4 +190,16 @@ module tcam_32x28 (
         .dout1	(vtb_out4)
     );
 
+endmodule
+
+module tcam_32x28 (
+    input   logic           clk_i,
+    input   logic           csb_i,
+    input   logic           web_i,
+    input   logic   [3:0]   wmask_i,
+    input   logic   [27:0]  addr_i,
+    input   logic   [31:0]  wdata_i,
+    output  logic   [5:0]   rdata_o
+);
+tcam_32x28_mem submodule (.*);
 endmodule

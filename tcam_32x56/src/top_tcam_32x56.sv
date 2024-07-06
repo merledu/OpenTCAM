@@ -1,4 +1,5 @@
-module tcam_32x28_mem (
+`timescale 1ns/100ps
+module tcam_32x28 (
     input   logic           clk_i,
     input   logic           csb_i,
     input   logic           web_i,
@@ -189,17 +190,79 @@ module tcam_32x28_mem (
         .addr1	({c_hi,addr_i[6:0]}),
         .dout1	(vtb_out4)
     );
-
 endmodule
 
-module tcam_32x28 (
-    input   logic           clk_i,
-    input   logic           csb_i,
-    input   logic           web_i,
-    input   logic   [3:0]   wmask_i,
-    input   logic   [27:0]  addr_i,
-    input   logic   [31:0]  wdata_i,
-    output  logic   [5:0]   rdata_o
+module top_tcam_32x56 (
+    input	logic	clk_i,
+    input	logic	csb_i,
+    input	logic	web_i,
+    input	logic	[3:0]	wmask_i,
+    input	logic	[55:0]	addr_i,
+    input	logic	[31:0]	wdata_i,
+    output	logic	[5:0]	rdata_o
 );
-tcam_32x28_mem submodule (.*);
+
+    // memory block selection for write logic
+    wire	[1:0]	block_sel;
+    always_comb begin
+        block_sel = 2'b11;
+    end
+
+    // logic for write mask
+    wire	[3:0]	wmask0;
+    wire	[3:0]	wmask1;
+    assign wmask0 = { 4{block_sel[0]} } & wmask_i;
+    assign wmask1 = { 4{block_sel[1]} } & wmask_i;
+
+    // logic for write addresses
+    wire	[27:0]	aw_addr0;
+    wire	[27:0]	aw_addr1;
+    assign aw_addr0 = { 28{block_sel[0]} } & addr_i[27:0];
+    assign aw_addr1 = { 28{block_sel[1]} } & addr_i[55:28];
+
+    // address mux for all N blocks (selects between read or write addresses)
+    wire	[27:0]	vtb_addr0;
+    wire	[27:0]	vtb_addr1;
+    assign vtb_addr0 = web_i ? addr_i[27:0] : aw_addr0;
+    assign vtb_addr1 = web_i ? addr_i[55:28] : aw_addr1;
+
+    // TCAM memory block instances
+    wire	[5:0]	rdata_o1;
+    wire	[5:0]	rdata_o2;
+
+    tcam_32x28 tcam_32x28_dut0(
+        .clk_i      (      clk_i),
+        .csb_i      (      csb_i),
+        .web_i      (      web_i),
+        .wmask_i    (    wmask_i),
+        .addr_i     (   vtb_addr0),
+        .wdata_i    (    wdata_i),
+        .rdata_o   (   rdata_o1)
+    );
+    tcam_32x28 tcam_32x28_dut1(
+        .clk_i      (      clk_i),
+        .csb_i      (      csb_i),
+        .web_i      (      web_i),
+        .wmask_i    (    wmask_i),
+        .addr_i     (   vtb_addr1),
+        .wdata_i    (    wdata_i),
+        .rdata_o   (   rdata_o2)
+    );
+    assign rdata_o = rdata_o1 & rdata_o2;
+
+    // AND gate instantiations
+    // wire	[31:0]	out_andgate0;
+    // wire	[31:0]	out_andgate1;
+    // wire	[31:0]	out_andgate2;
+    // wire	[31:0]	out_andgate;
+
+    // and_gate andgate_dut0 (.out_data (out_andgate), in_dataA (rdata_o2), in_dataB (rdata_o1));
+    // assign rdata_o = out_andgate[5:0];
+
+    // Priority Encoder instantiations
+//     priority_encoder_32x5 priority_encoder_dut0(
+//         .in_data  (out_andgate  ),
+//         .out_data (rdata_o     )
+//     );
+
 endmodule

@@ -1,4 +1,4 @@
-module tcam7x64 (
+module tcam_64x7_mem (
 
     input   logic           in_clk,
     input   logic           in_csb,
@@ -49,7 +49,7 @@ module tcam7x64 (
 
 endmodule
 
-module tcam(
+module tcam_64x7 (
 input logic in_clk,
 input logic in_csb,
 input logic in_web,
@@ -59,5 +59,5 @@ input logic [31:0]in_wdata,
 output logic [63:0]out_rdata
 );
 
-tcam7x64 submodule (.*);
+tcam_64x7_mem submodule (.*);
 endmodule
