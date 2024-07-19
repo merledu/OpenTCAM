@@ -1,6 +1,6 @@
 {
-    "DESIGN_NAME": "sky130_sram_36byte_1rw_72x4_8",
-    "VERILOG_FILES": "dir::src/sky130_sram_36byte_1rw_72x4_8.v",
+    "DESIGN_NAME": "sky130_sram_48byte_1rw_96x4_8",
+    "VERILOG_FILES": "dir::src/sky130_sram_48byte_1rw_96x4_8.v",
     "CLOCK_PORT": "clk",
     "CLOCK_PERIOD": 8.0,
     "FP_PDN_MULTILAYER": true,

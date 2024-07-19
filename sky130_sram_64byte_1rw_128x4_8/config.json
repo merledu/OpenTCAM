@@ -1,6 +1,6 @@
 {
-    "DESIGN_NAME": "sky130_sram_36byte_1rw_72x4_8",
-    "VERILOG_FILES": "dir::src/sky130_sram_36byte_1rw_72x4_8.v",
+    "DESIGN_NAME": "sky130_sram_64byte_1rw_128x4_8",
+    "VERILOG_FILES": "dir::src/sky130_sram_64byte_1rw_128x4_8.v",
     "CLOCK_PORT": "clk",
     "CLOCK_PERIOD": 8.0,
     "FP_PDN_MULTILAYER": true,
@@ -11,5 +11,5 @@
     "GND_NETS": "vssd1",
     "ROUTING_CORES": 8,
     "RUN_HEURISTIC_DIODE_INSERTION": 1,
-    "RT_MAX_LAYER": "met4"
+    "DRT_MAX_LAYER": "met4"
 }
