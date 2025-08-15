@@ -2,7 +2,7 @@
 // Words: 256
 // Word size: 32
 // Write size: 8
-
+`timescale 1ns/1ps
 parameter NUM_WMASKS = 4;
 parameter DATA_WIDTH = 32;
 parameter ADDR_WIDTH = 8;
@@ -39,7 +39,6 @@ module sky130_sram_1kbyte_1rw1r_32x256_8 (
 	reg	[NUM_WMASKS-1:0]	wmask0_reg;
 	reg	[ADDR_WIDTH-1:0]	addr0_reg;
 	reg	[DATA_WIDTH-1:0]	din0_reg;
-	reg	[DATA_WIDTH-1:0]	dout0;
 
 	// * All inputs are registers
 	always @(posedge clk0) begin
@@ -57,7 +56,6 @@ module sky130_sram_1kbyte_1rw1r_32x256_8 (
 
 	reg						csb1_reg;
 	reg	[ADDR_WIDTH-1:0]	addr1_reg;
-	reg	[DATA_WIDTH-1:0]	dout1;
 
 	// * All inputs are registers
 	always @(posedge clk1) begin
@@ -74,7 +72,7 @@ module sky130_sram_1kbyte_1rw1r_32x256_8 (
 
 	// * Memory Write Block Port 0
 	// Write Operation : When web0 = 0, csb0 = 0
-	always @ (negedge clk0) begin : MEM_WRITE0
+	always @ (posedge clk0) begin : MEM_WRITE0
 		if ( !csb0_reg && !web0_reg ) begin
 			if (wmask0_reg[0])
 				mem[addr0_reg][7:0]		= din0_reg[7:0];
@@ -89,14 +87,14 @@ module sky130_sram_1kbyte_1rw1r_32x256_8 (
 
 	// * Memory Read Block Port 0
 	// Read Operation : When web0 = 1, csb0 = 0
-	always @ (negedge clk0) begin : MEM_READ0
+	always @ (posedge clk0) begin : MEM_READ0
 		if (!csb0_reg && web0_reg)
 			dout0 <= #(DELAY) mem[addr0_reg];
 	end
 
 	// * Memory Read Block Port 1
 	// Read Operation : When web1 = 1, csb1 = 0
-	always @ (negedge clk1) begin : MEM_READ1
+	always @ (posedge clk1) begin : MEM_READ1
 		if (!csb1_reg)
 			dout1 <= #(DELAY) mem[addr1_reg];
 	end

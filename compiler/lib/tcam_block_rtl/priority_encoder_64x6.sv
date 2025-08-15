@@ -1,4 +1,4 @@
-
+`timescale 1ns/1ps
 module priority_encoder_64x6 (
     input   logic [63:0]    in_data,
     output  logic [5:0]     out_data

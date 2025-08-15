@@ -1,4 +1,4 @@
-
+`timescale 1ns/1ps
 module tcam7x64 (
     input   logic           in_clk,
     input   logic           in_csb,

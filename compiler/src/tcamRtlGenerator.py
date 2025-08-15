@@ -186,7 +186,8 @@ class TcamRtlWrapperGenerator:
         input args:
         return val:
         """
-        tempLine = '`timescale ' + str(timeUnit).replace(' ','') + '/' + str(timePrecision).replace(' ','')
+        # Force timescale to 1ns/1ps as requested
+        tempLine = '`timescale 1ns/1ps'
         self.__tcamRtlWrapLine.append(tempLine)
         logging.info('Added timescale in: {:<s}'.format(self._topWrapperFileName))
     
@@ -293,7 +294,7 @@ class TcamRtlWrapperGenerator:
         
         # * create wire/s for vtb_addr
         for i in range(self._currConfig['tcamBlocks']):
-            tempLine = '{:4s}wire\t[{:^d}:0]\t{:s}{:d};'.format(' ', vtbAddr['width']-1, vtbAddr['name'], i)
+            tempLine = '{:4s}wire\t[{:^d}:0]\t{:s}{:d};'.format(' ', vtbAddr['width'], vtbAddr['name'], i)
             self.__tcamRtlWrapLine.append(tempLine)
         
         # * create assign statements
@@ -337,7 +338,7 @@ class TcamRtlWrapperGenerator:
                 else:
                     tempLine = '{:8s}.{:<12s}({:>12s})'.format(' ', ports[j]['name'], ports[j]['name'])
                 # * add a , for N-1 ports in definition
-                if i != len(self._currConfig['ports']) - 1:
+                if j != len(ports) - 1:
                     tempLine += ','            
                 self.__tcamRtlWrapLine.append(tempLine)
             tempLine = '{:4s}{:s}'.format(' ', ');')
@@ -352,21 +353,28 @@ class TcamRtlWrapperGenerator:
         """
         outRData = self._currConfig['wireOutRData']['name']
         
-        # * create wire/s for vtb_addr
+        # * create wire/s for intermediate AND gate outputs
         for i in range(self._currConfig['tcamBlocks']-1):
             tempLine = '{:4s}wire\t[{:^d}:0]\t{:s}{:d};'.format(' ', self._currConfig['wireOutRData']['width']-1, 'out_andgate', i)
             self.__tcamRtlWrapLine.append(tempLine)
         
-        # * create and gate instances
+        # * create final AND gate output wire
+        tempLine = '{:4s}wire\t[{:^d}:0]\t{:s};'.format(' ', self._currConfig['wireOutRData']['width']-1, 'out_andgate')
+        self.__tcamRtlWrapLine.append(tempLine)
+        
+        # * create and gate instances with proper cascading
         for i in range(self._currConfig['tcamBlocks']-1):
             if i == 0:
-                tempLine = '{:4s}andgate andgate_dut{:d} (.out_data (out_gate{:d}), in_dataA ({:>s}{:d}), in_dataB ({:>s}{:d}));' \
+                # First AND gate: out_rdata0 & out_rdata1 -> out_andgate0
+                tempLine = '{:4s}and_gate andgate_dut{:d} (.out_data(out_andgate{:d}), .in_dataA({:>s}{:d}), .in_dataB({:>s}{:d}));' \
                 .format(' ', i, i, outRData, i, outRData, i+1)
             elif i == self._currConfig['tcamBlocks'] - 2:
-                tempLine = '{:4s}andgate andgate_dut{:d} (.out_data (out_andgate), in_dataA (out_gate{:d}), in_dataB ({:>s}{:d}));' \
-                .format(' ', i, i, outRData, i+1)
+                # Last AND gate: out_andgate1 & out_rdata3 -> out_andgate (final)
+                tempLine = '{:4s}and_gate andgate_dut{:d} (.out_data(out_andgate), .in_dataA(out_andgate{:d}), .in_dataB({:>s}{:d}));' \
+                .format(' ', i, i-1, outRData, i+1)
             else:
-                tempLine = '{:4s}andgate andgate_dut{:d} (.out_data (out_gate{:d}), in_dataA (out_gate{:d}), in_dataB ({:>s}{:d}));' \
+                # Middle AND gates: out_andgate{i-1} & out_rdata{i+1} -> out_andgate{i}
+                tempLine = '{:4s}and_gate andgate_dut{:d} (.out_data(out_andgate{:d}), .in_dataA(out_andgate{:d}), .in_dataB({:>s}{:d}));' \
                 .format(' ', i, i, i-1, outRData, i+1)
             self.__tcamRtlWrapLine.append(tempLine)
     
@@ -378,12 +386,38 @@ class TcamRtlWrapperGenerator:
         return val:
         """
         module = [
-            '{:4s}priority_encoder priority_encoder_dut0('.format(' '),
+            '{:4s}priority_encoder_64x6 priority_encoder_dut0('.format(' '),
             '{:8s}.in_data  (out_andgate  ),'.format(' '),
-            '{:8s}.out_data (out_data     )'.format(' '),
+            '{:8s}.out_data (out_pma      )'.format(' '),
             '{:4s});'.format(' ')
         ]
         for line in module:
+            self.__tcamRtlWrapLine.append(line)
+        
+        # Add debug code to monitor address mapping
+        self.insertBlankLine(1)
+        debug_code = [
+            '{:4s}// Debug code to monitor address mapping'.format(' '),
+            '{:4s}always @(posedge in_clk) begin'.format(' '),
+            '{:8s}if (!in_csb) begin  // Only print when chip is selected'.format(' '),
+            '{:12s}$display("=== TCAM Address Debug ===");'.format(' '),
+            '{:12s}$display("Input address: %h", in_addr);'.format(' '),
+            '{:12s}$display("in_web: %b", in_web);'.format(' '),
+            '{:12s}$display("Block 0 search addr = %b (%h)", in_addr[6:0], in_addr[6:0]);'.format(' '),
+            '{:12s}$display("Block 1 search addr = %b (%h)", in_addr[13:7], in_addr[13:7]);'.format(' '),
+            '{:12s}$display("Block 2 search addr = %b (%h)", in_addr[20:14], in_addr[20:14]);'.format(' '),
+            '{:12s}$display("Block 3 search addr = %b (%h)", in_addr[27:21], in_addr[27:21]);'.format(' '),
+            '{:12s}$display("vtb_addr0 = %h", vtb_addr0);'.format(' '),
+            '{:12s}$display("vtb_addr1 = %h", vtb_addr1);'.format(' '),
+            '{:12s}$display("vtb_addr2 = %h", vtb_addr2);'.format(' '),
+            '{:12s}$display("vtb_addr3 = %h", vtb_addr3);'.format(' '),
+            '{:12s}$display("out_pma = %h", out_pma);'.format(' '),            
+            '{:12s}$display("=========================");'.format(' '),
+            '{:8s}end'.format(' '),
+            '{:4s}end'.format(' '),
+            '{:4s}'.format(' ')
+        ]
+        for line in debug_code:
             self.__tcamRtlWrapLine.append(line)
         
         self.insertBlankLine(1)
